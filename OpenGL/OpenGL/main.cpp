@@ -54,7 +54,7 @@ int main()
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
 
-	
+
 
 	//create vertex shader 
 	unsigned int vertexShader;
@@ -100,14 +100,14 @@ int main()
 		std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
 	}
 
-	
+
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 
 	// set up vertex data (and buffer(s)) and configure vertex attributes
 	// ------------------------------------------------------------------
 
-	float vertices[] =
+	/*float vertices[] =
 	{
 		0.f,0.5f,0.f,
 		-0.5f,-0.5f,0.f,
@@ -122,12 +122,47 @@ int main()
 	glBindVertexArray(VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);*/
+
+	float vertices[] =
+	{
+		0.5f,0.5f,0, //top right
+		0.5f,-0.5f,0, //bottom right
+		-0.5f,-0.5f,0, //bottom left
+		-0.5f,0.5f,0 //top left
+	};
+
+	int indices[] =
+	{
+		0,1,3,
+		1,2,3
+	};
+
+
+	unsigned int VBO, VAO, EBO;
+
+	glGenBuffers(1, &VBO);
+	glGenVertexArrays(1, &VAO);
+	glGenBuffers(1, &EBO);
+
+	glBindVertexArray(VAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
+
+
+
+
 
 
 
@@ -140,11 +175,14 @@ int main()
 		glClearColor(0.3f, 0.1f, 0.4f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 		
+		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); //wireframe
 
 		//	rendering triangle
+
 		glUseProgram(shaderProgram);
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_INT,0);
+		glBindVertexArray(0);
 
 		// check and call events and swap buffers
 		glfwSwapBuffers(window);
