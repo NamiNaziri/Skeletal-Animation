@@ -57,49 +57,52 @@ int main()
 	// set upVector vertex data (and buffer(s)) and configure vertex attributes
 	// ------------------------------------------------------------------
 
+
 	std::vector<float> vertices = {
-	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-	 0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
 
-	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-	 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-	 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-	-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+	 0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+	 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+	 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+	-0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
 
-	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-	-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+	-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+	-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+	-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+	-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+	-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
 
-	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-	 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	 0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+	 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+	 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+	 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+	 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
 
-	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	 0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+	 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+	 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+	 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
 
-	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-	-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+	-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+	 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+	 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+	 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+	-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+	-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
 	};
+
+	
 
 	glm::vec3 cubePositions[] = {
 	glm::vec3(0.0f,  3.0f,  0.0f),
@@ -124,8 +127,9 @@ int main()
 	}
 
 	// Light cube object
+	glm::vec3 lightPosition(0.f, 0.f, -6.f);
 	GameObject light(vertices);
-	light.SetPosition(glm::vec3(0.f,0.f,-6.f));
+	light.SetPosition(lightPosition);
 
 
 
@@ -214,15 +218,16 @@ int main()
 
 		SimpleShader.use(); // don't forget to activate/use the shader before setting uniforms!
 							// either set it manually like so:
-		glUniform1i(glGetUniformLocation(SimpleShader.ID, "texture1"), 0);
-		// or set it via the texture class
-		SimpleShader.SetInt("texture2", 1);
 		SimpleShader.SetVec3("objectColor", glm::vec3(1.0f, 0.5f, 0.31f));
 		SimpleShader.SetVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
-
+		SimpleShader.SetVec3("lightPosition", lightPosition);
+		SimpleShader.SetVec3("viewPosition", cam.GetPosition());
+		
 		glm::mat4 view = cam.GetViewMatrix();
 		SimpleShader.SetMat4("view", view);
 
+
+		
 		glm::mat4 projection = glm::mat4(1);
 		projection = glm::perspective(glm::radians(cam.GetFOV()), static_cast<float>(width / height), 0.1f, 100.0f);
 		SimpleShader.SetMat4("projection", projection);

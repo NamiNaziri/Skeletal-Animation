@@ -36,10 +36,10 @@ void GameObject::SetupGameObject()
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE, 5 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE, 6 * sizeof(float), (void*)0);
 
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
 	
 	
 }
@@ -51,6 +51,10 @@ void GameObject::Render(Shader& shader)
 	model = glm::translate(model, position);
 	model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
 	shader.SetMat4("model", model);
+
+	glm::mat3 normalMatrix = glm::transpose(glm::inverse(model));
+	shader.SetMat3("normalMatrix",normalMatrix);
+	
 
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 	glBindVertexArray(0);
