@@ -52,6 +52,7 @@
     <None Include="FragmentShader.frag">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="LightFragmentShader.frag" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="VertexShader.vert">

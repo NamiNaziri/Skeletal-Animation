@@ -9,6 +9,12 @@ GameObject::GameObject(std::vector<float> vertices)
 	SetupGameObject();
 }
 
+GameObject::~GameObject()
+{
+	glDeleteVertexArrays(1, &VAO);
+	glDeleteBuffers(1, &VBO);
+}
+
 void GameObject::SetPosition(glm::vec3 position)
 {
 	this->position = position;

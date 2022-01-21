@@ -16,6 +16,11 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
+
+// Functions
+
+GLFWwindow* CreateWindow();
+
 // camera
 
 Camera cam(	glm::vec3(0.0f, 0.0f, 3.0f) ,
@@ -43,36 +48,11 @@ float lastFrame = 0.0f; // Time of last frame
 
 int main()
 {
-	glfwInit();
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-
-	GLFWwindow* window = glfwCreateWindow(Width, Height, "OpenGL", NULL, NULL);
-	if (window == NULL)
-	{
-		std::cout << "Failed to create GLFW Window" << std::endl;
-		glfwTerminate();
-		return -1;
-	}
-	glfwMakeContextCurrent(window);
-	
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-	{
-		std::cout << "Failed To initialize GLAD" << std::endl;
-		return -1;
-	}
-
-	glViewport(0, 0, Width, Height);
-
-	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-
+	GLFWwindow* window = CreateWindow();
 
 	Shader SimpleShader("VertexShader.vert", "FragmentShader.frag");
-	
+	Shader LightShader("VertexShader.vert", "LightFragmentShader.frag");
 
 	// set upVector vertex data (and buffer(s)) and configure vertex attributes
 	// ------------------------------------------------------------------
@@ -122,7 +102,7 @@ int main()
 	};
 
 	glm::vec3 cubePositions[] = {
-	glm::vec3(0.0f,  0.0f,  0.0f),
+	glm::vec3(0.0f,  3.0f,  0.0f),
 	glm::vec3(2.0f,  5.0f, -15.0f),
 	glm::vec3(-1.5f, -2.2f, -2.5f),
 	glm::vec3(-3.8f, -2.0f, -12.3f),
@@ -136,13 +116,18 @@ int main()
 
 	
 	std::vector<GameObject> boxes;
-
-	for(int i = 0 ; i < 10 ; i++)
+	for (int i = 0; i < 10; i++)
 	{
 		GameObject b(vertices);
 		b.SetPosition(cubePositions[i]);
 		boxes.push_back(b);
 	}
+
+	// Light cube object
+	GameObject light(vertices);
+	light.SetPosition(glm::vec3(0.f,0.f,-6.f));
+
+
 
 	unsigned int texture1;
 	glGenTextures(1, &texture1);
@@ -194,14 +179,7 @@ int main()
 
 	stbi_image_free(data);
 
-	SimpleShader.use(); // don't forget to activate/use the shader before setting uniforms!
-	// either set it manually like so:
-	glUniform1i(glGetUniformLocation(SimpleShader.ID, "texture1"), 0);
-	// or set it via the texture class
-	SimpleShader.SetInt("texture2", 1);
-
 	
-
 	glEnable(GL_DEPTH_TEST);
 	while (!glfwWindowShouldClose(window))
 	{
@@ -233,7 +211,22 @@ int main()
 
 		// render container
 
-		//glBindVertexArray(VAO);
+
+		SimpleShader.use(); // don't forget to activate/use the shader before setting uniforms!
+							// either set it manually like so:
+		glUniform1i(glGetUniformLocation(SimpleShader.ID, "texture1"), 0);
+		// or set it via the texture class
+		SimpleShader.SetInt("texture2", 1);
+		SimpleShader.SetVec3("objectColor", glm::vec3(1.0f, 0.5f, 0.31f));
+		SimpleShader.SetVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+
+		glm::mat4 view = cam.GetViewMatrix();
+		SimpleShader.SetMat4("view", view);
+
+		glm::mat4 projection = glm::mat4(1);
+		projection = glm::perspective(glm::radians(cam.GetFOV()), static_cast<float>(width / height), 0.1f, 100.0f);
+		SimpleShader.SetMat4("projection", projection);
+		
 		for (unsigned int i = 0; i < 10; i++)
 		{
 			float angle = 20.0f * i;
@@ -241,27 +234,20 @@ int main()
 				angle = glfwGetTime() * 25.0f;
 
 			boxes[i].SetAngle(angle);
-			
 			boxes[i].Render(SimpleShader);
 		}
-		
-		
-		glm::mat4 view = cam.GetViewMatrix();
-		SimpleShader.SetMat4("view", view);
 
-
-		glm::mat4 projection = glm::mat4(1);
-		projection = glm::perspective(glm::radians(cam.GetFOV()), static_cast<float>(width / height), 0.1f, 100.0f);
-
-		SimpleShader.SetMat4("projection", projection);
+		// Render light Cube
+		LightShader.use();
+		LightShader.SetMat4("view", view);
+		LightShader.SetMat4("projection", projection);
+		light.Render(LightShader);
 		
 		// check and call events and swap buffers
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
-
-	//glDeleteVertexArrays(1, &VAO);
-	//glDeleteBuffers(1, &VBO);
+	
 	glfwTerminate();
 
 	return 0;
@@ -336,4 +322,36 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 		fov = 45.0f;
 
 	cam.SetFOV(fov);
+}
+
+GLFWwindow* CreateWindow()
+{
+	glfwInit();
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+
+	GLFWwindow* window = glfwCreateWindow(Width, Height, "OpenGL", NULL, NULL);
+	if (window == NULL)
+	{
+		std::cout << "Failed to create GLFW Window" << std::endl;
+		glfwTerminate();
+		//return -1;
+	}
+	glfwMakeContextCurrent(window);
+
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+	{
+		std::cout << "Failed To initialize GLAD" << std::endl;
+		//return -1;
+	}
+
+	glViewport(0, 0, Width, Height);
+
+	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
+	return window;
 }

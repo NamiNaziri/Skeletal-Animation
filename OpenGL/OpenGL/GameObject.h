@@ -17,7 +17,7 @@ private:
 
 public:
 	GameObject(std::vector<float> vertices);
-	
+	~GameObject();
 	void SetupGameObject();
 	void Render(Shader& shader);
 
