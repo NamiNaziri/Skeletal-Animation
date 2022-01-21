@@ -8,6 +8,8 @@
 #include "Camera.h"
 #include "Shader.h"
 #include "STB/stb_image.h"
+#include "GameObject.h"
+#include <vector>
 
 void processInput(GLFWwindow* window);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -75,7 +77,7 @@ int main()
 	// set upVector vertex data (and buffer(s)) and configure vertex attributes
 	// ------------------------------------------------------------------
 
-	float vertices[] = {
+	std::vector<float> vertices = {
 	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
 	 0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
 	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
@@ -131,27 +133,16 @@ int main()
 	glm::vec3(1.5f,  0.2f, -1.5f),
 	glm::vec3(-1.3f,  1.0f, -1.5f)
 	};
+
 	
-	unsigned int VBO, VAO;
+	std::vector<GameObject> boxes;
 
-	glGenBuffers(1, &VBO);
-	glGenVertexArrays(1, &VAO);
-	
-	glBindVertexArray(VAO);
-
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	
-
-
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-	
-
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(2);
-
+	for(int i = 0 ; i < 10 ; i++)
+	{
+		GameObject b(vertices);
+		b.SetPosition(cubePositions[i]);
+		boxes.push_back(b);
+	}
 
 	unsigned int texture1;
 	glGenTextures(1, &texture1);
@@ -242,21 +233,17 @@ int main()
 
 		// render container
 
-		glBindVertexArray(VAO);
+		//glBindVertexArray(VAO);
 		for (unsigned int i = 0; i < 10; i++)
 		{
-			glm::mat4 model = glm::mat4(1.0f);
-			model = glm::translate(model, cubePositions[i]);
 			float angle = 20.0f * i;
 			if (i % 3 == 0)  // every 3rd iteration (including the first) we set the angle using GLFW's time function.
 				angle = glfwGetTime() * 25.0f;
-			model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-			SimpleShader.SetMat4("model", model);
 
-			glDrawArrays(GL_TRIANGLES, 0, 36);
+			boxes[i].SetAngle(angle);
+			
+			boxes[i].Render(SimpleShader);
 		}
-
-
 		
 		
 		glm::mat4 view = cam.GetViewMatrix();
@@ -273,8 +260,8 @@ int main()
 		glfwPollEvents();
 	}
 
-	glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(1, &VBO);
+	//glDeleteVertexArrays(1, &VAO);
+	//glDeleteBuffers(1, &VBO);
 	glfwTerminate();
 
 	return 0;
