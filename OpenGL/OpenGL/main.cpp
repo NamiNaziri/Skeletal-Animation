@@ -47,6 +47,8 @@ bool firstMouse = true;
 float deltaTime = 0.0f;	// Time between current frame and last frame
 float lastFrame = 0.0f; // Time of last frame
 
+#define POINT_LIGHTS_NUM 4
+
 int main()
 {
 
@@ -126,9 +128,21 @@ int main()
 	}
 
 	// Light cube object
+
+	glm::vec3 pointLightPositions[] = {
+		glm::vec3(0.7f,  0.2f,  2.0f),
+		glm::vec3(2.3f, -3.3f, -4.0f),
+		glm::vec3(-4.0f,  2.0f, -12.0f),
+		glm::vec3(0.0f,  0.0f, -3.0f)
+	};
+	
 	glm::vec3 lightPosition(0.f, 0.f, -6.f);
-	GameObject light(vertices);
-	light.SetPosition(lightPosition);
+	GameObject lights[POINT_LIGHTS_NUM] = {GameObject(vertices),GameObject(vertices) ,GameObject(vertices) ,GameObject(vertices)};
+	for(int i = 0 ; i < POINT_LIGHTS_NUM; i++)
+	{
+		lights[i].SetPosition(pointLightPositions[i]);
+	}
+	
 
 
 
@@ -154,7 +168,7 @@ int main()
 		glfwSetScrollCallback(window, scroll_callback);
 		// rendering commands
 
-		glClearColor(0.3f, 0.1f, 0.4f, 1.0f);
+		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
 		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); //wireframe
@@ -179,18 +193,66 @@ int main()
 		SimpleShader.SetInt("material.emission", 2);
 		SimpleShader.SetFloat("material.shininess", 32.0f);
 
-		// light
-		SimpleShader.SetVec3("light.position", lightPosition);
-		glm::vec3 lightColor(1.f);
-		glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f);
-		glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f);
-
-		SimpleShader.SetVec3("light.ambient", ambientColor);
-		SimpleShader.SetVec3("light.diffuse", diffuseColor);
-		SimpleShader.SetVec3("light.specular",glm::vec3(1.0f, 1.0f, 1.0f));
-
 		// camera view
 		SimpleShader.SetVec3("viewPosition", cam.GetPosition());
+
+		// light
+
+				// directional light
+		SimpleShader.SetVec3("dirLight.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
+		SimpleShader.SetVec3("dirLight.ambient", glm::vec3(0.05f, 0.05f, 0.05f));
+		SimpleShader.SetVec3("dirLight.diffuse", glm::vec3(0.4f, 0.4f, 0.4f));
+		SimpleShader.SetVec3("dirLight.specular", glm::vec3(0.5f, 0.5f, 0.5f));
+		// point light 1
+		SimpleShader.SetVec3("pointLights[0].position", pointLightPositions[0]);
+		SimpleShader.SetVec3("pointLights[0].ambient", glm::vec3(0.05f, 0.05f, 0.05f));
+		SimpleShader.SetVec3("pointLights[0].diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
+		SimpleShader.SetVec3("pointLights[0].specular", glm::vec3(1.0f, 1.0f, 1.0f));
+		SimpleShader.SetFloat("pointLights[0].constant", 1.0f);
+		SimpleShader.SetFloat("pointLights[0].linear", 0.09f);
+		SimpleShader.SetFloat("pointLights[0].quadratic", 0.032f);
+		// point light 2
+		SimpleShader.SetVec3("pointLights[1].position", pointLightPositions[1]);
+		SimpleShader.SetVec3("pointLights[1].ambient", glm::vec3(0.05f, 0.05f, 0.05f));
+		SimpleShader.SetVec3("pointLights[1].diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
+		SimpleShader.SetVec3("pointLights[1].specular", glm::vec3(1.0f, 1.0f, 1.0f));
+		SimpleShader.SetFloat("pointLights[1].constant", 1.0f);
+		SimpleShader.SetFloat("pointLights[1].linear", 0.09f);
+		SimpleShader.SetFloat("pointLights[1].quadratic", 0.032f);
+		// point light 3
+		SimpleShader.SetVec3("pointLights[2].position", pointLightPositions[2]);
+		SimpleShader.SetVec3("pointLights[2].ambient", glm::vec3(0.05f, 0.05f, 0.05f));
+		SimpleShader.SetVec3("pointLights[2].diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
+		SimpleShader.SetVec3("pointLights[2].specular", glm::vec3(1.0f, 1.0f, 1.0f));
+		SimpleShader.SetFloat("pointLights[2].constant", 1.0f);
+		SimpleShader.SetFloat("pointLights[2].linear", 0.09f);
+		SimpleShader.SetFloat("pointLights[2].quadratic", 0.032f);
+		// point light 4
+		SimpleShader.SetVec3("pointLights[3].position", pointLightPositions[3]);
+		SimpleShader.SetVec3("pointLights[3].ambient", glm::vec3(0.05f, 0.05f, 0.05f));
+		SimpleShader.SetVec3("pointLights[3].diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
+		SimpleShader.SetVec3("pointLights[3].specular", glm::vec3(1.0f, 1.0f, 1.0f));
+		SimpleShader.SetFloat("pointLights[3].constant", 1.0f);
+		SimpleShader.SetFloat("pointLights[3].linear", 0.09f);
+		SimpleShader.SetFloat("pointLights[3].quadratic", 0.032f);
+		// spotLight
+		SimpleShader.SetVec3("spotLight.position", cam.GetPosition());
+		SimpleShader.SetVec3("spotLight.direction", cam.GetForward());
+		SimpleShader.SetVec3("spotLight.ambient", glm::vec3(0.0f, 0.0f, 0.0f));
+		SimpleShader.SetVec3("spotLight.diffuse", glm::vec3(1.0f, 1.0f, 1.0f));
+		SimpleShader.SetVec3("spotLight.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+		SimpleShader.SetFloat("spotLight.constant", 1.0f);
+		SimpleShader.SetFloat("spotLight.linear", 0.09f);
+		SimpleShader.SetFloat("spotLight.quadratic", 0.032f);
+		SimpleShader.SetFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
+		SimpleShader.SetFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
+
+
+
+		
+		
+
+
 
 		glm::mat4 view = cam.GetViewMatrix();
 		SimpleShader.SetMat4("view", view);
@@ -215,7 +277,13 @@ int main()
 		LightShader.use();
 		LightShader.SetMat4("view", view);
 		LightShader.SetMat4("projection", projection);
-		light.Render(LightShader);
+
+		for (int i = 0; i < POINT_LIGHTS_NUM; i++)
+		{
+			lights[i].Render(LightShader);
+		}
+		
+		
 		
 		// check and call events and swap buffers
 		glfwSwapBuffers(window);
