@@ -8,8 +8,12 @@
 #include "Camera.h"
 #include "Shader.h"
 #include "STB/stb_image.h"
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
 #include "GameObject.h"
 #include <vector>
+#include "mesh.h"
 
 #include <iostream>
 void processInput(GLFWwindow* window);
@@ -117,7 +121,8 @@ int main()
 	glm::vec3(1.5f,  0.2f, -1.5f),
 	glm::vec3(-1.3f,  1.0f, -1.5f)
 	};
-
+	Assimp::Importer import;
+	const aiScene* scene = import.ReadFile("path", aiProcess_Triangulate | aiProcess_FlipUVs);
 	
 	std::vector<GameObject> boxes;
 	for (int i = 0; i < 10; i++)
@@ -246,11 +251,6 @@ int main()
 		SimpleShader.SetFloat("spotLight.quadratic", 0.032f);
 		SimpleShader.SetFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
 		SimpleShader.SetFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
-
-
-
-		
-		
 
 
 
