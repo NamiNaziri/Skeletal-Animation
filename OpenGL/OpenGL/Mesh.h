@@ -20,6 +20,7 @@ struct Texture
 	unsigned int id;
 	std::string name;
 	TextureType type;
+	std::string path;
 };
 
 
@@ -37,10 +38,5 @@ private:
 	std::vector<Texture> textures;
 
 	unsigned int VBO, VAO, EBO;
-
-
-
-
-	
 };
 
