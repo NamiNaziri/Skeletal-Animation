@@ -13,9 +13,8 @@
 #include <assimp/postprocess.h>
 #include "GameObject.h"
 #include <vector>
-#include "mesh.h"
-
 #include <iostream>
+#include "Model.h"
 void processInput(GLFWwindow* window);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -34,10 +33,6 @@ Camera cam(	glm::vec3(0.0f, 0.0f, 3.0f) ,
 			0,
 			-90
 			);
-
-
-
-
 
 const int Width = 800;
 const int Height = 600;
@@ -121,8 +116,7 @@ int main()
 	glm::vec3(1.5f,  0.2f, -1.5f),
 	glm::vec3(-1.3f,  1.0f, -1.5f)
 	};
-	Assimp::Importer import;
-	const aiScene* scene = import.ReadFile("path", aiProcess_Triangulate | aiProcess_FlipUVs);
+
 	
 	std::vector<GameObject> boxes;
 	for (int i = 0; i < 10; i++)
@@ -147,13 +141,13 @@ int main()
 	{
 		lights[i].SetPosition(pointLightPositions[i]);
 	}
+
+
+	// tell stb_image.h to flip loaded texture's on the y-axis (before loading model).
+	stbi_set_flip_vertically_on_load(true);
 	
+	Model ourModel("resources/objects/backpack/backpack.obj");
 
-
-
-	unsigned int texture1 = loadTexture("resources/container2.png");
-	unsigned int texture2 = loadTexture("resources/container2_specular.png");
-	unsigned int texture3 = loadTexture("resources/matrix.jpg");
 
 	
 	
@@ -179,23 +173,11 @@ int main()
 		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); //wireframe
 		
 		
-
-		// bind textures on corresponding texture units
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture1);
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, texture2);
-		glActiveTexture(GL_TEXTURE2);
-		glBindTexture(GL_TEXTURE_2D, texture3);
-
 		// render container
 		SimpleShader.use(); // don't forget to activate/use the shader before setting uniforms!
 							// either set it manually like so:
 
 		// material
-		SimpleShader.SetInt("material.diffuse", 0);
-		SimpleShader.SetInt("material.specular", 1);
-		SimpleShader.SetInt("material.emission", 2);
 		SimpleShader.SetFloat("material.shininess", 32.0f);
 
 		// camera view
@@ -203,7 +185,7 @@ int main()
 
 		// light
 
-				// directional light
+		// directional light
 		SimpleShader.SetVec3("dirLight.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
 		SimpleShader.SetVec3("dirLight.ambient", glm::vec3(0.05f, 0.05f, 0.05f));
 		SimpleShader.SetVec3("dirLight.diffuse", glm::vec3(0.4f, 0.4f, 0.4f));
@@ -253,7 +235,6 @@ int main()
 		SimpleShader.SetFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
 
 
-
 		glm::mat4 view = cam.GetViewMatrix();
 		SimpleShader.SetMat4("view", view);
 
@@ -263,7 +244,7 @@ int main()
 		projection = glm::perspective(glm::radians(cam.GetFOV()), static_cast<float>(Width / Height), 0.1f, 100.0f);
 		SimpleShader.SetMat4("projection", projection);
 		
-		for (unsigned int i = 0; i < 10; i++)
+		/*for (unsigned int i = 0; i < 10; i++)
 		{
 			float angle = 20.0f * i;
 			if (i % 3 == 0)  // every 3rd iteration (including the first) we set the angle using GLFW's time function.
@@ -271,7 +252,20 @@ int main()
 
 			boxes[i].SetAngle(angle);
 			boxes[i].Render(SimpleShader);
-		}
+		}*/
+
+		// render the loaded model
+		glm::mat4 model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
+		model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));	// it's a bit too big for our scene, so scale it down
+		SimpleShader.SetMat4("model", model);
+
+		const glm::mat3 normalMatrix = glm::transpose(glm::inverse(model));
+		SimpleShader.SetMat3("normalMatrix", normalMatrix);
+
+
+		
+		ourModel.Draw(SimpleShader);
 
 		// Render light Cube
 		LightShader.use();

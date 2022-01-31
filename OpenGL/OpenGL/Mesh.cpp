@@ -5,6 +5,8 @@ Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned> indices, std::vec
 	this->vertices = vertices;
 	this->indices = indices;
 	this->textures = textures;
+	// now that we have all the required data, set the vertex buffers and its attribute pointers.
+	SetupMesh();
 }
 
 void Mesh::Draw(Shader& shader)
@@ -29,12 +31,14 @@ void Mesh::Draw(Shader& shader)
 		shader.SetInt(("material." + textures[i].name + number), i);
 		glBindTexture(GL_TEXTURE_2D, textures[i].id);
 	}
-	glActiveTexture(GL_TEXTURE0);
+	
 
 	//draw mesh
 	glBindVertexArray(VAO);
-	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, static_cast<unsigned int>(indices.size()), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
+
+	glActiveTexture(GL_TEXTURE0);
 	
 }
 

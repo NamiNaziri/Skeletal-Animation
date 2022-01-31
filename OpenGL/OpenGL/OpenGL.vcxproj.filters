@@ -65,11 +65,13 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="LightFragmentShader.frag" />
+    <None Include="Resources\objects\backpack\backpack.mtl" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="VertexShader.vert">
       <Filter>Shaders</Filter>
     </Text>
+    <Text Include="Resources\objects\backpack\source_attribution.txt" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\container.jpg">
@@ -82,6 +84,21 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="Resources\container2_specular.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\objects\backpack\ao.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\objects\backpack\diffuse.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\objects\backpack\normal.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\objects\backpack\roughness.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\objects\backpack\specular.jpg">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
