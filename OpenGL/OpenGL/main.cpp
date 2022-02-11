@@ -19,7 +19,7 @@ void processInput(GLFWwindow* window);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-
+void WindowResizeHandler(GLFWwindow* window, int w, int h);
 
 // Functions
 
@@ -34,8 +34,8 @@ Camera cam(	glm::vec3(0.0f, 0.0f, 3.0f) ,
 			-90
 			);
 
-const int Width = 800;
-const int Height = 600;
+int Width = 1920;
+int Height = 1080;
 
 
 float lastX = Width/2, lastY = Height/2;
@@ -165,6 +165,7 @@ int main()
 		processInput(window);
 		glfwSetCursorPosCallback(window, mouse_callback);
 		glfwSetScrollCallback(window, scroll_callback);
+		glfwSetWindowSizeCallback(window, WindowResizeHandler);
 		// rendering commands
 
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
@@ -223,7 +224,7 @@ int main()
 		SimpleShader.SetFloat("pointLights[3].linear", 0.09f);
 		SimpleShader.SetFloat("pointLights[3].quadratic", 0.032f);
 		// spotLight
-		SimpleShader.SetVec3("spotLight.position", cam.GetPosition());
+		/*SimpleShader.SetVec3("spotLight.position", cam.GetPosition());
 		SimpleShader.SetVec3("spotLight.direction", cam.GetForward());
 		SimpleShader.SetVec3("spotLight.ambient", glm::vec3(0.0f, 0.0f, 0.0f));
 		SimpleShader.SetVec3("spotLight.diffuse", glm::vec3(1.0f, 1.0f, 1.0f));
@@ -232,7 +233,7 @@ int main()
 		SimpleShader.SetFloat("spotLight.linear", 0.09f);
 		SimpleShader.SetFloat("spotLight.quadratic", 0.032f);
 		SimpleShader.SetFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
-		SimpleShader.SetFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
+		SimpleShader.SetFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));*/
 
 
 		glm::mat4 view = cam.GetViewMatrix();
@@ -241,7 +242,8 @@ int main()
 
 		
 		glm::mat4 projection = glm::mat4(1);
-		projection = glm::perspective(glm::radians(cam.GetFOV()), static_cast<float>(Width / Height), 0.1f, 100.0f);
+
+		projection = glm::perspective(glm::radians(cam.GetFOV()), ((float)Width / (float)Height), 0.1f, 100.0f);
 		SimpleShader.SetMat4("projection", projection);
 		
 		/*for (unsigned int i = 0; i < 10; i++)
@@ -274,7 +276,7 @@ int main()
 
 		for (int i = 0; i < POINT_LIGHTS_NUM; i++)
 		{
-			lights[i].Render(LightShader);
+			//lights[i].Render(LightShader);
 		}
 		
 		
@@ -390,6 +392,14 @@ GLFWwindow* CreateWindow()
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
 	return window;
+}
+
+
+void WindowResizeHandler(GLFWwindow* window, int w, int h)
+{
+	std::cout << "Window Resized. W: " << w << "  H: " << h << std::endl;
+	Width = w;
+	Height = h;
 }
 
 // utility function for loading a 2D texture from file

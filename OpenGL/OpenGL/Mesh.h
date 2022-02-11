@@ -8,12 +8,29 @@
 
 struct Vertex
 {
-	glm::vec3 Position;
-	glm::vec3 Normal;
-	glm::vec2 TexCoords;
+	glm::vec3 position;
+	glm::vec3 normal;
+	glm::vec3 tangent;
+	glm::vec3 biTangent;
+	glm::vec2 texCoords;
+	
 };
 
-enum TextureType{ diffuse, specular };
+struct SkinnedVertex
+{
+	glm::vec3 position;
+	glm::vec3 normal;
+	glm::vec3 tangent;
+	glm::vec3 biTangent;
+	glm::vec2 texCoords;
+
+	//TODO
+	//glm::vec4 jointIndex;
+	//glm::vec4 jointWeight;
+	
+};
+
+enum TextureType{ diffuse, specular, normal };
 
 struct Texture
 {
@@ -40,3 +57,7 @@ private:
 	unsigned int VBO, VAO, EBO;
 };
 
+class SkinnedMesh: Mesh
+{
+	
+};

@@ -10,10 +10,15 @@ struct Material
     sampler2D texture_diffuse1;
     sampler2D texture_diffuse2;
     sampler2D texture_diffuse3;
+
     sampler2D emission;
+
     sampler2D texture_specular1;
     sampler2D texture_specular2;
     sampler2D texture_specular3;
+
+    sampler2D texture_normal1;
+
     float shininess;
 
 };
@@ -74,6 +79,7 @@ uniform SpotLight spotLight;
 in vec2 TexCoords;
 in vec3 Normal;
 in vec3 fragPosition;
+in mat3 TBN;
 
 out vec4 fragColor;
 
@@ -92,7 +98,9 @@ vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
 
 void main()
 {
-    vec3 norm = normalize(Normal);
+    vec3 norm = texture(material.texture_normal1,TexCoords).rgb;
+    norm = norm * 2 - 1;
+    norm = normalize(TBN * norm);
     vec3 viewDir  = normalize(viewPosition - fragPosition);
 
     vec3 result = CalcDirLight(dirLight, norm, viewDir);
@@ -101,7 +109,7 @@ void main()
         result += CalcPointLight(pointLights[i], norm, fragPosition, viewDir);
 
     }
-    result += CalcSpotLight(spotLight, norm, fragPosition, viewDir);
+    //result += CalcSpotLight(spotLight, norm, fragPosition, viewDir);
 
     fragColor = vec4(result, 1.0);
 }

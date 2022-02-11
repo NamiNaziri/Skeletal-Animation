@@ -18,7 +18,6 @@ GameObject::~GameObject()
 void GameObject::SetPosition(glm::vec3 position)
 {
 	this->position = position;
-	
 }
 
 void GameObject::SetAngle(float angle)
@@ -55,7 +54,7 @@ void GameObject::Render(Shader& shader)
 	model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
 	shader.SetMat4("model", model);
 
-	glm::mat3 normalMatrix = glm::transpose(glm::inverse(model));
+	const glm::mat3 normalMatrix = glm::transpose(glm::inverse(model));
 	shader.SetMat3("normalMatrix",normalMatrix); 
 	
 	glBindVertexArray(VAO);
