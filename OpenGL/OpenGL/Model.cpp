@@ -13,7 +13,7 @@ void Model::Draw(Shader& shader)
 {
 	for (auto mesh : meshes)
 	{
-		mesh.Draw(shader);
+		mesh->Draw(shader);
 	}
 }
 
@@ -33,68 +33,30 @@ void Model::LoadModel(std::string path)
 
 void Model::ProcessNode(aiNode* node, const aiScene* scene)
 {
-	for( int i = 0 ; i < node->mNumMeshes ; i++)
+	for(unsigned int i = 0 ; i < node->mNumMeshes ; i++)
 	{
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 		meshes.push_back(ProcessMesh(mesh, scene));
 	}
 
-	for( int j = 0 ; j < node->mNumChildren ; j++)
+	for(unsigned int j = 0 ; j < node->mNumChildren ; j++)
 	{
 		ProcessNode(node->mChildren[j], scene);
 	}
 }
 
-Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
+Mesh* Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 {
-	std::vector<Vertex> vertices;
-	std::vector<unsigned int> indices;
-	std::vector<Texture> textures;
-
 	// Processing Vertices
-	for(int i = 0 ; i < mesh->mNumVertices ; i++)
-	{
-		Vertex vertex;
-		vertex.position = glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
-		vertex.normal = glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
-		if (mesh->mTextureCoords[0]) // does the mesh contain texture coordinates?
-		{
-			vertex.texCoords = glm::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
-		}
-		else
-		{
-			vertex.texCoords = glm::vec2(0.0f, 0.0f);
-		}
-		vertex.tangent = glm::vec3(mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z);
-		vertex.biTangent = glm::vec3(mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z);
-		vertices.push_back(vertex);
-	}
-
+	const std::vector<Vertex> vertices = ProcessVertices(mesh);
+	
 	// Processing indices
-	for(int i = 0 ; i < mesh->mNumFaces ; i++)
-	{
-		aiFace face = mesh->mFaces[i];
-		for(int j = 0 ; j < face.mNumIndices ; j++)
-		{
-			indices.push_back(face.mIndices[j]);
-		}
-	}
+	const std::vector<unsigned int> indices = ProcessIndices(mesh);
 
 	// Processing materials
-	if(mesh->mMaterialIndex >= 0)
-	{
-		aiMaterial* material =  scene->mMaterials[mesh->mMaterialIndex];
-		std::vector<Texture> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, TextureType::diffuse, "texture_diffuse");
-		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
-		
-		std::vector<Texture> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, TextureType::specular, "texture_specular");
-		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+	const std::vector<Texture> textures = ProcessMaterials(mesh, scene);
 
-		std::vector<Texture> normalMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, TextureType::normal, "texture_normal");
-		textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
-	}
-
-	return Mesh(vertices, indices, textures);
+	return  new StaticMesh(vertices, indices, textures);
 }
 
 std::vector<Texture> Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType type, TextureType textureType, const std::string& textureName)
@@ -128,6 +90,64 @@ std::vector<Texture> Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType 
 	}
 	return textures;
 }
+
+std::vector<Vertex> Model::ProcessVertices(aiMesh* mesh)
+{
+	std::vector<Vertex> vertices;
+
+	for (int i = 0; i < mesh->mNumVertices; i++)
+	{
+		Vertex vertex;
+		vertex.position = glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
+		vertex.normal = glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
+		if (mesh->mTextureCoords[0]) // does the mesh contain texture coordinates?
+		{
+			vertex.texCoords = glm::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
+		}
+		else
+		{
+			vertex.texCoords = glm::vec2(0.0f, 0.0f);
+		}
+		vertex.tangent = glm::vec3(mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z);
+		vertex.biTangent = glm::vec3(mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z);
+
+		vertices.push_back(vertex);
+	}
+	return vertices;
+}
+
+std::vector<unsigned int> Model::ProcessIndices(aiMesh* mesh) 
+{
+	std::vector<unsigned int> indices;
+	for (int i = 0; i < mesh->mNumFaces; i++)
+	{
+		aiFace face = mesh->mFaces[i];
+		for (int j = 0; j < face.mNumIndices; j++)
+		{
+			indices.push_back(face.mIndices[j]);
+		}
+	}
+	return indices;
+}
+
+std::vector<Texture> Model::ProcessMaterials(aiMesh* mesh, const aiScene* scene) 
+{
+	std::vector<Texture> textures;
+	if (mesh->mMaterialIndex >= 0)
+	{
+		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+		std::vector<Texture> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, TextureType::diffuse, "texture_diffuse");
+		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
+
+		std::vector<Texture> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, TextureType::specular, "texture_specular");
+		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+
+		std::vector<Texture> normalMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, TextureType::normal, "texture_normal");
+		textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
+	}
+	return textures;
+}
+
 unsigned int LoadTextureFromFile(const std::string& path, const std::string& directory, bool gamma)
 {
 	std::string filename = std::string(path);

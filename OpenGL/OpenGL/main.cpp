@@ -34,7 +34,7 @@ Camera cam(	glm::vec3(0.0f, 0.0f, 3.0f) ,
 			-90
 			);
 
-int Width = 1920;
+int Width = 1080;
 int Height = 1080;
 
 
@@ -147,7 +147,7 @@ int main()
 	stbi_set_flip_vertically_on_load(true);
 	
 	Model ourModel("resources/objects/backpack/backpack.obj");
-
+	std::cout << "Model Loaded" << std::endl;
 
 	
 	
