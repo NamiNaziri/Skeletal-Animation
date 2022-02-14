@@ -146,7 +146,7 @@ int main()
 	// tell stb_image.h to flip loaded texture's on the y-axis (before loading model).
 	stbi_set_flip_vertically_on_load(true);
 	
-	Model ourModel("resources/objects/backpack/backpack.obj");
+	Model ourModel("resources/objects/MixamoCharacter/Strut Walking.fbx");
 	std::cout << "Model Loaded" << std::endl;
 
 	
@@ -259,7 +259,7 @@ int main()
 		// render the loaded model
 		glm::mat4 model = glm::mat4(1.0f);
 		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
-		model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));	// it's a bit too big for our scene, so scale it down
+		model = glm::scale(model, glm::vec3(0.01f, 0.01f, 0.01f));	// it's a bit too big for our scene, so scale it down
 		SimpleShader.SetMat4("model", model);
 
 		const glm::mat3 normalMatrix = glm::transpose(glm::inverse(model));

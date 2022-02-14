@@ -72,6 +72,8 @@
     </None>
     <None Include="LightFragmentShader.frag" />
     <None Include="Resources\objects\backpack\backpack.mtl" />
+    <None Include="Resources\objects\MixamoCharacter\Standing.fbx" />
+    <None Include="Resources\objects\MixamoCharacter\Standing.dae" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="VertexShader.vert">
@@ -105,6 +107,12 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="Resources\objects\backpack\specular.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\objects\MixamoCharacter\diffuse.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\objects\MixamoCharacter\normal.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

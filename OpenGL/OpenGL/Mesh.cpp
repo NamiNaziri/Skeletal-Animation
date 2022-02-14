@@ -1,9 +1,11 @@
 #include "Mesh.h"
 
-Mesh::Mesh(std::vector<unsigned> indices, std::vector<Texture> textures)
+Mesh::Mesh(std::string name, std::vector<unsigned> indices, std::vector<Texture> textures)
 {
+	this->name = name;
 	this->indices = indices;
 	this->textures = textures;
+	
 	// now that we have all the required data, set the vertex buffers and its attribute pointers.
 	SetupMesh();
 }
@@ -51,8 +53,8 @@ void Mesh::SetupMesh()
 {
 }
 
-StaticMesh::StaticMesh(std::vector<Vertex> vertices, std::vector<unsigned> indices, std::vector<Texture> textures)
-	: Mesh(indices,textures)
+StaticMesh::StaticMesh(std::string name, std::vector<Vertex> vertices, std::vector<unsigned> indices, std::vector<Texture> textures)
+	: Mesh(name,indices,textures)
 {
 	this->vertices = vertices;
 	SetupMesh();
@@ -94,10 +96,11 @@ void StaticMesh::SetupMesh()
 
 //////////////////////////////////////
 
-SkinnedMesh::SkinnedMesh(std::vector<SkinnedVertex> vertices, std::vector<unsigned> indices,
-	std::vector<Texture> textures): Mesh(indices,textures)
+SkinnedMesh::SkinnedMesh(std::string name, Skeleton skeleton, std::vector<SkinnedVertex> vertices, std::vector<unsigned> indices,
+	std::vector<Texture> textures): Mesh(name,indices,textures)
 {
 	this->vertices = vertices;
+	this->skeleton = skeleton;
 	SetupMesh();
 }
 
@@ -138,4 +141,9 @@ void SkinnedMesh::SetupMesh()
 	glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(SkinnedVertex), (void*)offsetof(SkinnedVertex, jointWeight));
 	
 	glBindVertexArray(0);
+}
+
+Skeleton& SkinnedMesh::GetSkeleton()
+{
+	return skeleton;
 }

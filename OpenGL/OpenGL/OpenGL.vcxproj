@@ -180,6 +180,8 @@
     <None Include="FragmentShader.frag" />
     <None Include="LightFragmentShader.frag" />
     <None Include="Resources\objects\backpack\backpack.mtl" />
+    <None Include="Resources\objects\MixamoCharacter\Standing.dae" />
+    <None Include="Resources\objects\MixamoCharacter\Standing.fbx" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\container.jpg" />
@@ -190,6 +192,8 @@
     <Image Include="Resources\objects\backpack\normal.png" />
     <Image Include="Resources\objects\backpack\roughness.jpg" />
     <Image Include="Resources\objects\backpack\specular.jpg" />
+    <Image Include="Resources\objects\MixamoCharacter\diffuse.png" />
+    <Image Include="Resources\objects\MixamoCharacter\normal.png" />
     <Image Include="Resources\wall.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
