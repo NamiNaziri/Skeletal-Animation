@@ -1,7 +1,7 @@
 #include "Camera.h"
 
-Camera::Camera(glm::vec3 position, glm::vec3 up, float fov, float pitch , float yaw)
-	: position(position), upVector(up),pitch(pitch),FOV(fov),yaw(yaw), forwardVector(glm::vec3(0.0f, 0.0f, -1.0f))
+Camera::Camera(glm::vec3 position, glm::vec3 up, float fov, float pitch , float yaw, float speed)
+	: position(position), upVector(up),pitch(pitch),FOV(fov),yaw(yaw), forwardVector(glm::vec3(0.0f, 0.0f, -1.0f)), speed(speed)
 {
 	Rotate(pitch, yaw);
 }
@@ -27,6 +27,11 @@ void Camera::Translate(glm::vec3 direction, float speed)
 void Camera::SetFOV(float fov)
 {
 	FOV = fov;
+}
+
+void Camera::SetSpeed(float speed)
+{
+	this->speed = speed;
 }
 
 glm::mat4 Camera::GetViewMatrix()
@@ -62,4 +67,9 @@ float Camera::GetYaw()
 float Camera::GetFOV()
 {
 	return FOV;
+}
+
+float Camera::GetSpeed()
+{
+	return speed;
 }

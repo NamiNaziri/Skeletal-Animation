@@ -7,23 +7,24 @@ class Camera
 {
 
 public:
-	Camera(glm::vec3 position, glm::vec3 up,float fov = 45.f,float pitch = 0.f ,float yaw = -90);
+	Camera(glm::vec3 position, glm::vec3 up,float fov = 45.f,float pitch = 0.f ,float yaw = -90, float speed = 50);
 	void Rotate(float pitch, float yaw);
 	void Translate(glm::vec3 direction, float speed);
 
 	
 	void SetFOV(float fov);
-
+	void SetSpeed(float speed);
 	
 	glm::mat4 GetViewMatrix();
 	glm::vec3 GetPosition();
 	glm::vec3 GetForward();
 	glm::vec3 GetRight();
 
+
 	float GetPitch();
 	float GetYaw();
 	float GetFOV();
-
+	float GetSpeed();
 private:
 	glm::vec3 position;
 	glm::vec3 forwardVector;
@@ -32,5 +33,6 @@ private:
 	float pitch;
 	float yaw;
 	float FOV = 45.f;
+	float speed = 60;
 };
 

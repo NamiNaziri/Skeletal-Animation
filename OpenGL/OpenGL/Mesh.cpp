@@ -63,7 +63,7 @@ StaticMesh::StaticMesh(std::string name, std::vector<Vertex> vertices, std::vect
 void StaticMesh::SetupMesh()
 {
 	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
+	glGenBuffers(1, &VBO);	
 	glGenBuffers(1, &EBO);
 
 	glBindVertexArray(VAO);
@@ -96,11 +96,10 @@ void StaticMesh::SetupMesh()
 
 //////////////////////////////////////
 
-SkinnedMesh::SkinnedMesh(std::string name, Skeleton skeleton, std::vector<SkinnedVertex> vertices, std::vector<unsigned> indices,
+SkinnedMesh::SkinnedMesh(std::string name, std::vector<SkinnedVertex> vertices, std::vector<unsigned> indices,
 	std::vector<Texture> textures): Mesh(name,indices,textures)
 {
 	this->vertices = vertices;
-	this->skeleton = skeleton;
 	SetupMesh();
 }
 
@@ -141,9 +140,4 @@ void SkinnedMesh::SetupMesh()
 	glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(SkinnedVertex), (void*)offsetof(SkinnedVertex, jointWeight));
 	
 	glBindVertexArray(0);
-}
-
-Skeleton& SkinnedMesh::GetSkeleton()
-{
-	return skeleton;
 }

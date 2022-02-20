@@ -15,6 +15,9 @@
 #include <vector>
 #include <iostream>
 #include "Model.h"
+#include "Mesh.h"
+#include "SkeletalModel.h"
+#include <glm/gtx/string_cast.hpp>
 void processInput(GLFWwindow* window);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -27,7 +30,7 @@ GLFWwindow* CreateWindow();
 unsigned int loadTexture(const char* path);
 // camera
 
-Camera cam(	glm::vec3(0.0f, 0.0f, 3.0f) ,
+Camera cam(	glm::vec3(0.0f, 0.0f, 500.0f) ,
 			glm::vec3(0.0f, 1.0f, 0.0f),
 			45,
 			0,
@@ -46,7 +49,21 @@ bool firstMouse = true;
 float deltaTime = 0.0f;	// Time between current frame and last frame
 float lastFrame = 0.0f; // Time of last frame
 
+bool ShowModel = true;
+
 #define POINT_LIGHTS_NUM 4
+
+std::vector<glm::vec3> pos;
+void DrawSkeleton(Bone* root, glm::mat4 parentTrnsform)
+{
+	glm::mat4 newParentTransform = parentTrnsform * root->GetTransform();
+	pos.push_back(glm::vec3(newParentTransform[3]));
+	for(int i = 0 ; i < root->GetChildren().size() ; i++)
+	{
+		DrawSkeleton(root->GetChildren()[i], newParentTransform);
+	}
+	
+}
 
 int main()
 {
@@ -118,13 +135,6 @@ int main()
 	};
 
 	
-	std::vector<GameObject> boxes;
-	for (int i = 0; i < 10; i++)
-	{
-		GameObject b(vertices);
-		b.SetPosition(cubePositions[i]);
-		boxes.push_back(b);
-	}
 
 	// Light cube object
 
@@ -146,10 +156,33 @@ int main()
 	// tell stb_image.h to flip loaded texture's on the y-axis (before loading model).
 	stbi_set_flip_vertically_on_load(true);
 	
-	Model ourModel("resources/objects/MixamoCharacter/Strut Walking.fbx");
+	SkeletalModel ourModel("resources/objects/MixamoCharacter/Zombie Stand Up.fbx");
+	Model secModel("resources/objects/Sphere/sphere.obj");
+	std::vector<Model> models;
 	std::cout << "Model Loaded" << std::endl;
+	/// *********** SKELETON **************////
+
+	Skeleton s = ourModel.GetSkeleton();
+	Bone* root = s.GetRootBone();
+	DrawSkeleton(root, glm::mat4(1.0f));
+	//std::reverse(pos.begin(), pos.end());
 
 	
+	for (int i = 0; i < s.GetBones().size(); i++)
+	{
+		Model secModel("resources/objects/Sphere/sphere.obj");
+		models.push_back(secModel);
+		
+	}
+
+	/*std::vector<GameObject> boxes;
+	for (int i = 0; i < s.GetBones().size(); i++)
+	{
+		GameObject b(vertices);
+		b.SetPosition(glm::vec3(s.GetBones()[i]->GetInverseBindPose()[3]));
+		boxes.push_back(b);
+	}*/
+
 	
 	glEnable(GL_DEPTH_TEST);
 	while (!glfwWindowShouldClose(window))
@@ -243,36 +276,71 @@ int main()
 		
 		glm::mat4 projection = glm::mat4(1);
 
-		projection = glm::perspective(glm::radians(cam.GetFOV()), ((float)Width / (float)Height), 0.1f, 100.0f);
+		projection = glm::perspective(glm::radians(cam.GetFOV()), ((float)Width / (float)Height), 0.1f, 50000.0f);
 		SimpleShader.SetMat4("projection", projection);
 		
-		/*for (unsigned int i = 0; i < 10; i++)
+		/*for (unsigned int i = 0; i < s.GetBones().size(); i++)
 		{
-			float angle = 20.0f * i;
-			if (i % 3 == 0)  // every 3rd iteration (including the first) we set the angle using GLFW's time function.
-				angle = glfwGetTime() * 25.0f;
-
-			boxes[i].SetAngle(angle);
 			boxes[i].Render(SimpleShader);
 		}*/
 
 		// render the loaded model
+		
+		//model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
+		//model = glm::scale(model, glm::vec3(0.01f, 0.01f, 0.01f));	// it's a bit too big for our scene, so scale it down
+	
+		
+
+		
+		std::cout << "Came Pos: " << glm::to_string( cam.GetPosition() ) << std::endl;
+		
+		// render the loaded model
 		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
-		model = glm::scale(model, glm::vec3(0.01f, 0.01f, 0.01f));	// it's a bit too big for our scene, so scale it down
+		model = glm::translate(model, glm::vec3(0.0f, 0.f, 0.0f)); // translate it down so it's at the center of the scene
+		model = glm::scale(model, glm::vec3(1.f, 1.f, 1.f));	// it's a bit too big for our scene, so scale it down
 		SimpleShader.SetMat4("model", model);
 
-		const glm::mat3 normalMatrix = glm::transpose(glm::inverse(model));
+		glm::mat3 normalMatrix = glm::transpose(glm::inverse(model));
 		SimpleShader.SetMat3("normalMatrix", normalMatrix);
 
 
+		if (ShowModel)
+		{
+			ourModel.Draw(SimpleShader);
+		}
 		
-		ourModel.Draw(SimpleShader);
-
 		// Render light Cube
+
 		LightShader.use();
+		/*model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(0, 0, 0));
+		model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));	// it's a bit too big for our scene, so scale it down
+
+		LightShader.SetMat4("model", model);
+		normalMatrix = glm::transpose(glm::inverse(model));*
+		LightShader.SetMat3("normalMatrix", normalMatrix);*/
+
+		
 		LightShader.SetMat4("view", view);
 		LightShader.SetMat4("projection", projection);
+
+		//secModel.Draw(LightShader);
+		
+		//Creates the bone of the the skeleton
+		for (int i = 0; i < s.GetBones().size(); i++)
+		{
+			glm::mat4 m1 = glm::mat4(1.0f);
+			m1 = glm::translate(m1, glm::vec3(pos[i].x, pos[i].y, pos[i].z));
+			//std::cout << std::endl <<  __FUNCTION__ << "  Bone Name: " << s.GetBones()[i]->GetName() << "  Translate: " << glm::to_string(glm::vec3(pos[i])) << std::endl;
+			m1 = glm::scale(m1, glm::vec3(1.f, 1.f, 1.f));	// it's a bit too big for our scene, so scale it down
+
+			LightShader.SetMat4("model", m1);
+			const glm::mat3 normalMatrix = glm::transpose(glm::inverse(m1));
+			LightShader.SetMat3("normalMatrix", normalMatrix);
+			models[i].Draw(LightShader);
+		}
+		
+
 
 		for (int i = 0; i < POINT_LIGHTS_NUM; i++)
 		{
@@ -299,7 +367,13 @@ void processInput(GLFWwindow* window)
 		glfwSetWindowShouldClose(window, true);
 	}
 
-	const float cameraSpeed = 2.5f * deltaTime; // adjust accordingly
+	if(glfwGetKey(window,GLFW_KEY_H) == GLFW_PRESS)
+	{
+		ShowModel = !ShowModel;
+	}
+
+
+	const float cameraSpeed = cam.GetSpeed() * deltaTime; // adjust accordingly
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		cam.Translate(cam.GetForward(), cameraSpeed);
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -352,15 +426,17 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-	float fov = cam.GetFOV();
-	fov -= (float)yoffset;
-	if (fov < 1.0f)
+	float speed = cam.GetSpeed();
+	speed += (float)yoffset * 10 ;
+	/*if (fov < 1.0f)
 		fov = 1.0f;
 	if (fov > 45.0f)
-		fov = 45.0f;
+		fov = 45.0f;*/
 
-	cam.SetFOV(fov);
+	cam.SetSpeed(speed);
 }
+
+
 
 GLFWwindow* CreateWindow()
 {

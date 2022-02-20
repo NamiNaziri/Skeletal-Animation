@@ -37,16 +37,20 @@ public:
 	}
 };
 
+
+
 class Bone
 {
 private:
 	glm::mat4 inverseBindPose;
+	glm::mat4 transform;
 	std::string	name;
 	int parentIndex = -1;
+	std::vector<Bone*> children;
 
 public:
-	Bone(glm::mat4 invBindPose, std::string name, int parentIndex)
-	: inverseBindPose(invBindPose), name(name), parentIndex(parentIndex)
+	Bone(glm::mat4 invBindPose, std::string name)
+	: inverseBindPose(invBindPose), name(name)
 	{}
 
 	void SetParentIndex(int index)
@@ -55,37 +59,64 @@ public:
 	}
 
 	std::string GetName() { return name; }
-
-
+	int GetParentIndex() { return parentIndex; }
+	glm::mat4 GetInverseBindPose() { return inverseBindPose; }
+	glm::mat4 GetTransform() { return transform; }
+	std::vector<Bone*>& GetChildren() { return children; }
+	void AddNewChild(Bone* child) { children.push_back(child); }
+	void SetTransform(glm::mat4 transform) { this->transform = transform; };
 };
 
 class Skeleton
 {
 private:
 	int uniqueID = -1;
-	std::vector<Bone> bones;
+	Bone* rootBone;
+	std::vector<Bone* > bones;
 public:
 	Skeleton()
 	{
 		
 	}
 
-	std::vector<Bone>& GetBones()
+	std::vector<Bone*>& GetBones()
 	{
 		return bones;
 	}
 
+	void AddBone(Bone* bone) { bones.push_back(bone); }
+	void SetRootBone(Bone* bone) { rootBone = bone; };
+	Bone* GetRootBone() { return rootBone; }
+	
 	int GetBoneIndexByName(std::string boneName)
 	{
 		for(int i = 0 ; i < bones.size() ; i++)
 		{
-			if(bones[i].GetName() == boneName)
+			if(bones[i]->GetName() == boneName)
 			{
 				return i;
 			}
 		}
 
 		return -1;
+	}
+	void Print()
+	{
+		for(int i= 0 ; i < bones.size() ; i++)
+		{
+			int pIndex = 0;
+			std::string parent;
+			if(bones[i]->GetParentIndex() < 0 )
+			{
+				parent = "No Parent";
+			}
+			else
+			{
+				parent = bones[bones[i]->GetParentIndex()]->GetName();
+			}
+
+			std::cout << "Bone Name: " << bones[i]->GetName() << " Parent Name: " << parent << std::endl;
+		}
 	}
 };
 
@@ -135,17 +166,17 @@ protected:
 class SkinnedMesh:public Mesh
 {
 public:
-	SkinnedMesh(std::string name, Skeleton skeleton, std::vector<SkinnedVertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures);
+	SkinnedMesh(std::string name,std::vector<SkinnedVertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures);
 	std::vector<SkinnedVertex>& GetVertices()
 	{
 		return vertices;
 	}
-	Skeleton& GetSkeleton();
+
 protected:
 	void SetupMesh() override;
 	
 
 protected:
 	std::vector<SkinnedVertex> vertices;
-	Skeleton skeleton;
+
 };

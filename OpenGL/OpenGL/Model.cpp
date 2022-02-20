@@ -5,10 +5,19 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include "STB/stb_image.h"
-inline glm::mat4 aiMatrix4x4ToGlm(const aiMatrix4x4* from);
+#include <glm/gtx/matrix_decompose.hpp>
+
+
+
+
 Model::Model(std::string path)
 {
-	LoadModel(path);
+	LoadAssets(path);
+}
+
+Model::Model()
+{
+	//LoadAssets(path);
 }
 
 void Model::Draw(Shader& shader)
@@ -19,7 +28,7 @@ void Model::Draw(Shader& shader)
 	}
 }
 
-void Model::LoadModel(std::string path)
+void Model::LoadAssets(std::string path)
 {
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_JoinIdenticalVertices |
@@ -31,28 +40,15 @@ void Model::LoadModel(std::string path)
 	}
 	directory = path.substr(0, path.find_last_of('/'));
 
-	CreateRelationshipMap(scene->mRootNode);
 	ProcessNode(scene->mRootNode, scene);
 }
 
-void Model::CreateRelationshipMap(aiNode* node)
-{
-	std::cout << "NodeName: " << node->mName.C_Str() << "  ParentName: " << (node->mParent ? node->mParent->mName.C_Str() : std::string("No parent")) << std::endl;
-
-	relationMap[node->mName.C_Str()] = node->mParent ? node->mParent->mName.C_Str() : "NULL";
-	
-	for (unsigned int j = 0; j < node->mNumChildren; j++)
-	{
-		CreateRelationshipMap(node->mChildren[j]);
-	}
-}
 
 void Model::ProcessNode(aiNode* node, const aiScene* scene)
 {
 	
 	for(unsigned int i = 0 ; i < node->mNumMeshes ; i++)
 	{
-		
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 		meshes.push_back(ProcessMesh(mesh, scene));
 	}
@@ -75,30 +71,12 @@ Mesh* Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 	const std::vector<Texture> textures = ProcessMaterials(mesh, scene);
 	
 	// Processing Vertices
-	if (mesh->HasBones())
-	{
-		// first create a skeleton for this mesh
-		Skeleton skel = CreateMeshSkeleton(mesh);
+
+	const std::vector<Vertex> vertices = ProcessStaticMeshVertices(mesh);
 		
-		// process the vertices
-		const std::vector<SkinnedVertex> vertices = ProcessSkinnedMeshVertices(mesh);
-		
-		// create the skinned mesh
-		SkinnedMesh* sm = new SkinnedMesh(mesh->mName.C_Str(), skel, vertices, indices, textures);
-		
-		// go through each bones of the mesh and assign each vertices boneWeight and boneIndex
-		ProcessVerticesBoneWeight(mesh, *sm); 
-		m = sm;
-	}
-	else
-	{
-		const std::vector<Vertex> vertices = ProcessStaticMeshVertices(mesh);
-		
-		m = new StaticMesh(mesh->mName.C_Str(), vertices, indices, textures);
-	}
+	m = new StaticMesh(mesh->mName.C_Str(), vertices, indices, textures);
 
 	return m;
-	
 }
 
 std::vector<Texture> Model::LoadMaterialTextures(const aiScene* scene,aiMaterial* mat, aiTextureType type, TextureType textureType, const std::string& textureName)
@@ -173,61 +151,6 @@ std::vector<Vertex> Model::ProcessStaticMeshVertices(aiMesh* mesh)
 	return vertices;
 }
 
-std::vector<SkinnedVertex> Model::ProcessSkinnedMeshVertices(aiMesh* mesh)
-{
-	std::vector<SkinnedVertex> vertices;
-
-	//Processing mesh vertices (position, normal and tex coords)
-	for (int i = 0; i < mesh->mNumVertices; i++)
-	{
-		Vertex vertex;
-		SkinnedVertex sv;
-		vertex.position = glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
-		vertex.normal = glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
-		if (mesh->mTextureCoords[0]) // does the mesh contain texture coordinates?
-		{
-			vertex.texCoords = glm::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
-		}
-		else
-		{
-			vertex.texCoords = glm::vec2(0.0f, 0.0f);
-		}
-		vertex.tangent = glm::vec3(mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z);
-		vertex.biTangent = glm::vec3(mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z);
-
-		sv.vertex = vertex;
-		vertices.push_back(sv);
-	}
-	
-
-
-		return vertices;
-}
-
-void Model::ProcessVerticesBoneWeight(aiMesh* mesh, SkinnedMesh& skinnedMesh)
-{
-
-	std::vector<SkinnedVertex>& vertices = skinnedMesh.GetVertices();
-	Skeleton& skeleton = skinnedMesh.GetSkeleton();
-	for (int i = 0; i < mesh->mNumBones; i++)
-	{
-		aiBone* bone = mesh->mBones[i];
-		const std::string boneName = bone->mName.C_Str();
-		for(int j = 0 ; j < bone->mNumWeights; j++)
-		{
-			const aiVertexWeight vertexWeight = bone->mWeights[j];
-			const int availableIndex = vertices[vertexWeight.mVertexId].FindAvailableJointIndex();
-			if(availableIndex == -1) //TODO look into the number of bones per vertex (maybe more than 4? )
-			{
-				continue;
-			}
-			vertices[vertexWeight.mVertexId].jointWeight[availableIndex] = vertexWeight.mWeight;
-			vertices[vertexWeight.mVertexId].jointIndex[availableIndex] = skeleton.GetBoneIndexByName(boneName);
-		}
-		
-
-	}
-}
 
 std::vector<unsigned int> Model::ProcessIndices(aiMesh* mesh) 
 {
@@ -261,45 +184,6 @@ std::vector<Texture> Model::ProcessMaterials(aiMesh* mesh, const aiScene* scene)
 	}
 
 	return textures;
-}
-
-Skeleton Model::CreateMeshSkeleton(aiMesh* mesh)
-{
-	Skeleton skel;
-	for (int i = 0; i < mesh->mNumBones; i++)
-	{
-		aiBone* bone = mesh->mBones[i];
-		glm::mat4 invTransform = aiMatrix4x4ToGlm(&(bone->mOffsetMatrix));
-	
-		Bone b(invTransform, bone->mName.C_Str(), -1);
-		skel.GetBones().push_back(b);
-	}
-
-	for (int i = 0; i < mesh->mNumBones; i++)
-	{
-		std::string parentName = relationMap[ skel.GetBones()[i].GetName() ];
-		if (parentName == "RootNode") 
-		{
-			skel.GetBones()[i].SetParentIndex(-1);
-			continue;
-		}
-		int parentIndex = skel.GetBoneIndexByName(parentName);
-		if(parentIndex == -1)
-		{
-			std::cout << "Warning In " << __FUNCTION__ << " Not Found The parent(" << parentName <<") in bones array" <<
-				" Mesh Name: " << mesh->mName.C_Str()<< std::endl ;
-			skel.GetBones()[i].SetParentIndex(i-1);
-		}
-		else
-		{
-			skel.GetBones()[i].SetParentIndex(parentIndex);
-		}
-		
-		
-	}
-	return skel;
-	
-	
 }
 
 unsigned int LoadTextureFromFile(const std::string& path, const std::string& directory, bool gamma)
@@ -342,15 +226,3 @@ unsigned int LoadTextureFromFile(const std::string& path, const std::string& dir
 	return textureID;
 }
 
-inline glm::mat4 aiMatrix4x4ToGlm(const aiMatrix4x4* from)
-{
-	glm::mat4 to;
-
-
-	to[0][0] = (GLfloat)from->a1; to[0][1] = (GLfloat)from->b1;  to[0][2] = (GLfloat)from->c1; to[0][3] = (GLfloat)from->d1;
-	to[1][0] = (GLfloat)from->a2; to[1][1] = (GLfloat)from->b2;  to[1][2] = (GLfloat)from->c2; to[1][3] = (GLfloat)from->d2;
-	to[2][0] = (GLfloat)from->a3; to[2][1] = (GLfloat)from->b3;  to[2][2] = (GLfloat)from->c3; to[2][3] = (GLfloat)from->d3;
-	to[3][0] = (GLfloat)from->a4; to[3][1] = (GLfloat)from->b4;  to[3][2] = (GLfloat)from->c4; to[3][3] = (GLfloat)from->d4;
-
-	return to;
-}
