@@ -18,6 +18,8 @@
 #include "Mesh.h"
 #include "SkeletalModel.h"
 #include <glm/gtx/string_cast.hpp>
+
+#include "Animation.h"
 void processInput(GLFWwindow* window);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -155,34 +157,15 @@ int main()
 
 	// tell stb_image.h to flip loaded texture's on the y-axis (before loading model).
 	stbi_set_flip_vertically_on_load(true);
-	
-	SkeletalModel ourModel("resources/objects/MixamoCharacter/Zombie Stand Up.fbx");
-	Model secModel("resources/objects/Sphere/sphere.obj");
-	std::vector<Model> models;
+
+
+	const std::string FBXResourcePath = "resources/objects/MixamoCharacter/Zombie Stand Up.fbx";
+	SkeletalModel ourModel(FBXResourcePath);
 	std::cout << "Model Loaded" << std::endl;
-	/// *********** SKELETON **************////
 
-	Skeleton s = ourModel.GetSkeleton();
-	Bone* root = s.GetRootBone();
-	DrawSkeleton(root, glm::mat4(1.0f));
-	//std::reverse(pos.begin(), pos.end());
-
+	// Load animation Clip
+	 AnimationClipManager animationClipManager(FBXResourcePath, ourModel.GetSkeleton());
 	
-	for (int i = 0; i < s.GetBones().size(); i++)
-	{
-		Model secModel("resources/objects/Sphere/sphere.obj");
-		models.push_back(secModel);
-		
-	}
-
-	/*std::vector<GameObject> boxes;
-	for (int i = 0; i < s.GetBones().size(); i++)
-	{
-		GameObject b(vertices);
-		b.SetPosition(glm::vec3(s.GetBones()[i]->GetInverseBindPose()[3]));
-		boxes.push_back(b);
-	}*/
-
 	
 	glEnable(GL_DEPTH_TEST);
 	while (!glfwWindowShouldClose(window))
@@ -279,21 +262,7 @@ int main()
 		projection = glm::perspective(glm::radians(cam.GetFOV()), ((float)Width / (float)Height), 0.1f, 50000.0f);
 		SimpleShader.SetMat4("projection", projection);
 		
-		/*for (unsigned int i = 0; i < s.GetBones().size(); i++)
-		{
-			boxes[i].Render(SimpleShader);
-		}*/
 
-		// render the loaded model
-		
-		//model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
-		//model = glm::scale(model, glm::vec3(0.01f, 0.01f, 0.01f));	// it's a bit too big for our scene, so scale it down
-	
-		
-
-		
-		std::cout << "Came Pos: " << glm::to_string( cam.GetPosition() ) << std::endl;
-		
 		// render the loaded model
 		glm::mat4 model = glm::mat4(1.0f);
 		model = glm::translate(model, glm::vec3(0.0f, 0.f, 0.0f)); // translate it down so it's at the center of the scene
@@ -309,36 +278,13 @@ int main()
 			ourModel.Draw(SimpleShader);
 		}
 		
-		// Render light Cube
-
+		// LightShader
 		LightShader.use();
-		/*model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(0, 0, 0));
-		model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));	// it's a bit too big for our scene, so scale it down
-
-		LightShader.SetMat4("model", model);
-		normalMatrix = glm::transpose(glm::inverse(model));*
-		LightShader.SetMat3("normalMatrix", normalMatrix);*/
-
-		
 		LightShader.SetMat4("view", view);
 		LightShader.SetMat4("projection", projection);
 
-		//secModel.Draw(LightShader);
-		
 		//Creates the bone of the the skeleton
-		for (int i = 0; i < s.GetBones().size(); i++)
-		{
-			glm::mat4 m1 = glm::mat4(1.0f);
-			m1 = glm::translate(m1, glm::vec3(pos[i].x, pos[i].y, pos[i].z));
-			//std::cout << std::endl <<  __FUNCTION__ << "  Bone Name: " << s.GetBones()[i]->GetName() << "  Translate: " << glm::to_string(glm::vec3(pos[i])) << std::endl;
-			m1 = glm::scale(m1, glm::vec3(1.f, 1.f, 1.f));	// it's a bit too big for our scene, so scale it down
-
-			LightShader.SetMat4("model", m1);
-			const glm::mat3 normalMatrix = glm::transpose(glm::inverse(m1));
-			LightShader.SetMat3("normalMatrix", normalMatrix);
-			models[i].Draw(LightShader);
-		}
+		ourModel.DrawSkeletonJoints(LightShader);
 		
 
 

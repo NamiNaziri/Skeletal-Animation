@@ -9,11 +9,23 @@
 #include <glm/ext.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
 #include <glm/gtx/string_cast.hpp>
-inline glm::mat4 ConvertMatrixToGLMFormat(const aiMatrix4x4& from);
+#include "EngineMath.h"
 
 SkeletalModel::SkeletalModel(std::string path) :Model()
 {
 	LoadAssets(path);
+}
+
+void SkeletalModel::Draw(Shader& shader)
+{
+	Model::Draw(shader);
+
+	if(drawSkeleton) // TODO ?? is it necessary?
+	{
+		
+	}
+
+	
 }
 
 void SkeletalModel::LoadAssets(std::string path)
@@ -31,27 +43,31 @@ void SkeletalModel::LoadAssets(std::string path)
 	CreateNecessityMap(scene->mRootNode);
 	std::cout << "=========================================================================" << std::endl;
 
+	// Process meshes and the bone coresponding to each mesh
 	ProcessNode(scene->mRootNode, scene);
+
+	// Creating Mesh Skeleton
 	CreateMeshSkeleton(scene->mRootNode);
 
+	CreateJointModel();
+
+	
+	//TODO debug stuff. delete this or refactor it!
 	glm::mat4 transformation; // your transformation matrix.
 	glm::vec3 scale;
 	glm::quat rotation;
 	glm::vec3 translation;
 	glm::vec3 skew;
 	glm::vec4 perspective;
-
-	for(int i = 0 ; i < skeleton.GetBones().size() ; i++)
+	for(unsigned i = 0 ; i < skeleton.GetBones().size() ; i++)
 	{
 		glm::decompose(skeleton.GetBones()[i]->GetInverseBindPose(), scale, rotation, translation, skew, perspective);
 
 		std::cout << "Bone Name: " << skeleton.GetBones()[i]->GetName() << "  inv: " << glm::to_string(translation) << std::endl;
 	}
-	skeleton;
-	if (scene->HasAnimations())
-	{
-		LoadAnimationClips(scene);
-	}
+
+
+	
 }
 
 
@@ -62,7 +78,7 @@ void SkeletalModel::CreateNecessityMap(aiNode* node)
 	glm::vec3 translation;
 	glm::vec3 skew;
 	glm::vec4 perspective;
-	glm::decompose(ConvertMatrixToGLMFormat(node->mTransformation), scale, rotation, translation, skew, perspective);
+	glm::decompose(EngineMath::ConvertMatrixToGLMFormat(node->mTransformation), scale, rotation, translation, skew, perspective);
 
 	std::cout << "NodeName: " << node->mName.C_Str() << "  ||| Transformation: "<< glm::to_string(translation) << "  ||| ParentName: " << (node->mParent ? node->mParent->mName.C_Str() : std::string("No parent")) << std::endl;;
 	necessityMap[node] = false;
@@ -123,15 +139,34 @@ Mesh* SkeletalModel::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 	return m;
 }
 
-
-void SkeletalModel::LoadAnimationClips(const aiScene* scene)
+void SkeletalModel::DrawSkeletonJoints(Shader& shader)
 {
-	scene->mAnimations[0];
-	for (int i = 0; i < scene->mAnimations[0]->mNumChannels; i++)
+	skeletonPosition.clear();
+	DrawSkeletonJointsHelper(skeleton.GetRootBone(), glm::mat4(1.0f));
+
+	for (int i = 0; i < skeleton.GetBones().size(); i++)
 	{
-		std::cout << "Channel: " << scene->mAnimations[0]->mChannels[i]->mNodeName.C_Str() << std::endl;
+		glm::mat4 m1 = glm::mat4(1.0f);
+		m1 = glm::translate(m1, glm::vec3(skeletonPosition[i].x, skeletonPosition[i].y, skeletonPosition[i].z));
+		m1 = glm::scale(m1, glm::vec3(1.f, 1.f, 1.f));	// it's a bit too big for our scene, so scale it down
+
+		shader.SetMat4("model", m1);
+		const glm::mat3 normalMatrix = glm::transpose(glm::inverse(m1));
+		shader.SetMat3("normalMatrix", normalMatrix);
+		skeletalJointsModels[i].Draw(shader);
 	}
-	scene->mAnimations[0]->mChannels[1];
+
+	
+}
+
+void SkeletalModel::DrawSkeletonJointsHelper(Bone* root, glm::mat4 parentTrnsform)
+{
+	glm::mat4 newParentTransform = parentTrnsform * root->GetTransform();
+	skeletonPosition.push_back(glm::vec3(newParentTransform[3]));
+	for (int i = 0; i < root->GetChildren().size(); i++)
+	{
+		DrawSkeletonJointsHelper(root->GetChildren()[i], newParentTransform);
+	}
 }
 
 std::vector<SkinnedVertex> SkeletalModel::ProcessSkinnedMeshVertices(aiMesh* mesh)
@@ -187,6 +222,10 @@ void SkeletalModel::ProcessVerticesBoneWeight(aiMesh* mesh, SkinnedMesh& skinned
 	}
 }
 
+void SkeletalModel::SetDrawSkeleton(bool drawSkeleton)
+{
+	this->drawSkeleton = drawSkeleton;
+}
 
 
 void SkeletalModel::ProcessNecessityMap(aiMesh* mesh, aiNode* meshNode, aiNode* meshParentNode, aiNode* sceneRoot)
@@ -194,7 +233,7 @@ void SkeletalModel::ProcessNecessityMap(aiMesh* mesh, aiNode* meshNode, aiNode* 
 	for (unsigned i = 0; i < mesh->mNumBones; i++)
 	{
 		aiBone* bone = mesh->mBones[i];
-		Bone* b = new Bone(ConvertMatrixToGLMFormat((bone->mOffsetMatrix)), bone->mName.C_Str());
+		Bone* b = new Bone(EngineMath::ConvertMatrixToGLMFormat((bone->mOffsetMatrix)), bone->mName.C_Str());
 		boneInfoMap[bone->mName.C_Str()] = b;
 		ProcessNecessityMapForEachBone(bone->mNode, meshNode, meshParentNode, sceneRoot);
 
@@ -227,7 +266,7 @@ void SkeletalModel::CreateMeshSkeletonHelper(aiNode* node)
 	// Bone transform
 	if(b)
 	{
-		b->SetTransform(ConvertMatrixToGLMFormat(node->mTransformation));
+		b->SetTransform(EngineMath::ConvertMatrixToGLMFormat(node->mTransformation));
 	}
 	
 	for (unsigned int j = 0; j < node->mNumChildren; j++)
@@ -253,14 +292,13 @@ void SkeletalModel::CreateMeshSkeletonHelper(aiNode* node)
 	}
 }
 
-
-inline glm::mat4 ConvertMatrixToGLMFormat(const aiMatrix4x4& from)
+void SkeletalModel::CreateJointModel()
 {
-	glm::mat4 to;
-	//the a,b,c,d in assimp is the row ; the 1,2,3,4 is the column
-	to[0][0] = from.a1; to[1][0] = from.a2; to[2][0] = from.a3; to[3][0] = from.a4;
-	to[0][1] = from.b1; to[1][1] = from.b2; to[2][1] = from.b3; to[3][1] = from.b4;
-	to[0][2] = from.c1; to[1][2] = from.c2; to[2][2] = from.c3; to[3][2] = from.c4;
-	to[0][3] = from.d1; to[1][3] = from.d2; to[2][3] = from.d3; to[3][3] = from.d4;
-	return to;
+	for (int i = 0; i < skeleton.GetBones().size(); i++)
+	{
+		Model secModel("resources/objects/Sphere/sphere.obj");
+		skeletalJointsModels.push_back(secModel);
+
+	}
+	
 }

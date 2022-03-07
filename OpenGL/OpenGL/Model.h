@@ -3,7 +3,6 @@
 
 #include "Mesh.h"
 #include "Shader.h"
-#include "Animation.h"
 #include <vector>
 #include <assimp/scene.h>
 
@@ -15,7 +14,7 @@ class Model
 public:
 	Model(std::string path);
 	Model();
-	void Draw(Shader& shader);
+	virtual void Draw(Shader& shader);
 	
 protected:
 	std::vector<Mesh*> meshes;
@@ -26,7 +25,7 @@ protected:
 
 	
 	 void LoadAssets(std::string path);
-
+	 
 	virtual void ProcessNode(aiNode* node, const aiScene* scene);
 	virtual Mesh* ProcessMesh(aiMesh* mesh, const aiScene* scene);
 	std::vector<Texture> LoadMaterialTextures(const aiScene* scene,aiMaterial* mat, aiTextureType type, TextureType textureType, const std::string& textureName);
