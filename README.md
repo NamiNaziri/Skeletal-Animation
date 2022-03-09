@@ -18,7 +18,7 @@ In this part i have started from creating a window to leaning about basic shader
 ![image](https://user-images.githubusercontent.com/49837425/154844002-b9a65735-5b0b-435d-b1e9-8ccc2944906f.png)
 
 
-
+![jumping:)](https://i.imgur.com/ETQpUCP.gif)
 
 
 https://user-images.githubusercontent.com/49837425/157555010-5edb6dbc-a2e9-4551-bb5d-6d6d28253ed5.mp4
