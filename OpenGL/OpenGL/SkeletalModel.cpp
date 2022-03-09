@@ -142,16 +142,19 @@ Mesh* SkeletalModel::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 void SkeletalModel::DrawSkeletonJoints(Shader& shader)
 {
 	skeletonPosition.clear();
+	skeletonTransform.clear();
 	DrawSkeletonJointsHelper(skeleton.GetRootBone(), glm::mat4(1.0f));
 
 	for (int i = 0; i < skeleton.GetBones().size(); i++)
 	{
-		glm::mat4 m1 = glm::mat4(1.0f);
-		m1 = glm::translate(m1, glm::vec3(skeletonPosition[i].x, skeletonPosition[i].y, skeletonPosition[i].z));
-		m1 = glm::scale(m1, glm::vec3(1.f, 1.f, 1.f));	// it's a bit too big for our scene, so scale it down
 
-		shader.SetMat4("model", m1);
-		const glm::mat3 normalMatrix = glm::transpose(glm::inverse(m1));
+		
+		//glm::mat4 m1 = glm::mat4(1.0f);
+		//m1 = glm::translate(m1, glm::vec3(skeletonPosition[i].x, skeletonPosition[i].y, skeletonPosition[i].z));
+		//m1 = glm::scale(m1, glm::vec3(1.f, 1.f, 1.f));	// it's a bit too big for our scene, so scale it down
+
+		shader.SetMat4("model", skeletonTransform[i]);
+		const glm::mat3 normalMatrix = glm::transpose(glm::inverse(skeletonTransform[i]));
 		shader.SetMat3("normalMatrix", normalMatrix);
 		skeletalJointsModels[i].Draw(shader);
 	}
@@ -161,8 +164,10 @@ void SkeletalModel::DrawSkeletonJoints(Shader& shader)
 
 void SkeletalModel::DrawSkeletonJointsHelper(Bone* root, glm::mat4 parentTrnsform)
 {
-	glm::mat4 newParentTransform = parentTrnsform * root->GetTransform();
-	skeletonPosition.push_back(glm::vec3(newParentTransform[3]));
+	const glm::mat4 newParentTransform = parentTrnsform * root->GetTransform();
+
+	skeletonTransform.push_back(newParentTransform);
+	//skeletonPosition.push_back(glm::vec3(newParentTransform[3]));
 	for (int i = 0; i < root->GetChildren().size(); i++)
 	{
 		DrawSkeletonJointsHelper(root->GetChildren()[i], newParentTransform);

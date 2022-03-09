@@ -133,7 +133,7 @@ private:
 	std::map<aiNode*, bool> necessityMap;
 	std::map<std::string, Bone* > boneInfoMap; // name of the bone -> BoneInfo
 
-	
+	std::vector<glm::mat4> skeletonTransform;
 	std::vector<glm::vec3> skeletonPosition;
 	bool drawSkeleton = false;
 

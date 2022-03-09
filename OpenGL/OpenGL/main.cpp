@@ -330,15 +330,10 @@ int main()
 			//Draw Skeleton Joints 
 			ourModel.DrawSkeletonJoints(LightShader);
 
-
-
 			for (int i = 0; i < POINT_LIGHTS_NUM; i++)
 			{
 				//lights[i].Render(LightShader);
 			}
-
-
-
 			// check and call events and swap buffers
 			glfwSwapBuffers(window);
 
