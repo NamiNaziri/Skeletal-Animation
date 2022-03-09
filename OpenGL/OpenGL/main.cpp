@@ -20,6 +20,7 @@
 #include <glm/gtx/string_cast.hpp>
 
 #include "Animation.h"
+#include "Animator.h"
 void processInput(GLFWwindow* window);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -48,8 +49,10 @@ float lastX = Width/2, lastY = Height/2;
 
 bool firstMouse = true;
 
-float deltaTime = 0.0f;	// Time between current frame and last frame
+double deltaTime = 0.0f;	// Time between current frame and last frame
 float lastFrame = 0.0f; // Time of last frame
+
+
 
 bool ShowModel = true;
 
@@ -159,145 +162,197 @@ int main()
 	stbi_set_flip_vertically_on_load(true);
 
 
-	const std::string FBXResourcePath = "resources/objects/MixamoCharacter/Zombie Stand Up.fbx";
+	const std::string FBXResourcePath = "resources/objects/MixamoCharacter/Walking.fbx";
 	SkeletalModel ourModel(FBXResourcePath);
 	std::cout << "Model Loaded" << std::endl;
 
 	// Load animation Clip
 	 AnimationClipManager animationClipManager(FBXResourcePath, ourModel.GetSkeleton());
+	 if(animationClipManager.GetLoadedAnimationClips().size() == 0)
+	 {
+		 std::cout << "Please load an animation";
+		 return 0;
+	 }
+
+	 AnimationClip* anim = animationClipManager.GetLoadedAnimationClips()[0];
+	 Animator animator(animationClipManager.GetSkeleton(), *anim, glfwGetTime());
+
 	
 	
 	glEnable(GL_DEPTH_TEST);
+	static double limitFPS = 1.0 / 60.0;
+
+	
+	const double fpsLimit = 1.0 / 60.0;
+	double lastUpdateTime = 0;  // number of seconds since the last loop
+	double lastFrameTime = 0;   // number of seconds since the last frame
+
 	while (!glfwWindowShouldClose(window))
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
-		float currentFrame = glfwGetTime();
+		/*float currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
-		lastFrame = currentFrame;
+		lastFrame = currentFrame;*/
+
+		
+		double now = glfwGetTime();
+		deltaTime = now - lastUpdateTime;
+
+		glfwPollEvents();
+
 		
 		// input
 		processInput(window);
 		glfwSetCursorPosCallback(window, mouse_callback);
 		glfwSetScrollCallback(window, scroll_callback);
 		glfwSetWindowSizeCallback(window, WindowResizeHandler);
+		
+
+		// update your application logic here,
+		 // using deltaTime if necessary (for physics, tweening, etc.)
+
+
+
+		animator.Update(deltaTime);
+	
+		
+		// This if-statement only executes once every 60th of a second
+		if ((now - lastFrameTime) >= fpsLimit)
+		{
+			// draw your frame here
+
+
 		// rendering commands
 
-		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		
-		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); //wireframe
-		
-		
-		// render container
-		SimpleShader.use(); // don't forget to activate/use the shader before setting uniforms!
-							// either set it manually like so:
+			glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// material
-		SimpleShader.SetFloat("material.shininess", 32.0f);
-
-		// camera view
-		SimpleShader.SetVec3("viewPosition", cam.GetPosition());
-
-		// light
-
-		// directional light
-		SimpleShader.SetVec3("dirLight.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
-		SimpleShader.SetVec3("dirLight.ambient", glm::vec3(0.05f, 0.05f, 0.05f));
-		SimpleShader.SetVec3("dirLight.diffuse", glm::vec3(0.4f, 0.4f, 0.4f));
-		SimpleShader.SetVec3("dirLight.specular", glm::vec3(0.5f, 0.5f, 0.5f));
-		// point light 1
-		SimpleShader.SetVec3("pointLights[0].position", pointLightPositions[0]);
-		SimpleShader.SetVec3("pointLights[0].ambient", glm::vec3(0.05f, 0.05f, 0.05f));
-		SimpleShader.SetVec3("pointLights[0].diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
-		SimpleShader.SetVec3("pointLights[0].specular", glm::vec3(1.0f, 1.0f, 1.0f));
-		SimpleShader.SetFloat("pointLights[0].constant", 1.0f);
-		SimpleShader.SetFloat("pointLights[0].linear", 0.09f);
-		SimpleShader.SetFloat("pointLights[0].quadratic", 0.032f);
-		// point light 2
-		SimpleShader.SetVec3("pointLights[1].position", pointLightPositions[1]);
-		SimpleShader.SetVec3("pointLights[1].ambient", glm::vec3(0.05f, 0.05f, 0.05f));
-		SimpleShader.SetVec3("pointLights[1].diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
-		SimpleShader.SetVec3("pointLights[1].specular", glm::vec3(1.0f, 1.0f, 1.0f));
-		SimpleShader.SetFloat("pointLights[1].constant", 1.0f);
-		SimpleShader.SetFloat("pointLights[1].linear", 0.09f);
-		SimpleShader.SetFloat("pointLights[1].quadratic", 0.032f);
-		// point light 3
-		SimpleShader.SetVec3("pointLights[2].position", pointLightPositions[2]);
-		SimpleShader.SetVec3("pointLights[2].ambient", glm::vec3(0.05f, 0.05f, 0.05f));
-		SimpleShader.SetVec3("pointLights[2].diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
-		SimpleShader.SetVec3("pointLights[2].specular", glm::vec3(1.0f, 1.0f, 1.0f));
-		SimpleShader.SetFloat("pointLights[2].constant", 1.0f);
-		SimpleShader.SetFloat("pointLights[2].linear", 0.09f);
-		SimpleShader.SetFloat("pointLights[2].quadratic", 0.032f);
-		// point light 4
-		SimpleShader.SetVec3("pointLights[3].position", pointLightPositions[3]);
-		SimpleShader.SetVec3("pointLights[3].ambient", glm::vec3(0.05f, 0.05f, 0.05f));
-		SimpleShader.SetVec3("pointLights[3].diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
-		SimpleShader.SetVec3("pointLights[3].specular", glm::vec3(1.0f, 1.0f, 1.0f));
-		SimpleShader.SetFloat("pointLights[3].constant", 1.0f);
-		SimpleShader.SetFloat("pointLights[3].linear", 0.09f);
-		SimpleShader.SetFloat("pointLights[3].quadratic", 0.032f);
-		// spotLight
-		/*SimpleShader.SetVec3("spotLight.position", cam.GetPosition());
-		SimpleShader.SetVec3("spotLight.direction", cam.GetForward());
-		SimpleShader.SetVec3("spotLight.ambient", glm::vec3(0.0f, 0.0f, 0.0f));
-		SimpleShader.SetVec3("spotLight.diffuse", glm::vec3(1.0f, 1.0f, 1.0f));
-		SimpleShader.SetVec3("spotLight.specular", glm::vec3(1.0f, 1.0f, 1.0f));
-		SimpleShader.SetFloat("spotLight.constant", 1.0f);
-		SimpleShader.SetFloat("spotLight.linear", 0.09f);
-		SimpleShader.SetFloat("spotLight.quadratic", 0.032f);
-		SimpleShader.SetFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
-		SimpleShader.SetFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));*/
+			//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); //wireframe
 
 
-		glm::mat4 view = cam.GetViewMatrix();
-		SimpleShader.SetMat4("view", view);
+			// render container
+			SimpleShader.use(); // don't forget to activate/use the shader before setting uniforms!
+								// either set it manually like so:
+
+			// material
+			SimpleShader.SetFloat("material.shininess", 32.0f);
+
+			// camera view
+			SimpleShader.SetVec3("viewPosition", cam.GetPosition());
+
+			// light
+
+			// directional light
+			SimpleShader.SetVec3("dirLight.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
+			SimpleShader.SetVec3("dirLight.ambient", glm::vec3(0.05f, 0.05f, 0.05f));
+			SimpleShader.SetVec3("dirLight.diffuse", glm::vec3(0.4f, 0.4f, 0.4f));
+			SimpleShader.SetVec3("dirLight.specular", glm::vec3(0.5f, 0.5f, 0.5f));
+			// point light 1
+			SimpleShader.SetVec3("pointLights[0].position", pointLightPositions[0]);
+			SimpleShader.SetVec3("pointLights[0].ambient", glm::vec3(0.05f, 0.05f, 0.05f));
+			SimpleShader.SetVec3("pointLights[0].diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
+			SimpleShader.SetVec3("pointLights[0].specular", glm::vec3(1.0f, 1.0f, 1.0f));
+			SimpleShader.SetFloat("pointLights[0].constant", 1.0f);
+			SimpleShader.SetFloat("pointLights[0].linear", 0.09f);
+			SimpleShader.SetFloat("pointLights[0].quadratic", 0.032f);
+			// point light 2
+			SimpleShader.SetVec3("pointLights[1].position", pointLightPositions[1]);
+			SimpleShader.SetVec3("pointLights[1].ambient", glm::vec3(0.05f, 0.05f, 0.05f));
+			SimpleShader.SetVec3("pointLights[1].diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
+			SimpleShader.SetVec3("pointLights[1].specular", glm::vec3(1.0f, 1.0f, 1.0f));
+			SimpleShader.SetFloat("pointLights[1].constant", 1.0f);
+			SimpleShader.SetFloat("pointLights[1].linear", 0.09f);
+			SimpleShader.SetFloat("pointLights[1].quadratic", 0.032f);
+			// point light 3
+			SimpleShader.SetVec3("pointLights[2].position", pointLightPositions[2]);
+			SimpleShader.SetVec3("pointLights[2].ambient", glm::vec3(0.05f, 0.05f, 0.05f));
+			SimpleShader.SetVec3("pointLights[2].diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
+			SimpleShader.SetVec3("pointLights[2].specular", glm::vec3(1.0f, 1.0f, 1.0f));
+			SimpleShader.SetFloat("pointLights[2].constant", 1.0f);
+			SimpleShader.SetFloat("pointLights[2].linear", 0.09f);
+			SimpleShader.SetFloat("pointLights[2].quadratic", 0.032f);
+			// point light 4
+			SimpleShader.SetVec3("pointLights[3].position", pointLightPositions[3]);
+			SimpleShader.SetVec3("pointLights[3].ambient", glm::vec3(0.05f, 0.05f, 0.05f));
+			SimpleShader.SetVec3("pointLights[3].diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
+			SimpleShader.SetVec3("pointLights[3].specular", glm::vec3(1.0f, 1.0f, 1.0f));
+			SimpleShader.SetFloat("pointLights[3].constant", 1.0f);
+			SimpleShader.SetFloat("pointLights[3].linear", 0.09f);
+			SimpleShader.SetFloat("pointLights[3].quadratic", 0.032f);
+			// spotLight
+			/*SimpleShader.SetVec3("spotLight.position", cam.GetPosition());
+			SimpleShader.SetVec3("spotLight.direction", cam.GetForward());
+			SimpleShader.SetVec3("spotLight.ambient", glm::vec3(0.0f, 0.0f, 0.0f));
+			SimpleShader.SetVec3("spotLight.diffuse", glm::vec3(1.0f, 1.0f, 1.0f));
+			SimpleShader.SetVec3("spotLight.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+			SimpleShader.SetFloat("spotLight.constant", 1.0f);
+			SimpleShader.SetFloat("spotLight.linear", 0.09f);
+			SimpleShader.SetFloat("spotLight.quadratic", 0.032f);
+			SimpleShader.SetFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
+			SimpleShader.SetFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));*/
 
 
-		
-		glm::mat4 projection = glm::mat4(1);
-
-		projection = glm::perspective(glm::radians(cam.GetFOV()), ((float)Width / (float)Height), 0.1f, 50000.0f);
-		SimpleShader.SetMat4("projection", projection);
-		
-
-		// render the loaded model
-		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(0.0f, 0.f, 0.0f)); // translate it down so it's at the center of the scene
-		model = glm::scale(model, glm::vec3(1.f, 1.f, 1.f));	// it's a bit too big for our scene, so scale it down
-		SimpleShader.SetMat4("model", model);
-
-		glm::mat3 normalMatrix = glm::transpose(glm::inverse(model));
-		SimpleShader.SetMat3("normalMatrix", normalMatrix);
+			glm::mat4 view = cam.GetViewMatrix();
+			SimpleShader.SetMat4("view", view);
 
 
-		if (ShowModel)
-		{
-			ourModel.Draw(SimpleShader);
+
+			glm::mat4 projection = glm::mat4(1);
+
+			projection = glm::perspective(glm::radians(cam.GetFOV()), ((float)Width / (float)Height), 0.1f, 50000.0f);
+			SimpleShader.SetMat4("projection", projection);
+
+
+			// render the loaded model
+			glm::mat4 model = glm::mat4(1.0f);
+			model = glm::translate(model, glm::vec3(0.0f, 0.f, 0.0f)); // translate it down so it's at the center of the scene
+			model = glm::scale(model, glm::vec3(1.f, 1.f, 1.f));	// it's a bit too big for our scene, so scale it down
+			SimpleShader.SetMat4("model", model);
+
+			glm::mat3 normalMatrix = glm::transpose(glm::inverse(model));
+			SimpleShader.SetMat3("normalMatrix", normalMatrix);
+
+
+
+
+			if (ShowModel)
+			{
+				ourModel.Draw(SimpleShader);
+			}
+
+			// LightShader
+			LightShader.use();
+			LightShader.SetMat4("view", view);
+			LightShader.SetMat4("projection", projection);
+
+			//Draw Skeleton Joints 
+			ourModel.DrawSkeletonJoints(LightShader);
+
+
+
+			for (int i = 0; i < POINT_LIGHTS_NUM; i++)
+			{
+				//lights[i].Render(LightShader);
+			}
+
+
+			
+			// check and call events and swap buffers
+			glfwSwapBuffers(window);
+			
+
+			// only set lastFrameTime when you actually draw something
+			lastFrameTime = now;
 		}
-		
-		// LightShader
-		LightShader.use();
-		LightShader.SetMat4("view", view);
-		LightShader.SetMat4("projection", projection);
 
-		//Creates the bone of the the skeleton
-		ourModel.DrawSkeletonJoints(LightShader);
+		// set lastUpdateTime every iteration
+		lastUpdateTime = now;
+
 		
 
-
-		for (int i = 0; i < POINT_LIGHTS_NUM; i++)
-		{
-			//lights[i].Render(LightShader);
-		}
 		
-		
-		
-		// check and call events and swap buffers
-		glfwSwapBuffers(window);
-		glfwPollEvents();
 	}
 	
 	glfwTerminate();

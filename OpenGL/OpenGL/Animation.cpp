@@ -3,22 +3,29 @@
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 
-AnimationClip::AnimationClip(std::string clipName, Skeleton* skeleton, double framePerSecond, int frameCount, bool loop)
-	:clipName(clipName), skeleton(skeleton), framePerSecond(framePerSecond), frameCount(frameCount), loop(loop)
+AnimationClip::AnimationClip(std::string clipName, Skeleton* skeleton, double framePerSecond, int frameCount, bool loop, double duration)
+	:name(clipName), skeleton(skeleton), framePerSecond(framePerSecond), frameCount(frameCount),loop(loop), duration(duration)
 {
+	loopCounter = 0;
 }
 
-AnimationClip::AnimationClip(std::string clipName, Skeleton* skeleton, double framePerSecond, int frameCount, bool loop,
+AnimationClip::AnimationClip(std::string clipName, Skeleton* skeleton, double framePerSecond, int frameCount, bool loop, double duration,
 	AnimationPoses animationPoses)
-	: clipName(clipName), skeleton(skeleton), framePerSecond(framePerSecond), frameCount(frameCount),
-		loop(loop), animationPoses(animationPoses)
+	: name(clipName), skeleton(skeleton), framePerSecond(framePerSecond), frameCount(frameCount), loop(loop), duration(duration),
+		animationPoses(animationPoses)
 {
+	loopCounter = 0;
+}
+
+std::string AnimationClip::GetName()
+{
+	return name;
 }
 
 
-void AnimationClip::SetClipName(std::string clipName)
+void AnimationClip::SetName(std::string clipName)
 {
-	this->clipName = clipName;
+	this->name = clipName;
 }
 
 void AnimationClip::SetSkeleton(Skeleton* skeleton)
@@ -36,6 +43,45 @@ void AnimationClip::SetFrameCount(int frameCount)
 	this->frameCount = frameCount;
 }
 
+AnimationPose AnimationClip::GetPoseForCurrentTime(double currentTime)
+{
+	if(currentTime > duration)
+	{
+		if(loop)
+		{
+			//TODO loop over the animation
+			//loopCounter++;
+			while(currentTime - duration > 0)
+			{
+				currentTime = currentTime - duration;
+			}
+			
+			
+		}
+		else
+		{
+			//TODO return the last pose of the anim
+		}
+		
+	}
+	AnimationPose pose;
+	for (auto x : animationPoses.keyframesMap)
+	{
+		AnimationKeyframe keyframe;
+		keyframe.position = x.second.GetPositionAtTime(currentTime);
+		keyframe.rotation = x.second.GetRotationAtTime(currentTime);
+		keyframe.scale = x.second.GetScaleAtTime(currentTime);
+		pose.keyframesMap.emplace(x.first, keyframe);
+	}
+	
+	return pose;
+	
+}
+
+float AnimationClip::GetDuration()
+{
+	return duration;
+}
 
 
 void AnimationKeyframes::AddNewPositionKeyframe(double time, glm::vec3 position)
@@ -51,6 +97,69 @@ void AnimationKeyframes::AddNewRotationKeyframe(double time, glm::quat rotation)
 void AnimationKeyframes::AddNewScaleKeyframe(double time, glm::vec3 scale)
 {
 	this->scaleKeyframes.emplace_back(time, scale);
+}
+
+glm::vec3 AnimationKeyframes::GetPositionAtTime(double time)
+{
+	if( positionKeyframes.size() == 1)
+	{
+		return positionKeyframes[0].position;
+	}
+	if(time > positionKeyframes.back().time )
+	{
+		std::cout << __FUNCTION__ << "time cant be more than the anim duration";
+		return glm::vec3(0,0,0);
+	}
+	for(int i = 1 ; i < positionKeyframes.size() ; i++)
+	{
+		if(  positionKeyframes[i].time > time)
+		{
+			
+			PositionKeyframe currentPos = positionKeyframes[i - 1];
+			PositionKeyframe nextPos = positionKeyframes[i];
+			return EngineMath::LinearBlend(currentPos.position, nextPos.position,
+				currentPos.time, time, nextPos.time
+			);
+		}
+	}
+	std::cout << __FUNCTION__ << "Something went wrong";
+	return glm::vec3(0, 0, 0);
+}
+
+glm::quat AnimationKeyframes::GetRotationAtTime(double time)
+{
+
+	if (rotationKeyframes.size() == 1)
+	{
+		return rotationKeyframes[0].rotation;
+	}
+
+	
+	if (time > rotationKeyframes.back().time)
+	{
+		std::cout << __FUNCTION__ << "time cant be more than the anim duration";
+		return glm::quat();
+	}
+	for (int i = 1; i < rotationKeyframes.size(); i++)
+	{
+		if (rotationKeyframes[i].time > time)
+		{
+
+			RotationKeyframe currentRot = rotationKeyframes[i - 1];
+			RotationKeyframe nextRot = rotationKeyframes[i];
+
+			const float alpha = (time - currentRot.time) / (nextRot.time - currentRot.time);
+			glm::quat ans = glm::slerp(currentRot.rotation, nextRot.rotation, alpha);
+			return ans;
+		}
+	}
+	std::cout << __FUNCTION__ << "Something went wrong";
+	return glm::quat();
+}
+
+glm::vec3 AnimationKeyframes::GetScaleAtTime(double time) //TODO
+{
+	return glm::vec3();
 }
 
 void AnimationPoses::AddNewPose(std::string boneName, AnimationKeyframes keyframes)
@@ -101,7 +210,8 @@ void AnimationClipManager::LoadAnimationClips(const aiScene* scene)
 		}
 
 		// Creating an animation clip
-		AnimationClip* animation = new AnimationClip(anim->mName.C_Str(), skeleton, anim->mTicksPerSecond, frameCount, false, poses);
+		//TODO loop should be assigned from outside of this class. prob in main.cpp
+		AnimationClip* animation = new AnimationClip(anim->mName.C_Str(), skeleton, anim->mTicksPerSecond, frameCount, true ,anim->mDuration, poses);
 		loadedAnimationClips.push_back(animation);
 	}
 }
@@ -129,4 +239,14 @@ AnimationKeyframes AnimationClipManager::ProcessAnimationChannel(aiNodeAnim* cha
 	}
 
 	return animKeyframes;
+}
+
+std::vector<AnimationClip* > AnimationClipManager::GetLoadedAnimationClips()
+{
+	return loadedAnimationClips;
+}
+
+Skeleton* AnimationClipManager::GetSkeleton()
+{
+	return skeleton;
 }

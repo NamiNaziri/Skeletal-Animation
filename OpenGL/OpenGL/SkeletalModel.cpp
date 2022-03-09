@@ -46,9 +46,9 @@ void SkeletalModel::LoadAssets(std::string path)
 	// Process meshes and the bone coresponding to each mesh
 	ProcessNode(scene->mRootNode, scene);
 
-	// Creating Mesh Skeleton
+	// Creating Meshes' bind Skeleton
 	CreateMeshSkeleton(scene->mRootNode);
-
+	
 	CreateJointModel();
 
 	

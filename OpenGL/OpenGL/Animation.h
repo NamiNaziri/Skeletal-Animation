@@ -9,6 +9,7 @@ struct PositionKeyframe
 	double time;
 	glm::vec3 position;
 	PositionKeyframe(double time, glm::vec3 position) : time(time), position(position) {}
+	
 };
 
 struct RotationKeyframe
@@ -27,6 +28,7 @@ struct ScaleKeyframe
 
 struct AnimationKeyframes
 {
+	// TODO it is assumed that the key frames are sorted based on the time
 	std::vector<PositionKeyframe> positionKeyframes;
 	std::vector<RotationKeyframe> rotationKeyframes;
 	std::vector<ScaleKeyframe>    scaleKeyframes;
@@ -34,7 +36,18 @@ struct AnimationKeyframes
 	void AddNewPositionKeyframe(double time, glm::vec3 position);
 	void AddNewRotationKeyframe(double time, glm::quat rotation);
 	void AddNewScaleKeyframe(double time, glm::vec3 scale);
+
+	glm::vec3 GetPositionAtTime(double time);
+	glm::quat GetRotationAtTime(double time);
+	glm::vec3 GetScaleAtTime(double time);
 	
+};
+
+struct AnimationKeyframe
+{
+	glm::vec3 position;
+	glm::quat rotation;
+	glm::vec3 scale;
 };
 
 struct AnimationPoses
@@ -48,14 +61,22 @@ struct AnimationPoses
 
 };
 
+struct AnimationPose
+{
+	AnimationPose(std::map<std::string, AnimationKeyframe> keyframesMap) : keyframesMap(keyframesMap) {}
+	AnimationPose() {}
+	// map between bone name and SQT transform
+	std::map<std::string, AnimationKeyframe> keyframesMap;
+};
+
 class AnimationClip
 {
 private:
-	std::string clipName;
+	std::string name;
 	Skeleton* skeleton; //TODO pointer has to be replaced with skeletonUnique Id
 	double framePerSecond;
 	int frameCount;
-
+	double duration;
 	/*
 	 * Contains the poses in this animation clip.
 	 * simply a map of name of the bone and the key frames related to that bone
@@ -64,15 +85,20 @@ private:
 	
 	bool loop;
 
-
+	int loopCounter = 0;
 public:
-	AnimationClip(std::string clipName, Skeleton* skeleton, double framePerSecond, int frameCount, bool loop);
-	AnimationClip(std::string clipName, Skeleton* skeleton, double framePerSecond, int frameCount, bool loop, AnimationPoses animationPoses);
+	AnimationClip(std::string clipName, Skeleton* skeleton, double framePerSecond, int frameCount, bool loop, double clipDuration);
+	AnimationClip(std::string clipName, Skeleton* skeleton, double framePerSecond, int frameCount, bool loop, double clipDuration, AnimationPoses animationPoses);
+
+	std::string GetName();
 	
-	void SetClipName(std::string name);
+	void SetName(std::string name);
 	void SetSkeleton(Skeleton* skeleton);
 	void SetFramePerSecond(double framePerSecond);
 	void SetFrameCount(int frameCount);
+
+	AnimationPose GetPoseForCurrentTime(double currentTime);
+	float GetDuration();
 };
 
 class AnimationClipManager
@@ -87,4 +113,8 @@ private:
 	
 	void LoadAnimationClips(const aiScene* scene);
 	AnimationKeyframes ProcessAnimationChannel(aiNodeAnim* channel);
+
+public:
+	std::vector<AnimationClip* > GetLoadedAnimationClips();
+	Skeleton* GetSkeleton();
 };

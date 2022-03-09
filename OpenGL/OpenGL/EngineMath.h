@@ -1,4 +1,5 @@
 #pragma once
+#include <stdexcept>
 #include <assimp/matrix4x4.h>
 #include <assimp/quaternion.h>
 #include <glm/fwd.hpp>
@@ -34,5 +35,22 @@ namespace EngineMath
 	inline glm::quat GetGLMQuat(const aiQuaternion& pOrientation)
 	{
 		return glm::quat(pOrientation.w, pOrientation.x, pOrientation.y, pOrientation.z);
+	}
+	/*
+	 * the effect of alpha is on start
+	 */
+	inline glm::vec3 LinearBlend(glm::vec3 start, glm::vec3 end, float alpha)
+	{
+		return start * alpha + (1 - alpha) * end;
+	}
+
+	inline glm::vec3 LinearBlend(glm::vec3 start, glm::vec3 end, float startTime,float currentTime, float endTime)
+	{
+		if(currentTime < startTime || currentTime > endTime || endTime < startTime)
+		{
+			throw std::invalid_argument(__FUNCTION__);
+		}
+		const float alpha = 1 - (currentTime - startTime) / (endTime - startTime);
+		return start * alpha + (1 - alpha) * end;
 	}
 }
