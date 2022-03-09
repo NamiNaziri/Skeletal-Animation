@@ -33,18 +33,18 @@ GLFWwindow* CreateWindow();
 unsigned int loadTexture(const char* path);
 // camera
 
-Camera cam(	glm::vec3(0.0f, 0.0f, 500.0f) ,
-			glm::vec3(0.0f, 1.0f, 0.0f),
-			45,
-			0,
-			-90
-			);
+Camera cam(glm::vec3(0.0f, 0.0f, 500.0f),
+	glm::vec3(0.0f, 1.0f, 0.0f),
+	45,
+	0,
+	-90
+);
 
 int Width = 1080;
 int Height = 1080;
 
 
-float lastX = Width/2, lastY = Height/2;
+float lastX = Width / 2, lastY = Height / 2;
 
 
 bool firstMouse = true;
@@ -63,11 +63,11 @@ void DrawSkeleton(Bone* root, glm::mat4 parentTrnsform)
 {
 	glm::mat4 newParentTransform = parentTrnsform * root->GetTransform();
 	pos.push_back(glm::vec3(newParentTransform[3]));
-	for(int i = 0 ; i < root->GetChildren().size() ; i++)
+	for (int i = 0; i < root->GetChildren().size(); i++)
 	{
 		DrawSkeleton(root->GetChildren()[i], newParentTransform);
 	}
-	
+
 }
 
 int main()
@@ -80,7 +80,7 @@ int main()
 
 	// set upVector vertex data (and buffer(s)) and configure vertex attributes
 	// ------------------------------------------------------------------
-	
+
 	std::vector<float>  vertices = {
 		// positions          // normals           // texture coords
 		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,
@@ -139,7 +139,7 @@ int main()
 	glm::vec3(-1.3f,  1.0f, -1.5f)
 	};
 
-	
+
 
 	// Light cube object
 
@@ -149,10 +149,10 @@ int main()
 		glm::vec3(-4.0f,  2.0f, -12.0f),
 		glm::vec3(0.0f,  0.0f, -3.0f)
 	};
-	
+
 	glm::vec3 lightPosition(0.f, 0.f, -6.f);
-	GameObject lights[POINT_LIGHTS_NUM] = {GameObject(vertices),GameObject(vertices) ,GameObject(vertices) ,GameObject(vertices)};
-	for(int i = 0 ; i < POINT_LIGHTS_NUM; i++)
+	GameObject lights[POINT_LIGHTS_NUM] = { GameObject(vertices),GameObject(vertices) ,GameObject(vertices) ,GameObject(vertices) };
+	for (int i = 0; i < POINT_LIGHTS_NUM; i++)
 	{
 		lights[i].SetPosition(pointLightPositions[i]);
 	}
@@ -162,27 +162,27 @@ int main()
 	stbi_set_flip_vertically_on_load(true);
 
 
-	const std::string FBXResourcePath = "resources/objects/MixamoCharacter/Walking.fbx";
+	const std::string FBXResourcePath = "resources/objects/MixamoCharacter/Jump.fbx";
 	SkeletalModel ourModel(FBXResourcePath);
 	std::cout << "Model Loaded" << std::endl;
 
 	// Load animation Clip
-	 AnimationClipManager animationClipManager(FBXResourcePath, ourModel.GetSkeleton());
-	 if(animationClipManager.GetLoadedAnimationClips().size() == 0)
-	 {
-		 std::cout << "Please load an animation";
-		 return 0;
-	 }
+	AnimationClipManager animationClipManager(FBXResourcePath, ourModel.GetSkeleton());
+	if (animationClipManager.GetLoadedAnimationClips().size() == 0)
+	{
+		std::cout << "Please load an animation";
+		return 0;
+	}
 
-	 AnimationClip* anim = animationClipManager.GetLoadedAnimationClips()[0];
-	 Animator animator(animationClipManager.GetSkeleton(), *anim, glfwGetTime());
+	AnimationClip* anim = animationClipManager.GetLoadedAnimationClips()[0];
+	Animator animator(animationClipManager.GetSkeleton(), *anim, glfwGetTime());
 
-	
-	
+
+
 	glEnable(GL_DEPTH_TEST);
 	static double limitFPS = 1.0 / 60.0;
 
-	
+
 	const double fpsLimit = 1.0 / 60.0;
 	double lastUpdateTime = 0;  // number of seconds since the last loop
 	double lastFrameTime = 0;   // number of seconds since the last frame
@@ -196,19 +196,19 @@ int main()
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;*/
 
-		
+
 		double now = glfwGetTime();
 		deltaTime = now - lastUpdateTime;
 
 		glfwPollEvents();
 
-		
+
 		// input
 		processInput(window);
 		glfwSetCursorPosCallback(window, mouse_callback);
 		glfwSetScrollCallback(window, scroll_callback);
 		glfwSetWindowSizeCallback(window, WindowResizeHandler);
-		
+
 
 		// update your application logic here,
 		 // using deltaTime if necessary (for physics, tweening, etc.)
@@ -216,8 +216,8 @@ int main()
 
 
 		animator.Update(deltaTime);
-	
-		
+
+
 		// This if-statement only executes once every 60th of a second
 		if ((now - lastFrameTime) >= fpsLimit)
 		{
@@ -319,7 +319,7 @@ int main()
 
 			if (ShowModel)
 			{
-				ourModel.Draw(SimpleShader);
+				//ourModel.Draw(SimpleShader);
 			}
 
 			// LightShader
@@ -338,10 +338,10 @@ int main()
 			}
 
 
-			
+
 			// check and call events and swap buffers
 			glfwSwapBuffers(window);
-			
+
 
 			// only set lastFrameTime when you actually draw something
 			lastFrameTime = now;
@@ -350,11 +350,11 @@ int main()
 		// set lastUpdateTime every iteration
 		lastUpdateTime = now;
 
-		
 
-		
+
+
 	}
-	
+
 	glfwTerminate();
 
 	return 0;
@@ -368,7 +368,7 @@ void processInput(GLFWwindow* window)
 		glfwSetWindowShouldClose(window, true);
 	}
 
-	if(glfwGetKey(window,GLFW_KEY_H) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS)
 	{
 		ShowModel = !ShowModel;
 	}
@@ -399,7 +399,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 		firstMouse = false;
 	}
 
-	
+
 	float xoffset = xpos - lastX;
 	float yoffset = lastY - ypos; // reversed since y-coordinates range from bottom to top
 	lastX = xpos;
@@ -414,7 +414,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 
 	yaw += xoffset;
 	pitch += yoffset;
-	
+
 
 	if (pitch > 89.0f)
 		pitch = 89.0f;
@@ -428,7 +428,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
 	float speed = cam.GetSpeed();
-	speed += (float)yoffset * 10 ;
+	speed += (float)yoffset * 10;
 	/*if (fov < 1.0f)
 		fov = 1.0f;
 	if (fov > 45.0f)

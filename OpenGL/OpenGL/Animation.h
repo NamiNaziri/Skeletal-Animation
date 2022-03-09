@@ -37,9 +37,9 @@ struct AnimationKeyframes
 	void AddNewRotationKeyframe(double time, glm::quat rotation);
 	void AddNewScaleKeyframe(double time, glm::vec3 scale);
 
-	glm::vec3 GetPositionAtTime(double time);
-	glm::quat GetRotationAtTime(double time);
-	glm::vec3 GetScaleAtTime(double time);
+	glm::vec3 GetPositionAtFrame(double Frame);
+	glm::quat GetRotationAtFrame(double Frame);
+	glm::vec3 GetScaleAtFrame(double Frame);
 	
 };
 
@@ -97,8 +97,9 @@ public:
 	void SetFramePerSecond(double framePerSecond);
 	void SetFrameCount(int frameCount);
 
-	AnimationPose GetPoseForCurrentTime(double currentTime);
+	AnimationPose GetPoseForCurrentFrame(double currentFrame);
 	float GetDuration();
+	double GetFramePerSecond();
 };
 
 class AnimationClipManager

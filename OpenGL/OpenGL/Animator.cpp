@@ -11,9 +11,8 @@ void Animator::Update(double deltaTime)
 {
 	currentTime += deltaTime;
 	
-	AnimationPose currentPose = currentClip->GetPoseForCurrentTime(currentTime - startTimeForCurrentAnim);
-
-	glm::mat4 currentBoneTransform;
+	AnimationPose currentPose = currentClip->GetPoseForCurrentFrame((currentTime - startTimeForCurrentAnim) * currentClip->GetFramePerSecond());
+	
 
 	for(auto ap: currentPose.keyframesMap)
 	{
