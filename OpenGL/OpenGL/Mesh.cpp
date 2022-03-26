@@ -100,7 +100,7 @@ SkinnedMesh::SkinnedMesh(std::string name, std::vector<SkinnedVertex> vertices, 
 	std::vector<Texture> textures): Mesh(name,indices,textures)
 {
 	this->vertices = vertices;
-	SetupMesh();
+	//SetupMesh();
 }
 
 void SkinnedMesh::SetupMesh()
@@ -134,7 +134,7 @@ void SkinnedMesh::SetupMesh()
 	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(SkinnedVertex), (void*)offsetof(Vertex, biTangent));
 
 	glEnableVertexAttribArray(5);
-	glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(SkinnedVertex), (void*)offsetof(SkinnedVertex, jointIndex));
+	glVertexAttribIPointer(5, 4, GL_INT , sizeof(SkinnedVertex), (void*)offsetof(SkinnedVertex, jointIndex));
 
 	glEnableVertexAttribArray(6);
 	glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(SkinnedVertex), (void*)offsetof(SkinnedVertex, jointWeight));

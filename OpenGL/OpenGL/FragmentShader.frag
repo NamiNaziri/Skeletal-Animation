@@ -112,8 +112,10 @@ void main()
         result += CalcPointLight(pointLights[i], norm, fragPosition, viewDir);
 
     }
-    //result += CalcSpotLight(spotLight, norm, fragPosition, viewDir);
+    result += CalcSpotLight(spotLight, norm, fragPosition, viewDir);
 
+
+    //fragColor = texture(material.texture_diffuse1, TexCoords);
     fragColor = vec4(result, 1.0);
 }
 

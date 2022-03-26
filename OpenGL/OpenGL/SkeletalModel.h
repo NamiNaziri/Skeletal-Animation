@@ -64,7 +64,7 @@ public:
 				return i;
 			}
 		}
-
+		std::cout << "Bone not Found" << std::endl;
 		return -1;
 	}
 
@@ -133,12 +133,13 @@ private:
 	std::map<aiNode*, bool> necessityMap;
 	std::map<std::string, Bone* > boneInfoMap; // name of the bone -> BoneInfo
 
-	std::vector<glm::mat4> skeletonTransform;
-	std::vector<glm::vec3> skeletonPosition;
+	std::vector<glm::mat4> skeletonTransform; // This just the skeleton transform
+	std::vector<glm::mat4> matrixPalletTransform; 
 	bool drawSkeleton = false;
 
 	void CreateNecessityMap(aiNode* node);
-	void ProcessNecessityMap(aiMesh* mesh, aiNode* meshNode, aiNode* meshParentNode, aiNode* sceneRoot); // finds the skeleton of the mesh
+	void ProcessNecessityMap(aiNode* node, const aiScene* scene);
+	void ProcessNecessityMapHelper(aiMesh* mesh, aiNode* meshNode, aiNode* meshParentNode, aiNode* sceneRoot); // finds the skeleton of the mesh
 	void ProcessNecessityMapForEachBone(aiNode* node, aiNode* meshNode, aiNode* meshParentNode, aiNode* sceneRoot);
 
 	// Animation and Bone Processing
@@ -150,5 +151,6 @@ private:
 
 	//TODO Draw skeleton bind pose!?
 	
-	void DrawSkeletonJointsHelper(Bone* root, glm::mat4 parentTrnsform);
+	void CalculateSkeletonTransform(Bone* root, glm::mat4 parentTrnsform);
+	void CalculateMatrixPalletTransform(Bone* root, glm::mat4 parentTrnsform);
 };

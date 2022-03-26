@@ -187,6 +187,7 @@
     <None Include="Resources\objects\backpack\backpack.mtl" />
     <None Include="Resources\objects\MixamoCharacter\Standing.dae" />
     <None Include="Resources\objects\MixamoCharacter\Standing.fbx" />
+    <None Include="SkeletonVertexShader.vert" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\container.jpg" />

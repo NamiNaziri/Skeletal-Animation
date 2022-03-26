@@ -4,6 +4,8 @@
 #include "SkeletalModel.h"
 #include <map>
 
+
+
 struct PositionKeyframe
 {
 	double time;

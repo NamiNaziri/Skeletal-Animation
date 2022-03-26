@@ -18,8 +18,8 @@ struct Vertex
 struct SkinnedVertex
 {
 	Vertex vertex;
-
-	glm::ivec4 jointIndex = glm::ivec4(-1);
+	//bone indexes which will influence this vertex
+	int jointIndex[4] = {-1,-1,-1,-1};
 	glm::vec4 jointWeight = glm::vec4(0.0f);
 public:
 	int FindAvailableJointIndex()
@@ -57,8 +57,8 @@ public:
 	Mesh(std::string name, std::vector<unsigned int> indices, std::vector<Texture> textures);
 	void Draw(Shader& shader);
 
-protected:
-	virtual void SetupMesh();
+public:
+	void SetupMesh();
 
 protected:
 	std::string name;
@@ -77,7 +77,7 @@ public:
 	StaticMesh(std::string name, std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures);
 
 protected:
-	void SetupMesh() override;
+	void SetupMesh();
 
 protected:
 	std::vector<Vertex> vertices; // this var should be different based on diff types of Meshes
@@ -92,9 +92,8 @@ public:
 		return vertices;
 	}
 
-protected:
-	void SetupMesh() override;
-	
+public:
+	void SetupMesh();
 
 protected:
 	std::vector<SkinnedVertex> vertices;

@@ -89,6 +89,7 @@
     <None Include="Resources\objects\backpack\backpack.mtl" />
     <None Include="Resources\objects\MixamoCharacter\Standing.fbx" />
     <None Include="Resources\objects\MixamoCharacter\Standing.dae" />
+    <None Include="SkeletonVertexShader.vert" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="VertexShader.vert">

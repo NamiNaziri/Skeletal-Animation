@@ -18,6 +18,20 @@ SkeletalModel::SkeletalModel(std::string path) :Model()
 
 void SkeletalModel::Draw(Shader& shader)
 {
+	//TODO Process the skeleton here
+
+	//TODO the actual function of creating pallet should clear the matrixPalletTransform too.
+	matrixPalletTransform.clear();
+	matrixPalletTransform = std::vector<glm::mat4>(skeleton.GetBones().size());
+	CalculateMatrixPalletTransform(skeleton.GetRootBone(), glm::mat4(1.0f));
+
+	for(int i = 0 ; i < skeleton.GetBones().size() ; i++)
+	{
+		std::string str = "JointsTransformation[" + std::to_string(i) + "]";
+		shader.SetMat4(str, matrixPalletTransform[i]);
+	}
+
+	
 	Model::Draw(shader);
 
 	if(drawSkeleton) // TODO ?? is it necessary?
@@ -43,11 +57,16 @@ void SkeletalModel::LoadAssets(std::string path)
 	CreateNecessityMap(scene->mRootNode);
 	std::cout << "=========================================================================" << std::endl;
 
+	//Fill up the necessity map
+	ProcessNecessityMap(scene->mRootNode, scene);
+
+	
+	// Creating Meshes' bind Skeleton
+	CreateMeshSkeleton(scene->mRootNode);
+
 	// Process meshes and the bone coresponding to each mesh
 	ProcessNode(scene->mRootNode, scene);
 
-	// Creating Meshes' bind Skeleton
-	CreateMeshSkeleton(scene->mRootNode);
 	
 	CreateJointModel();
 
@@ -89,15 +108,30 @@ void SkeletalModel::CreateNecessityMap(aiNode* node)
 	}
 }
 
-void SkeletalModel::ProcessNode(aiNode* node, const aiScene* scene)
+void SkeletalModel::ProcessNecessityMap(aiNode* node, const aiScene* scene)
 {
 	for (unsigned int i = 0; i < node->mNumMeshes; i++)
 	{
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 		if (mesh->HasBones())
 		{
-			ProcessNecessityMap(mesh, node, node->mParent, scene->mRootNode);
+			ProcessNecessityMapHelper(mesh, node, node->mParent, scene->mRootNode);
 		}
+
+	}
+
+	for (unsigned int j = 0; j < node->mNumChildren; j++)
+	{
+		ProcessNecessityMap(node->mChildren[j], scene);
+	}
+}
+
+
+void SkeletalModel::ProcessNode(aiNode* node, const aiScene* scene)
+{
+	for (unsigned int i = 0; i < node->mNumMeshes; i++)
+	{
+		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 		meshes.push_back(ProcessMesh(mesh, scene));
 	}
 
@@ -119,17 +153,17 @@ Mesh* SkeletalModel::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 	
 	if (mesh->HasBones()) 
 	{
-		// Process necessity map
-		//ProcessNecessityMap(mesh);
+		
 
 		// process the vertices
 		const std::vector<SkinnedVertex> vertices = ProcessSkinnedMeshVertices(mesh);
 
 		// create the skinned mesh
 		SkinnedMesh* sm = new SkinnedMesh(mesh->mName.C_Str(), vertices, indices, textures);
-
+		
 		// go through each bones of the mesh and assign each vertices boneWeight and boneIndex
 		ProcessVerticesBoneWeight(mesh, *sm);
+		sm->SetupMesh();
 		m = sm;
 	}
 	else
@@ -141,18 +175,12 @@ Mesh* SkeletalModel::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 
 void SkeletalModel::DrawSkeletonJoints(Shader& shader)
 {
-	skeletonPosition.clear();
+
 	skeletonTransform.clear();
-	DrawSkeletonJointsHelper(skeleton.GetRootBone(), glm::mat4(1.0f));
+	CalculateSkeletonTransform(skeleton.GetRootBone(), glm::mat4(1.0f));
 
 	for (int i = 0; i < skeleton.GetBones().size(); i++)
 	{
-
-		
-		//glm::mat4 m1 = glm::mat4(1.0f);
-		//m1 = glm::translate(m1, glm::vec3(skeletonPosition[i].x, skeletonPosition[i].y, skeletonPosition[i].z));
-		//m1 = glm::scale(m1, glm::vec3(1.f, 1.f, 1.f));	// it's a bit too big for our scene, so scale it down
-
 		shader.SetMat4("model", skeletonTransform[i]);
 		const glm::mat3 normalMatrix = glm::transpose(glm::inverse(skeletonTransform[i]));
 		shader.SetMat3("normalMatrix", normalMatrix);
@@ -162,15 +190,29 @@ void SkeletalModel::DrawSkeletonJoints(Shader& shader)
 	
 }
 
-void SkeletalModel::DrawSkeletonJointsHelper(Bone* root, glm::mat4 parentTrnsform)
+void SkeletalModel::CalculateSkeletonTransform(Bone* root, glm::mat4 parentTrnsform)
 {
 	const glm::mat4 newParentTransform = parentTrnsform * root->GetTransform();
 
 	skeletonTransform.push_back(newParentTransform);
-	//skeletonPosition.push_back(glm::vec3(newParentTransform[3]));
 	for (int i = 0; i < root->GetChildren().size(); i++)
 	{
-		DrawSkeletonJointsHelper(root->GetChildren()[i], newParentTransform);
+		CalculateSkeletonTransform(root->GetChildren()[i], newParentTransform);
+	}
+}
+
+void SkeletalModel::CalculateMatrixPalletTransform(Bone* root, glm::mat4 parentTrnsform)
+{
+	// TODO is the order right?
+	const glm::mat4 newParentTransform = (parentTrnsform * root->GetTransform());
+
+	const int boneIndex = skeleton.GetBoneIndexByName(root->GetName());
+	matrixPalletTransform[boneIndex] =  newParentTransform * root->GetInverseBindPose();
+	
+	//matrixPalletTransform.push_back(newParentTransform * root->GetInverseBindPose());
+	for (int i = 0; i < root->GetChildren().size(); i++)
+	{
+		CalculateMatrixPalletTransform(root->GetChildren()[i], newParentTransform);
 	}
 }
 
@@ -213,6 +255,7 @@ void SkeletalModel::ProcessVerticesBoneWeight(aiMesh* mesh, SkinnedMesh& skinned
 	{
 		aiBone* bone = mesh->mBones[i];
 		const std::string boneName = bone->mName.C_Str();
+		const int boneIndex = skeleton.GetBoneIndexByName(boneName);
 		for (int j = 0; j < bone->mNumWeights; j++)
 		{
 			const aiVertexWeight vertexWeight = bone->mWeights[j];
@@ -222,7 +265,7 @@ void SkeletalModel::ProcessVerticesBoneWeight(aiMesh* mesh, SkinnedMesh& skinned
 				continue;
 			}
 			vertices[vertexWeight.mVertexId].jointWeight[availableIndex] = vertexWeight.mWeight;
-			vertices[vertexWeight.mVertexId].jointIndex[availableIndex] = skeleton.GetBoneIndexByName(boneName);
+			vertices[vertexWeight.mVertexId].jointIndex[availableIndex] = boneIndex;
 		}
 	}
 }
@@ -233,7 +276,7 @@ void SkeletalModel::SetDrawSkeleton(bool drawSkeleton)
 }
 
 
-void SkeletalModel::ProcessNecessityMap(aiMesh* mesh, aiNode* meshNode, aiNode* meshParentNode, aiNode* sceneRoot)
+void SkeletalModel::ProcessNecessityMapHelper(aiMesh* mesh, aiNode* meshNode, aiNode* meshParentNode, aiNode* sceneRoot)
 {
 	for (unsigned i = 0; i < mesh->mNumBones; i++)
 	{
