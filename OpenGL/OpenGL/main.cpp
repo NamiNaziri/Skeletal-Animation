@@ -22,7 +22,7 @@
 #include "Mesh.h"
 #include "SkeletalModel.h"
 #include <glm/gtx/string_cast.hpp>
-
+#include "UIFunctions.h"
 #include "Animation.h"
 #include "Animator.h"
 void processInput(GLFWwindow* window);
@@ -240,15 +240,8 @@ int main()
 
 		processInput(window);
 
-		
-		
-
-		
-
-
 		// update your application logic here,
 		// using deltaTime if necessary (for physics, tweening, etc.)
-
 
 		// Updating animations
 		animator.Update(deltaTime);
@@ -266,7 +259,8 @@ int main()
 
 		// Create a window called "My First Tool", with a menu bar.
 		ImGui::Begin("My First Tool");
-		ImGui::Button("ssss");
+		
+		UIFunctions::DrawSkeletonTreeHelper(*(ourModel.GetSkeleton().GetRootBone()));
 
 		ImGui::End();
 
