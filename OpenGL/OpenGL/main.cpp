@@ -211,7 +211,11 @@ int main()
 	Animator animator(animationClipManager.GetSkeleton(), *anim, glfwGetTime());
 
 
+	glfwSetCursorPosCallback(window, mouse_callback);
+	glfwSetScrollCallback(window, scroll_callback);
+	glfwSetWindowSizeCallback(window, WindowResizeHandler);
 
+	
 	glEnable(GL_DEPTH_TEST);
 	static double limitFPS = 1.0 / 60.0;
 
@@ -219,6 +223,10 @@ int main()
 	double lastUpdateTime = 0;  // number of seconds since the last loop
 	double lastFrameTime = 0;   // number of seconds since the last frame
 
+
+
+
+	
 	while (!glfwWindowShouldClose(window))
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -226,18 +234,16 @@ int main()
 
 		const double now = glfwGetTime();
 		deltaTime = now - lastUpdateTime;
+		// input
 
 		glfwPollEvents();
 
-		
-
-
-		
-		// input
 		processInput(window);
-		glfwSetCursorPosCallback(window, mouse_callback);
-		glfwSetScrollCallback(window, scroll_callback);
-		glfwSetWindowSizeCallback(window, WindowResizeHandler);
+
+		
+		
+
+		
 
 
 		// update your application logic here,
@@ -249,18 +255,43 @@ int main()
 
 		// This if-statement only executes once every 60th of a second
 
+
+		// Start the Dear ImGui frame
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+
+		// Draw the UI
+		ImGui::ShowDemoWindow();
+
+		// Create a window called "My First Tool", with a menu bar.
+		ImGui::Begin("My First Tool");
+		ImGui::Button("ssss");
+
+		ImGui::End();
+
+
+		ImGui::Render();
+		// Update and Render additional Platform Windows
+		// (Platform functions may change the current OpenGL context, so we save/restore it to make it easier to paste this code elsewhere.
+		//  For this specific demo app we could also call glfwMakeContextCurrent(window) directly)
+		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+		{
+			GLFWwindow* backup_current_context = glfwGetCurrentContext();
+			ImGui::UpdatePlatformWindows();
+			ImGui::RenderPlatformWindowsDefault();
+			glfwMakeContextCurrent(backup_current_context);
+		}
+
+
+		
 		if ((now - lastFrameTime) >= fpsLimit)
 		{
 
-			// Start the Dear ImGui frame
-			ImGui_ImplOpenGL3_NewFrame();
-			ImGui_ImplGlfw_NewFrame();
-			ImGui::NewFrame();
 
-			ImGui::ShowDemoWindow();
+			
 
-
-			ImGui::Render();
+			
 			
 			// draw your frame here
 			// rendering commands
@@ -371,22 +402,9 @@ int main()
 			}
 
 
-			
-
-
 			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-			// Update and Render additional Platform Windows
-	   // (Platform functions may change the current OpenGL context, so we save/restore it to make it easier to paste this code elsewhere.
-	   //  For this specific demo app we could also call glfwMakeContextCurrent(window) directly)
-			if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-			{
-				GLFWwindow* backup_current_context = glfwGetCurrentContext();
-				ImGui::UpdatePlatformWindows();
-				ImGui::RenderPlatformWindowsDefault();
-				glfwMakeContextCurrent(backup_current_context);
-			}
 			
+
 			
 			// check and call events and swap buffers
 			glfwSwapBuffers(window);
@@ -395,6 +413,9 @@ int main()
 			// only set lastFrameTime when you actually draw something
 			lastFrameTime = now;
 		}
+
+		
+		
 
 		// set lastUpdateTime every iteration
 		lastUpdateTime = now;
@@ -446,6 +467,8 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
+
+	ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);
 	if (firstMouse) // initially set to true
 	{
 		lastX = xpos;
@@ -481,6 +504,8 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
+	ImGui_ImplGlfw_ScrollCallback(window, xoffset, yoffset);
+	
 	float speed = cam.GetSpeed();
 	speed += (float)yoffset * 10;
 	/*if (fov < 1.0f)
@@ -511,7 +536,7 @@ GLFWwindow* CreateWindow()
 	glfwMakeContextCurrent(window);
 	glfwSwapInterval(1); // Enable vsync
 	
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
@@ -533,6 +558,7 @@ void SetupImgui(GLFWwindow* window)
 
 void WindowResizeHandler(GLFWwindow* window, int w, int h)
 {
+	
 	std::cout << "Window Resized. W: " << w << "  H: " << h << std::endl;
 	Width = w;
 	Height = h;
@@ -576,3 +602,6 @@ unsigned int loadTexture(char const* path)
 
 	return textureID;
 }
+
+
+

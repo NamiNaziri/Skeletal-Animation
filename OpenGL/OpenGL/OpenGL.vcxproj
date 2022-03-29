@@ -172,6 +172,7 @@
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="SkeletalModel.cpp" />
     <ClCompile Include="stb_image.cpp" />
+    <ClCompile Include="UIFunctions.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h" />
@@ -192,6 +193,7 @@
     <ClInclude Include="Model.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="SkeletalModel.h" />
+    <ClInclude Include="UIFunctions.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Resources\objects\backpack\source_attribution.txt" />
