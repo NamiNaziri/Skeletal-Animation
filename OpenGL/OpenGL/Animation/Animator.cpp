@@ -3,8 +3,19 @@
 Animator::Animator(Skeleton* skeleton, AnimationClip& animClip, double startTime) :
 	skeleton(skeleton),  startTimeForCurrentAnim(startTime), currentClip(&animClip)
 {
+
 	currentClipName = animClip.GetName();
 	currentTime = startTime;
+}
+
+void Animator::ChangeAnimationClip(AnimationClip& animClip, double startTime)
+{
+	currentClip = &animClip;
+
+	currentClipName = animClip.GetName();
+	startTimeForCurrentAnim = startTime;
+	currentTime = startTime; //todo is this necessary or is it better to not change it?
+	
 }
 
 void Animator::Update(double deltaTime)

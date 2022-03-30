@@ -65,7 +65,7 @@ bool ShowModel = true;
 #define POINT_LIGHTS_NUM 4
 
 
-// IMgui
+//
 
 
 int main()
@@ -184,7 +184,6 @@ int main()
 		lights[i].SetPosition(pointLightPositions[i]);
 	}
 
-
 	// tell stb_image.h to flip loaded texture's on the y-axis (before loading model).
 	stbi_set_flip_vertically_on_load(true);
 
@@ -207,7 +206,10 @@ int main()
 
 	// Get an animation from anim manager and pass it to animation
 	// this way we could easily create state machines. Of course in its specific class
-	AnimationClip* anim = animationClipManager.GetLoadedAnimationClips()[0];
+
+	int animationSelector = 0;
+	
+	AnimationClip* anim = animationClipManager.GetLoadedAnimationClips()[animationSelector];
 	Animator animator(animationClipManager.GetSkeleton(), *anim, glfwGetTime());
 
 
@@ -263,14 +265,35 @@ int main()
 		ImGui::ShowDemoWindow();
 
 		// Create a window called "My First Tool", with a menu bar.
-		ImGui::Begin("My First Tool");
-		
+		ImGui::Begin("Animation Controller");
+	
 		UIFunctions::DrawSkeletonTreeHelper(*(ourModel.GetSkeleton().GetRootBone()));
+
+		if (ImGui::Button("Next Anim"))
+		{
+			animationSelector++;
+			if(animationSelector >= animationClipManager.GetLoadedAnimationClips().size())
+			{
+				animationSelector = 0;
+			}
+			AnimationClip* anim = animationClipManager.GetLoadedAnimationClips()[animationSelector];
+			animator.ChangeAnimationClip(*anim, glfwGetTime());
+		}
+
 
 		ImGui::End();
 
-		UIFunctions::AddNewAnimationUI(fileDialog);
-
+		// Getting new animation from user
+		
+		
+		UIFunctions::AddNewAnimationUI(fileDialog); // dialogue so that the user can choose the animation
+		
+		if (fileDialog.HasSelected()) 
+		{
+			std::cout << "Selected filename" << fileDialog.GetSelected().string() << std::endl;
+			animationClipManager.AddNewAnimationClip(fileDialog.GetSelected().string());
+			fileDialog.ClearSelected();
+		}
 
 		ImGui::Render();
 		// Update and Render additional Platform Windows

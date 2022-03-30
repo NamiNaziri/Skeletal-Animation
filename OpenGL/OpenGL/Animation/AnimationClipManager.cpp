@@ -6,11 +6,18 @@
 #include "Animation.h"
 
 
-AnimationClipManager::AnimationClipManager(std::string path, Skeleton& skeleton) :skeleton(&skeleton)
+AnimationClipManager::AnimationClipManager(const std::string& path, Skeleton& skeleton)
+		:skeleton(&skeleton)
 {
-	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_JoinIdenticalVertices |
-		aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace | aiProcess_PopulateArmatureData | aiProcess_LimitBoneWeights);
+	AddNewAnimationClip(path);
+}
+
+AnimationClipManager::AnimationClipManager(Skeleton& skeleton) : skeleton(&skeleton)
+{}
+
+void AnimationClipManager::AddNewAnimationClip(const std::string& path)
+{
+	const aiScene* scene = importer.ReadFile(path, aiProcess_PopulateArmatureData | aiProcess_LimitBoneWeights);
 	if (!scene || !scene->mRootNode)
 	{
 		std::cout << "ERROR::ASSIMP::" << importer.GetErrorString() << std::endl;
@@ -21,12 +28,6 @@ AnimationClipManager::AnimationClipManager(std::string path, Skeleton& skeleton)
 	{
 		LoadAnimationClips(scene);
 	}
-	std::cout << std::endl << loadedAnimationClips.size() << " Number of Animation added" << std::endl;
-
-}
-
-void AnimationClipManager::AddNewAnimationClip(std::string path)
-{
 }
 
 void AnimationClipManager::LoadAnimationClips(const aiScene* scene)
@@ -44,12 +45,14 @@ void AnimationClipManager::LoadAnimationClips(const aiScene* scene)
 			std::string boneName = anim->mChannels[i]->mNodeName.C_Str();
 			poses.AddNewPose(boneName, keyframes);
 		}
-
+		
 		// Creating an animation clip
 		//TODO loop should be assigned from outside of this class. prob in main.cpp
 		AnimationClip* animation = new AnimationClip(anim->mName.C_Str(), skeleton,
 			anim->mTicksPerSecond, anim->mDuration, true, anim->mDuration / anim->mTicksPerSecond, poses);
 		loadedAnimationClips.push_back(animation);
+		std::cout << std::endl << "New Animation added. Clip name: " << anim->mName.C_Str() << std::endl;
+
 	}
 }
 

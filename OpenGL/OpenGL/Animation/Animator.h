@@ -16,6 +16,7 @@ private:
 
 public:
 	Animator(Skeleton* skeleton, AnimationClip& animClip, double startTime);
+	void ChangeAnimationClip(AnimationClip& animClip, double startTime);
 	void Update(double deltaTime);
 };
 
