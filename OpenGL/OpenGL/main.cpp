@@ -23,8 +23,10 @@
 #include "SkeletalModel.h"
 #include <glm/gtx/string_cast.hpp>
 #include "UIFunctions.h"
-#include "Animation.h"
-#include "Animator.h"
+#include "Animation/Animation.h"
+#include "Animation/Animator.h"
+#include "Animation/AnimationClipManager.h"
+#include "imgui/Plugin/imfilebrowser.h"
 void processInput(GLFWwindow* window);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -33,7 +35,7 @@ void WindowResizeHandler(GLFWwindow* window, int w, int h);
 
 // Functions
 
-GLFWwindow* CreateWindow();
+GLFWwindow* CreateGLFWWindow();
 void SetupImgui(GLFWwindow* window);
 unsigned int loadTexture(const char* path);
 
@@ -45,8 +47,6 @@ Camera cam(glm::vec3(0.0f, 0.0f, 500.0f),
 	0,
 	-90
 );
-
-
 
 int Width = 1080;
 int Height = 1080;
@@ -71,7 +71,7 @@ bool ShowModel = true;
 int main()
 {
 
-	GLFWwindow* window = CreateWindow();
+	GLFWwindow* window = CreateGLFWWindow();
 
 	//SetupImgui( window);
 
@@ -192,7 +192,7 @@ int main()
 	/************** Loading model and Animations **************/
 	
 	const std::string FBXResourcePath = "resources/objects/Archer/Yelling While Standing.fbx";
-	const std::string animationPath = "resources/objects/Archer/Yelling While Standing.fbx";
+	const std::string animationPath = "resources/objects/Archer/Dying.fbx";
 	// Load the model
 	SkeletalModel ourModel(FBXResourcePath);
 	std::cout << "Model Loaded" << std::endl;
@@ -224,7 +224,12 @@ int main()
 	double lastFrameTime = 0;   // number of seconds since the last frame
 
 
+	// create a file browser instance
+	ImGui::FileBrowser fileDialog;
 
+	// (optional) set browser properties
+	fileDialog.SetTitle("Select an animation");
+	fileDialog.SetTypeFilters({ ".fbx" });
 
 	
 	while (!glfwWindowShouldClose(window))
@@ -264,6 +269,8 @@ int main()
 
 		ImGui::End();
 
+		UIFunctions::AddNewAnimationUI(fileDialog);
+
 
 		ImGui::Render();
 		// Update and Render additional Platform Windows
@@ -282,11 +289,6 @@ int main()
 		if ((now - lastFrameTime) >= fpsLimit)
 		{
 
-
-			
-
-			
-			
 			// draw your frame here
 			// rendering commands
 
@@ -512,7 +514,7 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 
 
 
-GLFWwindow* CreateWindow()
+GLFWwindow* CreateGLFWWindow()
 {
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);

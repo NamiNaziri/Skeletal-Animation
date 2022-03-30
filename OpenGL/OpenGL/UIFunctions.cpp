@@ -1,7 +1,7 @@
 #include "UIFunctions.h"
 
 #include "imgui/imgui.h"
-
+#include "imgui/Plugin/imfilebrowser.h"
 
 void UIFunctions::DrawSkeletonTree(Skeleton& skel)
 {
@@ -46,4 +46,25 @@ void UIFunctions::DrawSkeletonTreeHelper(Bone& root)
     }
 
 	
+}
+
+void UIFunctions::AddNewAnimationUI(ImGui::FileBrowser& fileDialog)
+{
+
+	
+    if (ImGui::Begin("dummy window"))
+    {
+        // open file dialog when user clicks this button
+        if (ImGui::Button("open file dialog"))
+            fileDialog.Open();
+    }
+    ImGui::End();
+
+    fileDialog.Display();
+
+    if (fileDialog.HasSelected())
+    {
+        std::cout << "Selected filename" << fileDialog.GetSelected().string() << std::endl;
+        fileDialog.ClearSelected();
+    }
 }

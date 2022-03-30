@@ -2,7 +2,7 @@
 #include <string>
 
 #include "Animation.h"
-#include "SkeletalModel.h"
+#include "../SkeletalModel.h"
 class Animator
 {
 private:

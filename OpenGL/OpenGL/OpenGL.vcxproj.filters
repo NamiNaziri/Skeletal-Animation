@@ -45,10 +45,10 @@
     <ClCompile Include="SkeletalModel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Animation.cpp">
+    <ClCompile Include="Animation\Animation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Animator.cpp">
+    <ClCompile Include="Animation\Animator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="imgui\imgui.cpp">
@@ -75,6 +75,12 @@
     <ClCompile Include="UIFunctions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="imgui\Plugin\imfilebrowser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Animation\AnimationClipManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">
@@ -95,13 +101,13 @@
     <ClInclude Include="SkeletalModel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Animation.h">
+    <ClInclude Include="Animation\Animation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="EngineMath.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Animator.h">
+    <ClInclude Include="Animation\Animator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="imgui\imconfig.h">
@@ -134,6 +140,12 @@
     <ClInclude Include="UIFunctions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="imgui\Plugin\imfilebrowser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation\AnimationClipManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="FragmentShader.frag">
@@ -144,6 +156,7 @@
     <None Include="Resources\objects\MixamoCharacter\Standing.fbx" />
     <None Include="Resources\objects\MixamoCharacter\Standing.dae" />
     <None Include="SkeletonVertexShader.vert" />
+    <None Include="imgui\Plugin\LICENSE" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="VertexShader.vert">
