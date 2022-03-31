@@ -158,18 +158,21 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\glad.c" />
+    <ClCompile Include="Sources\imgui\ImguiHandler.cpp" />
+    <ClCompile Include="Sources\Application.cpp" />
+    <ClCompile Include="Sources\GraphicalWindow.cpp" />
     <ClCompile Include="Sources\Animation\Animation.cpp" />
     <ClCompile Include="Sources\Animation\AnimationClipManager.cpp" />
     <ClCompile Include="Sources\Animation\Animator.cpp" />
     <ClCompile Include="Sources\Camera.cpp" />
     <ClCompile Include="Sources\GameObject.cpp" />
-    <ClCompile Include="Sources\imgui\imgui.cpp" />
-    <ClCompile Include="Sources\imgui\imgui_demo.cpp" />
-    <ClCompile Include="Sources\imgui\imgui_draw.cpp" />
-    <ClCompile Include="Sources\imgui\imgui_impl_glfw.cpp" />
-    <ClCompile Include="Sources\imgui\imgui_impl_opengl3.cpp" />
-    <ClCompile Include="Sources\imgui\imgui_tables.cpp" />
-    <ClCompile Include="Sources\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="Sources\imgui\Core\imgui.cpp" />
+    <ClCompile Include="Sources\imgui\Core\imgui_demo.cpp" />
+    <ClCompile Include="Sources\imgui\Core\imgui_draw.cpp" />
+    <ClCompile Include="Sources\imgui\Core\imgui_impl_glfw.cpp" />
+    <ClCompile Include="Sources\imgui\Core\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="Sources\imgui\Core\imgui_tables.cpp" />
+    <ClCompile Include="Sources\imgui\Core\imgui_widgets.cpp" />
     <ClCompile Include="Sources\imgui\Plugin\imfilebrowser.cpp" />
     <ClCompile Include="Sources\main.cpp" />
     <ClCompile Include="Sources\Mesh.cpp" />
@@ -180,38 +183,42 @@
     <ClCompile Include="Sources\UIFunctions.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Sources\imgui\ImguiHandler.h" />
+    <ClInclude Include="Sources\Application.h" />
+    <ClInclude Include="Sources\GraphicalWindow.h" />
     <ClInclude Include="Sources\Animation\Animation.h" />
     <ClInclude Include="Sources\Animation\AnimationClipManager.h" />
     <ClInclude Include="Sources\Animation\Animator.h" />
     <ClInclude Include="Sources\Camera.h" />
     <ClInclude Include="Sources\EngineMath.h" />
     <ClInclude Include="Sources\GameObject.h" />
-    <ClInclude Include="Sources\imgui\imconfig.h" />
-    <ClInclude Include="Sources\imgui\imgui.h" />
-    <ClInclude Include="Sources\imgui\imgui_impl_glfw.h" />
-    <ClInclude Include="Sources\imgui\imgui_impl_opengl3.h" />
-    <ClInclude Include="Sources\imgui\imgui_impl_opengl3_loader.h" />
-    <ClInclude Include="Sources\imgui\imgui_internal.h" />
-    <ClInclude Include="Sources\imgui\imstb_rectpack.h" />
-    <ClInclude Include="Sources\imgui\imstb_textedit.h" />
-    <ClInclude Include="Sources\imgui\imstb_truetype.h" />
+    <ClInclude Include="Sources\imgui\Core\imgui.h" />
+    <ClInclude Include="Sources\imgui\Core\imgui_impl_glfw.h" />
+    <ClInclude Include="Sources\imgui\Core\imgui_impl_opengl3.h" />
+    <ClInclude Include="Sources\imgui\Core\imgui_impl_opengl3_loader.h" />
+    <ClInclude Include="Sources\imgui\Core\imgui_internal.h" />
+    <ClInclude Include="Sources\imgui\Core\imstb_rectpack.h" />
+    <ClInclude Include="Sources\imgui\Core\imstb_textedit.h" />
+    <ClInclude Include="Sources\imgui\Core\imstb_truetype.h" />
     <ClInclude Include="Sources\imgui\Plugin\imfilebrowser.h" />
     <ClInclude Include="Sources\Mesh.h" />
     <ClInclude Include="Sources\Model.h" />
+    <ClInclude Include="Sources\ModelData.h" />
     <ClInclude Include="Sources\Shader.h" />
     <ClInclude Include="Sources\SkeletalModel.h" />
     <ClInclude Include="Sources\UIFunctions.h" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Sources\VertexShader.vert" />
+    <Text Include="Sources\Shaders\Vertex\VertexShader.vert" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Sources\FragmentShader.frag" />
+    <None Include="Sources\imgui\Core\imgui.ini" />
+    <None Include="Sources\Shaders\Fragment\FragmentShader.frag" />
     <None Include="Sources\imgui\Plugin\LICENSE" />
-    <None Include="Sources\LightFragmentShader.frag" />
+    <None Include="Sources\Shaders\Fragment\LightFragmentShader.frag" />
     <None Include="Resources\objects\MixamoCharacter\Standing.dae" />
     <None Include="Resources\objects\MixamoCharacter\Standing.fbx" />
-    <None Include="Sources\SkeletonVertexShader.vert" />
+    <None Include="Sources\Shaders\Vertex\SkeletonVertexShader.vert" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\objects\MixamoCharacter\diffuse.png" />

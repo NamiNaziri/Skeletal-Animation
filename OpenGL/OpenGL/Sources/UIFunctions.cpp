@@ -1,12 +1,12 @@
 #include "UIFunctions.h"
 
-#include "imgui/imgui.h"
+#include "imgui/Core/imgui.h"
 #include "imgui/Plugin/imfilebrowser.h"
 
 void UIFunctions::DrawSkeletonTree(Skeleton& skel)
 {
 
-    }
+}
 
 void UIFunctions::DrawSkeletonTreeHelper(Bone& root)
 {

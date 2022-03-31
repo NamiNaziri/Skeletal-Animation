@@ -51,25 +51,25 @@
     <ClCompile Include="Sources\Animation\Animator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\imgui\imgui.cpp">
+    <ClCompile Include="Sources\imgui\Core\imgui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\imgui\imgui_demo.cpp">
+    <ClCompile Include="Sources\imgui\Core\imgui_demo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\imgui\imgui_draw.cpp">
+    <ClCompile Include="Sources\imgui\Core\imgui_draw.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\imgui\imgui_impl_glfw.cpp">
+    <ClCompile Include="Sources\imgui\Core\imgui_impl_glfw.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\imgui\imgui_impl_opengl3.cpp">
+    <ClCompile Include="Sources\imgui\Core\imgui_impl_opengl3.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\imgui\imgui_tables.cpp">
+    <ClCompile Include="Sources\imgui\Core\imgui_tables.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\imgui\imgui_widgets.cpp">
+    <ClCompile Include="Sources\imgui\Core\imgui_widgets.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Sources\UIFunctions.cpp">
@@ -79,6 +79,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Sources\Animation\AnimationClipManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\GraphicalWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Application.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\imgui\ImguiHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -110,31 +119,28 @@
     <ClInclude Include="Sources\Animation\Animator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\imgui\imconfig.h">
+    <ClInclude Include="Sources\imgui\Core\imgui.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\imgui\imgui.h">
+    <ClInclude Include="Sources\imgui\Core\imgui_impl_glfw.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\imgui\imgui_impl_glfw.h">
+    <ClInclude Include="Sources\imgui\Core\imgui_impl_opengl3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\imgui\imgui_impl_opengl3.h">
+    <ClInclude Include="Sources\imgui\Core\imgui_impl_opengl3_loader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\imgui\imgui_impl_opengl3_loader.h">
+    <ClInclude Include="Sources\imgui\Core\imgui_internal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\imgui\imgui_internal.h">
+    <ClInclude Include="Sources\imgui\Core\imstb_rectpack.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\imgui\imstb_rectpack.h">
+    <ClInclude Include="Sources\imgui\Core\imstb_textedit.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\imgui\imstb_textedit.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\imgui\imstb_truetype.h">
+    <ClInclude Include="Sources\imgui\Core\imstb_truetype.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Sources\UIFunctions.h">
@@ -146,19 +152,32 @@
     <ClInclude Include="Sources\Animation\AnimationClipManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Sources\GraphicalWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Application.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\imgui\ImguiHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\ModelData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Sources\FragmentShader.frag">
+    <None Include="Sources\Shaders\Fragment\FragmentShader.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Sources\LightFragmentShader.frag" />
+    <None Include="Sources\Shaders\Fragment\LightFragmentShader.frag" />
     <None Include="Resources\objects\MixamoCharacter\Standing.fbx" />
     <None Include="Resources\objects\MixamoCharacter\Standing.dae" />
-    <None Include="Sources\SkeletonVertexShader.vert" />
+    <None Include="Sources\Shaders\Vertex\SkeletonVertexShader.vert" />
     <None Include="Sources\imgui\Plugin\LICENSE" />
+    <None Include="Sources\imgui\Core\imgui.ini" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Sources\VertexShader.vert">
+    <Text Include="Sources\Shaders\Vertex\VertexShader.vert">
       <Filter>Shaders</Filter>
     </Text>
   </ItemGroup>

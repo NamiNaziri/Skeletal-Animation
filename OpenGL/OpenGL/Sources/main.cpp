@@ -5,9 +5,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "imgui/imgui.h"
-#include "imgui/imgui_impl_glfw.h"
-#include "imgui/imgui_impl_opengl3.h"
+#include "imgui/Core/imgui.h"
+#include "imgui/Core/imgui_impl_glfw.h"
+#include "imgui/Core/imgui_impl_opengl3.h"
 
 #include "Camera.h"
 #include "Shader.h"
@@ -27,6 +27,20 @@
 #include "Animation/Animator.h"
 #include "Animation/AnimationClipManager.h"
 #include "imgui/Plugin/imfilebrowser.h"
+
+#include "imgui/ImguiHandler.h"
+#include "ModelData.h"
+
+struct DestroyglfwWin {
+
+	void operator()(GLFWwindow* ptr) {
+		glfwDestroyWindow(ptr);
+	}
+
+};
+
+
+
 void processInput(GLFWwindow* window);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -35,8 +49,7 @@ void WindowResizeHandler(GLFWwindow* window, int w, int h);
 
 // Functions
 
-GLFWwindow* CreateGLFWWindow();
-void SetupImgui(GLFWwindow* window);
+std::unique_ptr<GLFWwindow, DestroyglfwWin> CreateGLFWWindow();
 unsigned int loadTexture(const char* path);
 
 
@@ -54,7 +67,6 @@ int Height = 1080;
 
 float lastX = Width / 2, lastY = Height / 2;
 
-
 bool firstMouse = true;
 
 double deltaTime = 0.0f;	// Time between current frame and last frame
@@ -64,110 +76,24 @@ bool ShowModel = true;
 
 #define POINT_LIGHTS_NUM 4
 
-
-//
-
-
 int main()
 {
 
-	GLFWwindow* window = CreateGLFWWindow();
+	std::unique_ptr<GLFWwindow, DestroyglfwWin> window = CreateGLFWWindow();
 
-	//SetupImgui( window);
-
-	// Setup Dear ImGui context
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
-	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
-	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
-	//io.ConfigViewportsNoAutoMerge = true;
-	//io.ConfigViewportsNoTaskBarIcon = true;
-
-	// Setup Dear ImGui style
-	ImGui::StyleColorsDark();
-	//ImGui::StyleColorsClassic();
-
-	// When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
-	ImGuiStyle& style = ImGui::GetStyle();
-	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-	{
-		style.WindowRounding = 0.0f;
-		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
-	}
-
-	// Setup Platform/Renderer backends
-	ImGui_ImplGlfw_InitForOpenGL(window, true);
-	ImGui_ImplOpenGL3_Init("#version 130");
-
-	// Load Fonts
-	// - If no fonts are loaded, dear imgui will use the default font. You can also load multiple fonts and use ImGui::PushFont()/PopFont() to select them.
-	// - AddFontFromFileTTF() will return the ImFont* so you can store it if you need to select the font among multiple.
-	// - If the file cannot be loaded, the function will return NULL. Please handle those errors in your application (e.g. use an assertion, or display an error and quit).
-	// - The fonts will be rasterized at a given size (w/ oversampling) and stored into a texture when calling ImFontAtlas::Build()/GetTexDataAsXXXX(), which ImGui_ImplXXXX_NewFrame below will call.
-	// - Read 'docs/FONTS.md' for more instructions and details.
-	// - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
-	//io.Fonts->AddFontDefault();
-	//io.Fonts->AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf", 16.0f);
-	//io.Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf", 15.0f);
-	//io.Fonts->AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf", 16.0f);
-	//io.Fonts->AddFontFromFileTTF("../../misc/fonts/ProggyTiny.ttf", 10.0f);
-	//ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
-	//IM_ASSERT(font != NULL);
+	std::unique_ptr<ImguiHandler> imguiHandler = std::make_unique<ImguiHandler>(*window) ;
 	
-
-	Shader SimpleShader("VertexShader.vert", "FragmentShader.frag");
-	Shader LightShader("SkeletonVertexShader.vert", "LightFragmentShader.frag");
-
+	/*
+	 * Note: we have to use the absolute path 
+	 */
+	Shader SimpleShader("E:/Graphics/OpenGL/GitRepo/OpenGL/OpenGL/Sources/Shaders/Vertex/VertexShader.vert",
+						"E:/Graphics/OpenGL/GitRepo/OpenGL/OpenGL/Sources/Shaders/Fragment/FragmentShader.frag");
+	
+	Shader LightShader("E:/Graphics/OpenGL/GitRepo/OpenGL/OpenGL/Sources/Shaders/Vertex/SkeletonVertexShader.vert",
+				       "E:/Graphics/OpenGL/GitRepo/OpenGL/OpenGL/Sources/Shaders/Fragment/LightFragmentShader.frag");
+	
 	// set upVector vertex data (and buffer(s)) and configure vertex attributes
 	// ------------------------------------------------------------------
-
-	std::vector<float>  vertices = {
-		// positions          // normals           // texture coords
-		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,
-		 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 0.0f,
-		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f,
-		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f,
-		-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,
-
-		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 0.0f,
-		 0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 0.0f,
-		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 1.0f,
-		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 1.0f,
-		-0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 1.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 0.0f,
-
-		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
-		-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
-		-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
-		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
-
-		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
-		 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
-		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
-		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
-		 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
-		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
-
-		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f,
-		 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 1.0f,
-		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 0.0f,
-		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 0.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 0.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f,
-
-		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f,
-		 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 1.0f,
-		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,
-		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,
-		-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f,
-		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f
-	};
 
 
 	// Light cube object
@@ -213,9 +139,9 @@ int main()
 	Animator animator(animationClipManager.GetSkeleton(), *anim, glfwGetTime());
 
 
-	glfwSetCursorPosCallback(window, mouse_callback);
-	glfwSetScrollCallback(window, scroll_callback);
-	glfwSetWindowSizeCallback(window, WindowResizeHandler);
+	glfwSetCursorPosCallback(window.get(), mouse_callback);
+	glfwSetScrollCallback(window.get(), scroll_callback);
+	glfwSetWindowSizeCallback(window.get(), WindowResizeHandler);
 
 	
 	glEnable(GL_DEPTH_TEST);
@@ -234,7 +160,7 @@ int main()
 	fileDialog.SetTypeFilters({ ".fbx" });
 
 	
-	while (!glfwWindowShouldClose(window))
+	while (!glfwWindowShouldClose(window.get()))
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -244,7 +170,7 @@ int main()
 
 		glfwPollEvents();
 
-		processInput(window);
+		processInput(window.get());
 
 		// update your application logic here,
 		// using deltaTime if necessary (for physics, tweening, etc.)
@@ -255,23 +181,20 @@ int main()
 		// This if-statement only executes once every 60th of a second
 
 
-		// Start the Dear ImGui frame
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
-		ImGui::NewFrame();
+		imguiHandler->BeginFrame();
 
 		// Draw the UI
 		ImGui::ShowDemoWindow();
 
 		// Create a window called "My First Tool", with a menu bar.
 		ImGui::Begin("Animation Controller");
-	
+
 		UIFunctions::DrawSkeletonTreeHelper(*(ourModel.GetSkeleton().GetRootBone()));
 
 		if (ImGui::Button("Next Anim"))
 		{
 			animationSelector++;
-			if(animationSelector >= animationClipManager.GetLoadedAnimationClips().size())
+			if (animationSelector >= animationClipManager.GetLoadedAnimationClips().size())
 			{
 				animationSelector = 0;
 			}
@@ -283,29 +206,18 @@ int main()
 		ImGui::End();
 
 		// Getting new animation from user
-		
-		
+
+
 		UIFunctions::AddNewAnimationUI(fileDialog); // dialogue so that the user can choose the animation
-		
-		if (fileDialog.HasSelected()) 
+
+		if (fileDialog.HasSelected())
 		{
 			std::cout << "Selected filename" << fileDialog.GetSelected().string() << std::endl;
 			animationClipManager.AddNewAnimationClip(fileDialog.GetSelected().string());
 			fileDialog.ClearSelected();
 		}
 
-		ImGui::Render();
-		// Update and Render additional Platform Windows
-		// (Platform functions may change the current OpenGL context, so we save/restore it to make it easier to paste this code elsewhere.
-		//  For this specific demo app we could also call glfwMakeContextCurrent(window) directly)
-		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-		{
-			GLFWwindow* backup_current_context = glfwGetCurrentContext();
-			ImGui::UpdatePlatformWindows();
-			ImGui::RenderPlatformWindowsDefault();
-			glfwMakeContextCurrent(backup_current_context);
-		}
-
+		imguiHandler->EndFrame();
 
 		
 		if ((now - lastFrameTime) >= fpsLimit)
@@ -384,8 +296,6 @@ int main()
 			glm::mat4 view = cam.GetViewMatrix();
 			SimpleShader.SetMat4("view", view);
 
-
-
 			glm::mat4 projection = glm::mat4(1);
 
 			projection = glm::perspective(glm::radians(cam.GetFOV()), ((float)Width / (float)Height), 0.1f, 50000.0f);
@@ -419,13 +329,10 @@ int main()
 				lights[i].Render(LightShader);
 			}
 
-
-			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-			
-
+			imguiHandler->Render();
 			
 			// check and call events and swap buffers
-			glfwSwapBuffers(window);
+			glfwSwapBuffers(window.get());
 
 
 			// only set lastFrameTime when you actually draw something
@@ -447,7 +354,7 @@ int main()
 	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();
 
-	glfwDestroyWindow(window);
+
 	glfwTerminate();
 	
 	return 0;
@@ -536,14 +443,14 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 
 
 
-GLFWwindow* CreateGLFWWindow()
+std::unique_ptr<GLFWwindow, DestroyglfwWin> CreateGLFWWindow()
 {
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-
+	//std::unique_ptr<GLFWwindow> window = std::make_unique<GLFWwindow>()
 	GLFWwindow* window = glfwCreateWindow(Width, Height, "Skeletal Animation", NULL, NULL);
 	if (window == NULL)
 	{
@@ -565,13 +472,8 @@ GLFWwindow* CreateGLFWWindow()
 	glViewport(0, 0, Width, Height);
 
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-
-	return window;
-}
-
-void SetupImgui(GLFWwindow* window)
-{
 	
+	return std::unique_ptr<GLFWwindow, DestroyglfwWin>(window);
 }
 
 void WindowResizeHandler(GLFWwindow* window, int w, int h)
