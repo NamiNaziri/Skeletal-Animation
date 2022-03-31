@@ -18,180 +18,151 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="Sources\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\glad.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Shader.cpp">
+    <ClCompile Include="Sources\Shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="stb_image.cpp">
+    <ClCompile Include="Sources\stb_image.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Camera.cpp">
+    <ClCompile Include="Sources\Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GameObject.cpp">
+    <ClCompile Include="Sources\GameObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Mesh.cpp">
+    <ClCompile Include="Sources\Mesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Model.cpp">
+    <ClCompile Include="Sources\Model.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SkeletalModel.cpp">
+    <ClCompile Include="Sources\SkeletalModel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Animation\Animation.cpp">
+    <ClCompile Include="Sources\Animation\Animation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Animation\Animator.cpp">
+    <ClCompile Include="Sources\Animation\Animator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="imgui\imgui.cpp">
+    <ClCompile Include="Sources\imgui\imgui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="imgui\imgui_demo.cpp">
+    <ClCompile Include="Sources\imgui\imgui_demo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="imgui\imgui_draw.cpp">
+    <ClCompile Include="Sources\imgui\imgui_draw.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="imgui\imgui_impl_glfw.cpp">
+    <ClCompile Include="Sources\imgui\imgui_impl_glfw.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="imgui\imgui_impl_opengl3.cpp">
+    <ClCompile Include="Sources\imgui\imgui_impl_opengl3.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="imgui\imgui_tables.cpp">
+    <ClCompile Include="Sources\imgui\imgui_tables.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="imgui\imgui_widgets.cpp">
+    <ClCompile Include="Sources\imgui\imgui_widgets.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="UIFunctions.cpp">
+    <ClCompile Include="Sources\UIFunctions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="imgui\Plugin\imfilebrowser.cpp">
+    <ClCompile Include="Sources\imgui\Plugin\imfilebrowser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Animation\AnimationClipManager.cpp">
+    <ClCompile Include="Sources\Animation\AnimationClipManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Shader.h">
+    <ClInclude Include="Sources\Shader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Camera.h">
+    <ClInclude Include="Sources\Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GameObject.h">
+    <ClInclude Include="Sources\GameObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Mesh.h">
+    <ClInclude Include="Sources\Mesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Model.h">
+    <ClInclude Include="Sources\Model.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SkeletalModel.h">
+    <ClInclude Include="Sources\SkeletalModel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Animation\Animation.h">
+    <ClInclude Include="Sources\Animation\Animation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="EngineMath.h">
+    <ClInclude Include="Sources\EngineMath.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Animation\Animator.h">
+    <ClInclude Include="Sources\Animation\Animator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="imgui\imconfig.h">
+    <ClInclude Include="Sources\imgui\imconfig.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="imgui\imgui.h">
+    <ClInclude Include="Sources\imgui\imgui.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="imgui\imgui_impl_glfw.h">
+    <ClInclude Include="Sources\imgui\imgui_impl_glfw.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="imgui\imgui_impl_opengl3.h">
+    <ClInclude Include="Sources\imgui\imgui_impl_opengl3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="imgui\imgui_impl_opengl3_loader.h">
+    <ClInclude Include="Sources\imgui\imgui_impl_opengl3_loader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="imgui\imgui_internal.h">
+    <ClInclude Include="Sources\imgui\imgui_internal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="imgui\imstb_rectpack.h">
+    <ClInclude Include="Sources\imgui\imstb_rectpack.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="imgui\imstb_textedit.h">
+    <ClInclude Include="Sources\imgui\imstb_textedit.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="imgui\imstb_truetype.h">
+    <ClInclude Include="Sources\imgui\imstb_truetype.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UIFunctions.h">
+    <ClInclude Include="Sources\UIFunctions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="imgui\Plugin\imfilebrowser.h">
+    <ClInclude Include="Sources\imgui\Plugin\imfilebrowser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Animation\AnimationClipManager.h">
+    <ClInclude Include="Sources\Animation\AnimationClipManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="FragmentShader.frag">
+    <None Include="Sources\FragmentShader.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="LightFragmentShader.frag" />
-    <None Include="Resources\objects\backpack\backpack.mtl" />
+    <None Include="Sources\LightFragmentShader.frag" />
     <None Include="Resources\objects\MixamoCharacter\Standing.fbx" />
     <None Include="Resources\objects\MixamoCharacter\Standing.dae" />
-    <None Include="SkeletonVertexShader.vert" />
-    <None Include="imgui\Plugin\LICENSE" />
+    <None Include="Sources\SkeletonVertexShader.vert" />
+    <None Include="Sources\imgui\Plugin\LICENSE" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="VertexShader.vert">
+    <Text Include="Sources\VertexShader.vert">
       <Filter>Shaders</Filter>
     </Text>
-    <Text Include="Resources\objects\backpack\source_attribution.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Resources\container.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Resources\wall.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Resources\container2.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Resources\container2_specular.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Resources\objects\backpack\ao.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Resources\objects\backpack\diffuse.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Resources\objects\backpack\normal.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Resources\objects\backpack\roughness.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Resources\objects\backpack\specular.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="Resources\objects\MixamoCharacter\diffuse.png">
       <Filter>Resource Files</Filter>
     </Image>

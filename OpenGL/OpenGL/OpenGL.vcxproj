@@ -158,75 +158,64 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\glad.c" />
-    <ClCompile Include="Animation\Animation.cpp" />
-    <ClCompile Include="Animation\AnimationClipManager.cpp" />
-    <ClCompile Include="Animation\Animator.cpp" />
-    <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="GameObject.cpp" />
-    <ClCompile Include="imgui\imgui.cpp" />
-    <ClCompile Include="imgui\imgui_demo.cpp" />
-    <ClCompile Include="imgui\imgui_draw.cpp" />
-    <ClCompile Include="imgui\imgui_impl_glfw.cpp" />
-    <ClCompile Include="imgui\imgui_impl_opengl3.cpp" />
-    <ClCompile Include="imgui\imgui_tables.cpp" />
-    <ClCompile Include="imgui\imgui_widgets.cpp" />
-    <ClCompile Include="imgui\Plugin\imfilebrowser.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="Mesh.cpp" />
-    <ClCompile Include="Model.cpp" />
-    <ClCompile Include="Shader.cpp" />
-    <ClCompile Include="SkeletalModel.cpp" />
-    <ClCompile Include="stb_image.cpp" />
-    <ClCompile Include="UIFunctions.cpp" />
+    <ClCompile Include="Sources\Animation\Animation.cpp" />
+    <ClCompile Include="Sources\Animation\AnimationClipManager.cpp" />
+    <ClCompile Include="Sources\Animation\Animator.cpp" />
+    <ClCompile Include="Sources\Camera.cpp" />
+    <ClCompile Include="Sources\GameObject.cpp" />
+    <ClCompile Include="Sources\imgui\imgui.cpp" />
+    <ClCompile Include="Sources\imgui\imgui_demo.cpp" />
+    <ClCompile Include="Sources\imgui\imgui_draw.cpp" />
+    <ClCompile Include="Sources\imgui\imgui_impl_glfw.cpp" />
+    <ClCompile Include="Sources\imgui\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="Sources\imgui\imgui_tables.cpp" />
+    <ClCompile Include="Sources\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="Sources\imgui\Plugin\imfilebrowser.cpp" />
+    <ClCompile Include="Sources\main.cpp" />
+    <ClCompile Include="Sources\Mesh.cpp" />
+    <ClCompile Include="Sources\Model.cpp" />
+    <ClCompile Include="Sources\Shader.cpp" />
+    <ClCompile Include="Sources\SkeletalModel.cpp" />
+    <ClCompile Include="Sources\stb_image.cpp" />
+    <ClCompile Include="Sources\UIFunctions.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Animation\Animation.h" />
-    <ClInclude Include="Animation\AnimationClipManager.h" />
-    <ClInclude Include="Animation\Animator.h" />
-    <ClInclude Include="Camera.h" />
-    <ClInclude Include="EngineMath.h" />
-    <ClInclude Include="GameObject.h" />
-    <ClInclude Include="imgui\imconfig.h" />
-    <ClInclude Include="imgui\imgui.h" />
-    <ClInclude Include="imgui\imgui_impl_glfw.h" />
-    <ClInclude Include="imgui\imgui_impl_opengl3.h" />
-    <ClInclude Include="imgui\imgui_impl_opengl3_loader.h" />
-    <ClInclude Include="imgui\imgui_internal.h" />
-    <ClInclude Include="imgui\imstb_rectpack.h" />
-    <ClInclude Include="imgui\imstb_textedit.h" />
-    <ClInclude Include="imgui\imstb_truetype.h" />
-    <ClInclude Include="imgui\Plugin\imfilebrowser.h" />
-    <ClInclude Include="Mesh.h" />
-    <ClInclude Include="Model.h" />
-    <ClInclude Include="Shader.h" />
-    <ClInclude Include="SkeletalModel.h" />
-    <ClInclude Include="UIFunctions.h" />
+    <ClInclude Include="Sources\Animation\Animation.h" />
+    <ClInclude Include="Sources\Animation\AnimationClipManager.h" />
+    <ClInclude Include="Sources\Animation\Animator.h" />
+    <ClInclude Include="Sources\Camera.h" />
+    <ClInclude Include="Sources\EngineMath.h" />
+    <ClInclude Include="Sources\GameObject.h" />
+    <ClInclude Include="Sources\imgui\imconfig.h" />
+    <ClInclude Include="Sources\imgui\imgui.h" />
+    <ClInclude Include="Sources\imgui\imgui_impl_glfw.h" />
+    <ClInclude Include="Sources\imgui\imgui_impl_opengl3.h" />
+    <ClInclude Include="Sources\imgui\imgui_impl_opengl3_loader.h" />
+    <ClInclude Include="Sources\imgui\imgui_internal.h" />
+    <ClInclude Include="Sources\imgui\imstb_rectpack.h" />
+    <ClInclude Include="Sources\imgui\imstb_textedit.h" />
+    <ClInclude Include="Sources\imgui\imstb_truetype.h" />
+    <ClInclude Include="Sources\imgui\Plugin\imfilebrowser.h" />
+    <ClInclude Include="Sources\Mesh.h" />
+    <ClInclude Include="Sources\Model.h" />
+    <ClInclude Include="Sources\Shader.h" />
+    <ClInclude Include="Sources\SkeletalModel.h" />
+    <ClInclude Include="Sources\UIFunctions.h" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Resources\objects\backpack\source_attribution.txt" />
-    <Text Include="VertexShader.vert" />
+    <Text Include="Sources\VertexShader.vert" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="FragmentShader.frag" />
-    <None Include="imgui\Plugin\LICENSE" />
-    <None Include="LightFragmentShader.frag" />
-    <None Include="Resources\objects\backpack\backpack.mtl" />
+    <None Include="Sources\FragmentShader.frag" />
+    <None Include="Sources\imgui\Plugin\LICENSE" />
+    <None Include="Sources\LightFragmentShader.frag" />
     <None Include="Resources\objects\MixamoCharacter\Standing.dae" />
     <None Include="Resources\objects\MixamoCharacter\Standing.fbx" />
-    <None Include="SkeletonVertexShader.vert" />
+    <None Include="Sources\SkeletonVertexShader.vert" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Resources\container.jpg" />
-    <Image Include="Resources\container2.png" />
-    <Image Include="Resources\container2_specular.png" />
-    <Image Include="Resources\objects\backpack\ao.jpg" />
-    <Image Include="Resources\objects\backpack\diffuse.jpg" />
-    <Image Include="Resources\objects\backpack\normal.png" />
-    <Image Include="Resources\objects\backpack\roughness.jpg" />
-    <Image Include="Resources\objects\backpack\specular.jpg" />
     <Image Include="Resources\objects\MixamoCharacter\diffuse.png" />
     <Image Include="Resources\objects\MixamoCharacter\normal.png" />
-    <Image Include="Resources\wall.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
