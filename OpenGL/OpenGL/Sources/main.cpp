@@ -30,7 +30,7 @@
 
 #include "imgui/ImguiHandler.h"
 #include "ModelData.h"
-
+#include "StateMachine/StateMachine.h"
 struct DestroyglfwWin {
 
 	void operator()(GLFWwindow* ptr) {
@@ -75,6 +75,13 @@ float lastFrame = 0.0f; // Time of last frame
 bool ShowModel = true;
 
 #define POINT_LIGHTS_NUM 4
+
+bool changeState = false;
+
+bool ChangeState()
+{
+	return changeState;
+}
 
 int main()
 {
@@ -129,15 +136,23 @@ int main()
 		std::cout << "Please load an animation";
 		return 0;
 	}
-
+	animationClipManager.AddNewAnimationClip("resources/objects/Archer/Yelling While Standing.fbx");
 	// Get an animation from anim manager and pass it to animation
 	// this way we could easily create state machines. Of course in its specific class
 
 	int animationSelector = 0;
 	
 	AnimationClip* anim = animationClipManager.GetLoadedAnimationClips()[animationSelector];
-	Animator animator(animationClipManager.GetSkeleton(), *anim, glfwGetTime());
+	Animator* animator = new Animator(animationClipManager.GetSkeleton(), *anim, glfwGetTime());  // TODO new?????/
 
+	AnimationState* IDLE_STATE = new AnimationState("IDLE",animationClipManager.GetLoadedAnimationClips()[0]); // TODO new?????/
+	//Transition tranIDLETOWalk = new Transition() // todo
+	//IDLE_STATE->AddNewTransition()//todo
+	AnimationState* Walk_STATE = new AnimationState("Walk", animationClipManager.GetLoadedAnimationClips()[1]); // TODO new?????/
+	AnimationStateMachine animState(animator, IDLE_STATE); // TODO new?????/
+	animState.AddNewState(Walk_STATE);
+
+	
 
 	glfwSetCursorPosCallback(window.get(), mouse_callback);
 	glfwSetScrollCallback(window.get(), scroll_callback);
@@ -176,7 +191,8 @@ int main()
 		// using deltaTime if necessary (for physics, tweening, etc.)
 
 		// Updating animations
-		animator.Update(deltaTime);
+		animState.Update(deltaTime);
+		//animator.Update(deltaTime);
 
 		// This if-statement only executes once every 60th of a second
 
@@ -191,7 +207,7 @@ int main()
 
 		UIFunctions::DrawSkeletonTreeHelper(*(ourModel.GetSkeleton().GetRootBone()));
 
-		if (ImGui::Button("Next Anim"))
+		/*if (ImGui::Button("Next Anim"))
 		{
 			animationSelector++;
 			if (animationSelector >= animationClipManager.GetLoadedAnimationClips().size())
@@ -200,7 +216,7 @@ int main()
 			}
 			AnimationClip* anim = animationClipManager.GetLoadedAnimationClips()[animationSelector];
 			animator.ChangeAnimationClip(*anim, glfwGetTime());
-		}
+		}*/
 
 
 		ImGui::End();
@@ -370,7 +386,12 @@ void processInput(GLFWwindow* window)
 
 	if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS)
 	{
+		changeState = true;
 		ShowModel = !ShowModel;
+	}
+	else
+	{
+		changeState = false;
 	}
 
 

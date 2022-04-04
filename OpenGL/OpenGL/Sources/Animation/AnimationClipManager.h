@@ -10,6 +10,7 @@ public:
 	AnimationClipManager(const std::string& path, Skeleton& skeleton);
 	AnimationClipManager(Skeleton& skeleton);
 	void AddNewAnimationClip(const std::string& path);
+	
 private:
 
 	Skeleton* skeleton;
@@ -19,6 +20,7 @@ private:
 
 public:
 	std::vector<AnimationClip* > GetLoadedAnimationClips();
+	AnimationClip* GetAnimationClipByName(std::string animName);  //TODO 
 	Skeleton* GetSkeleton();
 
 private:

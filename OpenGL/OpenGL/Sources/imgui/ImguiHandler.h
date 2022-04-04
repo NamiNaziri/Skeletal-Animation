@@ -13,9 +13,6 @@ public:
 
 private:
 	void Init(GLFWwindow& window);
-
-	
-	
 	
 };
 

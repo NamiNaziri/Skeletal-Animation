@@ -181,6 +181,7 @@
     <ClCompile Include="Sources\SkeletalModel.cpp" />
     <ClCompile Include="Sources\stb_image.cpp" />
     <ClCompile Include="Sources\UIFunctions.cpp" />
+    <ClCompile Include="Sources\StateMachine\StateMachine.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Sources\imgui\ImguiHandler.h" />
@@ -207,6 +208,7 @@
     <ClInclude Include="Sources\Shader.h" />
     <ClInclude Include="Sources\SkeletalModel.h" />
     <ClInclude Include="Sources\UIFunctions.h" />
+    <ClInclude Include="Sources\StateMachine\StateMachine.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Sources\Shaders\Vertex\VertexShader.vert" />

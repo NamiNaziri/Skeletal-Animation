@@ -18,14 +18,45 @@ void Animator::ChangeAnimationClip(AnimationClip& animClip, double startTime)
 	
 }
 
+void Animator::SetSkeletonPose(AnimationPose& pose)
+{
+	for (auto ap : pose.keyframesMap)
+	{
+
+		Bone* b = skeleton->GetBoneByName(ap.first);
+
+		glm::mat4 rot = glm::toMat4(ap.second.rotation);
+		glm::mat4 trans = glm::translate(glm::mat4(1.0f), ap.second.position);
+		glm::mat4 final = trans * rot;
+		//TODO scale
+		b->SetTransform(final);
+	}
+}
+
+double Animator::GetCurrentClipTime()
+{
+	return GetCurrentClipTime();
+}
+
+const AnimationClip& Animator::GetCurrentClip()
+{
+	return *currentClip;
+}
+
+AnimationPose Animator::GetPoseAtCurrentTime()
+{
+	return currentClip->GetPoseForCurrentFrame((currentTime - startTimeForCurrentAnim) * currentClip->GetFramePerSecond());
+
+}
+
 void Animator::Update(double deltaTime)
 {
 	currentTime += deltaTime;
 	
 	AnimationPose currentPose = currentClip->GetPoseForCurrentFrame((currentTime - startTimeForCurrentAnim) * currentClip->GetFramePerSecond());
 	
-
-	for(auto ap: currentPose.keyframesMap)
+	SetSkeletonPose(currentPose);
+	/*for(auto ap: currentPose.keyframesMap)
 	{
 		
 		Bone* b = skeleton->GetBoneByName(ap.first);
@@ -35,6 +66,6 @@ void Animator::Update(double deltaTime)
 		glm::mat4 final = trans * rot ;
 		//TODO scale
 		b->SetTransform(final);
-	}
+	}*/
 	
 }

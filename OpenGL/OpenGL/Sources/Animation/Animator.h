@@ -17,6 +17,13 @@ private:
 public:
 	Animator(Skeleton* skeleton, AnimationClip& animClip, double startTime);
 	void ChangeAnimationClip(AnimationClip& animClip, double startTime);
+	void SetSkeletonPose(AnimationPose& pose);
+	double GetCurrentClipTime();
+	const AnimationClip& GetCurrentClip();
+	AnimationPose GetPoseAtCurrentTime();
+
+
+	
 	void Update(double deltaTime);
 };
 
