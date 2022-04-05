@@ -146,9 +146,13 @@ int main()
 	Animator* animator = new Animator(animationClipManager.GetSkeleton(), *anim, glfwGetTime());  // TODO new?????/
 
 	AnimationState* IDLE_STATE = new AnimationState("IDLE",animationClipManager.GetLoadedAnimationClips()[0]); // TODO new?????/
-	//Transition tranIDLETOWalk = new Transition() // todo
-	//IDLE_STATE->AddNewTransition()//todo
-	AnimationState* Walk_STATE = new AnimationState("Walk", animationClipManager.GetLoadedAnimationClips()[1]); // TODO new?????/
+	Transition* tranIdleToWalk = new Transition("WALK", []() { return changeState; }, 0.1); 
+	IDLE_STATE->AddNewTransition(tranIdleToWalk); 
+	
+	AnimationState* Walk_STATE = new AnimationState("WALK", animationClipManager.GetLoadedAnimationClips()[1]); // TODO new?????/
+	Transition* tranWalkToIdle = new Transition("IDLE", []() {return !changeState; }, 0.14);
+	Walk_STATE->AddNewTransition(tranWalkToIdle);
+	
 	AnimationStateMachine animState(animator, IDLE_STATE); // TODO new?????/
 	animState.AddNewState(Walk_STATE);
 
@@ -191,6 +195,13 @@ int main()
 		// using deltaTime if necessary (for physics, tweening, etc.)
 
 		// Updating animations
+
+		if(!changeState)
+		{
+			//std::cout << "HI";
+		}
+
+		
 		animState.Update(deltaTime);
 		//animator.Update(deltaTime);
 
@@ -379,6 +390,22 @@ int main()
 
 void processInput(GLFWwindow* window)
 {
+
+
+	ImGuiIO& io = ImGui::GetIO();
+	if(ImGui::IsKeyPressed(ImGuiKey_Y,false))
+	{
+		changeState = !changeState;
+		
+	}
+
+
+	if (ImGui::IsKeyPressed(ImGuiKey_H, false))
+	{
+		ShowModel = !ShowModel;
+	}
+
+	
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 	{
 		glfwSetWindowShouldClose(window, true);
@@ -386,12 +413,12 @@ void processInput(GLFWwindow* window)
 
 	if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS)
 	{
-		changeState = true;
-		ShowModel = !ShowModel;
+		//changeState = true;
+		
 	}
 	else
 	{
-		changeState = false;
+		//changeState = false;
 	}
 
 

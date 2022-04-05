@@ -20,6 +20,8 @@ struct Transition
 {
 	
 public:
+	Transition(std::string to, std::function<bool()> evaluateFunction, double transitionTime);
+	
 	//std::string from;
 	std::string to;
 	std::function<bool()> evaluateFunction;

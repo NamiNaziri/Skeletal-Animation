@@ -1,5 +1,10 @@
 #include "StateMachine.h"
 
+Transition::Transition(std::string to, std::function<bool()> evaluateFunction, double transitionTime)
+	: to(to), evaluateFunction(std::move(evaluateFunction)), transitionTime(transitionTime)
+{
+}
+
 bool Transition::Evaluate()
 {
 	return evaluateFunction();
@@ -26,8 +31,12 @@ bool AnimationStateMachine::TransitionUpdate(double deltaTime)
 		AnimationPose pose;
 		for (auto x : TransitionFromPose.keyframesMap)
 		{
+			if(TransitionToPose.keyframesMap.find(x.first) == TransitionToPose.keyframesMap.end())
+			{
+				// Not found the key
+				continue;
+			}
 			AnimationKeyframe keyframe;
-			
 			keyframe.position = glm::mix(x.second.position, TransitionToPose.keyframesMap.at(x.first).position, alpha);
 			keyframe.rotation = glm::slerp(x.second.rotation, TransitionToPose.keyframesMap.at(x.first).rotation, alpha);
 			keyframe.scale = glm::mix(x.second.scale, TransitionToPose.keyframesMap.at(x.first).scale, alpha);
@@ -64,6 +73,8 @@ void AnimationStateMachine::Update(double deltaTime)
 				currentState = animationStatesMap.at(transition->to);
 				TransitionFromPose = animator->GetPoseAtCurrentTime();
 				TransitionToPose = currentState->GetAnimClip()->GetPoseForCurrentFrame(0);
+				currentTime = 0;
+				transitionTime = transition->transitionTime;
 				break;
 			}
 		}
@@ -77,8 +88,13 @@ void AnimationStateMachine::Update(double deltaTime)
 	{
 		if(TransitionUpdate(deltaTime)) // if transition is finished //TODO
 		{
-			transitionStatus = TransitionStatus::normal;
+			transitionStatus = TransitionStatus::finished;
 		}
+	}
+	else if(transitionStatus == TransitionStatus::finished)
+	{
+		animator->ChangeAnimationClip(*(currentState->GetAnimClip()), 0); // TODO start time;
+		transitionStatus = TransitionStatus::normal;
 	}
 }
 
