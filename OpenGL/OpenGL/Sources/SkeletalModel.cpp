@@ -126,6 +126,30 @@ void SkeletalModel::ProcessNecessityMap(aiNode* node, const aiScene* scene)
 	}
 }
 
+void SkeletalModel::ProcessNecessityMapHelper(aiMesh* mesh, aiNode* meshNode, aiNode* meshParentNode, aiNode* sceneRoot)
+{
+	for (unsigned i = 0; i < mesh->mNumBones; i++)
+	{
+		aiBone* bone = mesh->mBones[i];
+
+		Bone* b = new Bone(EngineMath::ConvertMatrixToGLMFormat((bone->mOffsetMatrix)), bone->mName.C_Str());
+		boneInfoMap[bone->mName.C_Str()] = b;
+		ProcessNecessityMapForEachBone(bone->mNode, meshNode, meshParentNode, sceneRoot);
+
+	}
+}
+
+void SkeletalModel::ProcessNecessityMapForEachBone(aiNode* node, aiNode* meshNode, aiNode* meshParentNode,
+	aiNode* sceneRoot)
+{
+	if ((node == meshNode || node == meshParentNode || node == nullptr))
+	{
+		return;
+	}
+	necessityMap[node] = true;
+	ProcessNecessityMapForEachBone(node->mParent, meshNode, meshParentNode, sceneRoot);
+}
+
 
 void SkeletalModel::ProcessNode(aiNode* node, const aiScene* scene)
 {
@@ -276,34 +300,15 @@ void SkeletalModel::SetDrawSkeleton(bool drawSkeleton)
 }
 
 
-void SkeletalModel::ProcessNecessityMapHelper(aiMesh* mesh, aiNode* meshNode, aiNode* meshParentNode, aiNode* sceneRoot)
-{
-	for (unsigned i = 0; i < mesh->mNumBones; i++)
-	{
-		aiBone* bone = mesh->mBones[i];
-		Bone* b = new Bone(EngineMath::ConvertMatrixToGLMFormat((bone->mOffsetMatrix)), bone->mName.C_Str());
-		boneInfoMap[bone->mName.C_Str()] = b;
-		ProcessNecessityMapForEachBone(bone->mNode, meshNode, meshParentNode, sceneRoot);
 
-	}
-}
 
-void SkeletalModel::ProcessNecessityMapForEachBone(aiNode* node, aiNode* meshNode, aiNode* meshParentNode,
-	aiNode* sceneRoot)
-{
-	if ((node == meshNode || node == meshParentNode || node == nullptr))
-	{
-		return;
-	}
-	necessityMap[node] = true;
-	ProcessNecessityMapForEachBone(node->mParent, meshNode, meshParentNode, sceneRoot);
-}
 
 void SkeletalModel::CreateMeshSkeleton(aiNode* node)
 {
 	// Create
 	CreateMeshSkeletonHelper(node);
 	std::reverse(skeleton.GetBones().begin(), skeleton.GetBones().end());
+	
 	skeleton.SetRootBone(skeleton.GetBones()[0]);
 }
 

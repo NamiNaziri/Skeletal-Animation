@@ -123,8 +123,8 @@ int main()
 
 	/************** Loading model and Animations **************/
 	
-	const std::string FBXResourcePath = "resources/objects/Archer/Yelling While Standing.fbx";
-	const std::string animationPath = "resources/objects/Archer/Dying.fbx";
+	const std::string FBXResourcePath = "resources/objects/Demon/Demon.fbx";
+	const std::string animationPath = "resources/objects/Demon/Demon.fbx";
 	// Load the model
 	SkeletalModel ourModel(FBXResourcePath);
 	std::cout << "Model Loaded" << std::endl;
@@ -146,15 +146,15 @@ int main()
 	Animator* animator = new Animator(animationClipManager.GetSkeleton(), *anim, glfwGetTime());  // TODO new?????/
 
 	AnimationState* IDLE_STATE = new AnimationState("IDLE",animationClipManager.GetLoadedAnimationClips()[0]); // TODO new?????/
-	Transition* tranIdleToWalk = new Transition("WALK", []() { return changeState; }, 0.1); 
-	IDLE_STATE->AddNewTransition(tranIdleToWalk); 
+	//Transition* tranIdleToWalk = new Transition("WALK", []() { return changeState; }, 0.1); 
+	//IDLE_STATE->AddNewTransition(tranIdleToWalk); 
 	
-	AnimationState* Walk_STATE = new AnimationState("WALK", animationClipManager.GetLoadedAnimationClips()[1]); // TODO new?????/
-	Transition* tranWalkToIdle = new Transition("IDLE", []() {return !changeState; }, 0.14);
-	Walk_STATE->AddNewTransition(tranWalkToIdle);
+	//AnimationState* Walk_STATE = new AnimationState("WALK", animationClipManager.GetLoadedAnimationClips()[1]); // TODO new?????/
+	//Transition* tranWalkToIdle = new Transition("IDLE", []() {return !changeState; }, 0.14);
+	//Walk_STATE->AddNewTransition(tranWalkToIdle);
 	
 	AnimationStateMachine animState(animator, IDLE_STATE); // TODO new?????/
-	animState.AddNewState(Walk_STATE);
+	//animState.AddNewState(Walk_STATE);
 
 	
 
