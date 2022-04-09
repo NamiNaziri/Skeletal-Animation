@@ -134,21 +134,103 @@ void SkeletalModel::ProcessNecessityMapHelper(aiMesh* mesh, aiNode* meshNode, ai
 
 		Bone* b = new Bone(EngineMath::ConvertMatrixToGLMFormat((bone->mOffsetMatrix)), bone->mName.C_Str());
 		boneInfoMap[bone->mName.C_Str()] = b;
-		ProcessNecessityMapForEachBone(bone->mNode, meshNode, meshParentNode, sceneRoot);
+		ProcessNecessityMapForEachBone(bone->mNode, meshNode, meshParentNode);
 
 	}
 }
 
-void SkeletalModel::ProcessNecessityMapForEachBone(aiNode* node, aiNode* meshNode, aiNode* meshParentNode,
-	aiNode* sceneRoot)
+void SkeletalModel::ProcessNecessityMapForEachBone(aiNode* node, aiNode* meshNode, aiNode* meshParentNode)
 {
 	if ((node == meshNode || node == meshParentNode || node == nullptr))
 	{
 		return;
 	}
 	necessityMap[node] = true;
-	ProcessNecessityMapForEachBone(node->mParent, meshNode, meshParentNode, sceneRoot);
+	ProcessNecessityMapForEachBone(node->mParent, meshNode, meshParentNode);
 }
+
+
+
+void SkeletalModel::CreateMeshSkeleton(aiNode* node)
+{
+	// Create
+	CreateMeshSkeletonHelper(node);
+	//std::reverse(skeleton.GetBones().begin(), skeleton.GetBones().end());
+
+	skeleton.SetRootBone(skeleton.GetBones()[0]);
+}
+
+/*
+	c) Recursively iterate over the node hierarchy
+		c1) If the node is marked as necessary, copy it into the skeleton and check its children
+		c2) If the node is marked as not necessary, skip it and do not iterate over its children.
+*/
+
+void SkeletalModel::CreateMeshSkeletonHelper(aiNode* node)
+{
+
+	if(!node)
+	{
+		return;
+	}
+	
+	bool isNecessery = necessityMap[node];
+	if(isNecessery)
+	{
+		Bone* b = boneInfoMap[node->mName.C_Str()];
+		if(b)
+		{
+			for (int i = 0; i < node->mNumChildren; i++)
+			{
+				Bone* child = boneInfoMap[node->mChildren[i]->mName.C_Str()];
+				if (b && child)
+				{
+					b->AddNewChild(child);
+				}
+
+			}
+			b->SetTransform(EngineMath::ConvertMatrixToGLMFormat(node->mTransformation));
+			skeleton.AddBone(b);
+		}
+	}
+	
+	for (int i = 0; i < node->mNumChildren; i++)
+	{
+		CreateMeshSkeletonHelper(node->mChildren[i]);
+	}
+
+	
+	/*Bone* b = boneInfoMap[node->mName.C_Str()];
+
+	// Bone transform
+	if (b)
+	{
+		b->SetTransform(EngineMath::ConvertMatrixToGLMFormat(node->mTransformation));
+	}
+
+	for (unsigned int j = 0; j < node->mNumChildren; j++)
+	{
+		if (necessityMap[node] == false)
+		{
+			continue;
+		}
+		if (b)
+		{
+			Bone* childBone = boneInfoMap[node->mChildren[j]->mName.C_Str()];
+			if (childBone)
+			{
+				b->AddNewChild(childBone);
+			}
+
+		}
+		CreateMeshSkeletonHelper(node->mChildren[j]);
+	}
+	if (b)
+	{
+		skeleton.AddBone(b);
+	}*/
+}
+
 
 
 void SkeletalModel::ProcessNode(aiNode* node, const aiScene* scene)
@@ -302,48 +384,6 @@ void SkeletalModel::SetDrawSkeleton(bool drawSkeleton)
 
 
 
-
-void SkeletalModel::CreateMeshSkeleton(aiNode* node)
-{
-	// Create
-	CreateMeshSkeletonHelper(node);
-	std::reverse(skeleton.GetBones().begin(), skeleton.GetBones().end());
-	
-	skeleton.SetRootBone(skeleton.GetBones()[0]);
-}
-
-void SkeletalModel::CreateMeshSkeletonHelper(aiNode* node)
-{
-	Bone* b = boneInfoMap[node->mName.C_Str()];
-
-	// Bone transform
-	if(b)
-	{
-		b->SetTransform(EngineMath::ConvertMatrixToGLMFormat(node->mTransformation));
-	}
-	
-	for (unsigned int j = 0; j < node->mNumChildren; j++)
-	{
-		if (necessityMap[node] == false)
-		{
-			continue;
-		}
-		if (b)
-		{
-			Bone* childBone = boneInfoMap[node->mChildren[j]->mName.C_Str()];
-			if(childBone)
-			{
-				b->AddNewChild(childBone);
-			}
-			
-		}
-		CreateMeshSkeletonHelper(node->mChildren[j]);
-	}
-	if (b)
-	{
-		skeleton.AddBone(b);
-	}
-}
 
 void SkeletalModel::CreateJointModel()
 {

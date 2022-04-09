@@ -54,6 +54,7 @@ AnimationStateMachine::AnimationStateMachine(Animator* animator, AnimationState*
 	: animator(animator), currentState(initialState)
 {
 	AddNewState(initialState);
+	animator->ChangeAnimationClip(*(currentState->GetAnimClip()), 0);
 }
 
 void AnimationStateMachine::Update(double deltaTime)

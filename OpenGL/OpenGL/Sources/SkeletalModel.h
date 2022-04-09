@@ -137,11 +137,35 @@ private:
 	std::vector<glm::mat4> matrixPalletTransform; 
 	bool drawSkeleton = false;
 
+	/*
+	 * Source : http://assimp.sourceforge.net/lib_html/data.html
+	 * So when creating the skeleton hierarchy for a mesh I suggest the following method:
+
+		a) Create a map or a similar container to store which nodes are necessary for the skeleton. Pre-initialise it for all nodes with a "no".
+		b) For each bone in the mesh:
+		b1) Find the corresponding node in the scene's hierarchy by comparing their names.
+		b2) Mark this node as "yes" in the necessityMap.
+		b3) Mark all of its parents the same way until you 1) find the mesh's node or 2) the parent of the mesh's node.
+		c) Recursively iterate over the node hierarchy
+		c1) If the node is marked as necessary, copy it into the skeleton and check its children
+		c2) If the node is marked as not necessary, skip it and do not iterate over its children.
+	 */
+
+	// Create a map to store which nodes are necessary for the skeleton
 	void CreateNecessityMap(aiNode* node);
+	
+	/*
+	   b) For each bone in the mesh:
+			b1) Find the corresponding node in the scene's hierarchy by comparing their names.
+			b2) Mark this node as "yes" in the necessityMap.
+			b3) Mark all of its parents the same way until you 1) find the mesh's node or 2) the parent of the mesh's node.
+	 */
 	void ProcessNecessityMap(aiNode* node, const aiScene* scene);
 	void ProcessNecessityMapHelper(aiMesh* mesh, aiNode* meshNode, aiNode* meshParentNode, aiNode* sceneRoot); // finds the skeleton of the mesh
-	void ProcessNecessityMapForEachBone(aiNode* node, aiNode* meshNode, aiNode* meshParentNode, aiNode* sceneRoot);
+	void ProcessNecessityMapForEachBone(aiNode* node, aiNode* meshNode, aiNode* meshParentNode);
 
+	
+	
 	// Animation and Bone Processing
 	void CreateMeshSkeleton(aiNode* node);
 	// recursively iterates over the hierarchy and creates the skeleton

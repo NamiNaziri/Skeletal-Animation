@@ -24,12 +24,15 @@ void Animator::SetSkeletonPose(AnimationPose& pose)
 	{
 
 		Bone* b = skeleton->GetBoneByName(ap.first);
-
-		glm::mat4 rot = glm::toMat4(ap.second.rotation);
-		glm::mat4 trans = glm::translate(glm::mat4(1.0f), ap.second.position);
-		glm::mat4 final = trans * rot;
-		//TODO scale
-		b->SetTransform(final);
+		if(b)
+		{
+			glm::mat4 rot = glm::toMat4(ap.second.rotation);
+			glm::mat4 trans = glm::translate(glm::mat4(1.0f), ap.second.position);
+			glm::mat4 final = trans * rot;
+			//TODO scale
+			b->SetTransform(final);
+		}
+		
 	}
 }
 

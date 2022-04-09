@@ -123,8 +123,8 @@ int main()
 
 	/************** Loading model and Animations **************/
 	
-	const std::string FBXResourcePath = "resources/objects/Demon/Demon.fbx";
-	const std::string animationPath = "resources/objects/Demon/Demon.fbx";
+	const std::string FBXResourcePath = "resources/objects/Skel/Elephant Idle.fbx";
+	const std::string animationPath = "resources/objects/Skel/Elephant Idle.fbx";
 	// Load the model
 	SkeletalModel ourModel(FBXResourcePath);
 	std::cout << "Model Loaded" << std::endl;
@@ -143,6 +143,9 @@ int main()
 	int animationSelector = 0;
 	
 	AnimationClip* anim = animationClipManager.GetLoadedAnimationClips()[animationSelector];
+
+
+	//TODO animator constructor should be changed so it does not take any animations;
 	Animator* animator = new Animator(animationClipManager.GetSkeleton(), *anim, glfwGetTime());  // TODO new?????/
 
 	AnimationState* IDLE_STATE = new AnimationState("IDLE",animationClipManager.GetLoadedAnimationClips()[0]); // TODO new?????/
@@ -349,7 +352,7 @@ int main()
 			LightShader.SetMat4("projection", projection);
 
 			//Draw Skeleton Joints 
-			//ourModel.DrawSkeletonJoints(LightShader);
+			ourModel.DrawSkeletonJoints(LightShader);
 
 			for (int i = 0; i < POINT_LIGHTS_NUM; i++)
 			{

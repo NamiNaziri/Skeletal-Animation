@@ -24,7 +24,11 @@ void Model::Draw(Shader& shader)
 {
 	for (auto mesh : meshes)
 	{
-		mesh->Draw(shader);
+		if(mesh) //TODO currently because we only create skeletal model and some models might be static. in this case the mesh will be null
+		{
+			mesh->Draw(shader);
+		}
+		
 	}
 }
 
@@ -79,6 +83,7 @@ Mesh* Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 	return m;
 }
 
+// todo fix texture import
 std::vector<Texture> Model::LoadMaterialTextures(const aiScene* scene,aiMaterial* mat, aiTextureType type, TextureType textureType, const std::string& textureName)
 {
 	std::vector<Texture> textures;
