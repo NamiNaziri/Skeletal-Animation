@@ -40,8 +40,8 @@ struct DestroyglfwWin {
 };
 
 
-
 void processInput(GLFWwindow* window);
+void processInput(GLFWwindow* window, SkeletalModelGameObject* elephant);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
@@ -83,6 +83,7 @@ bool ChangeState()
 	return changeState;
 }
 
+
 int main()
 {
 
@@ -111,11 +112,11 @@ int main()
 		glm::vec3(0.0f,  0.0f, -3.0f)
 	};
 	
-	GameObject lights[POINT_LIGHTS_NUM] = { GameObject(vertices),GameObject(vertices) ,GameObject(vertices) ,GameObject(vertices) };
+	/*GameObject lights[POINT_LIGHTS_NUM] = { GameObject(vertices),GameObject(vertices) ,GameObject(vertices) ,GameObject(vertices) };
 	for (int i = 0; i < POINT_LIGHTS_NUM; i++)
 	{
 		lights[i].SetPosition(pointLightPositions[i]);
-	}
+	}*/
 
 	// tell stb_image.h to flip loaded texture's on the y-axis (before loading model).
 	stbi_set_flip_vertically_on_load(true);
@@ -123,41 +124,50 @@ int main()
 
 	/************** Loading model and Animations **************/
 	
+	//TODO
+	/*const std::string animationPath = "resources/objects/Skel/Elephant Idle.fbx";
 	const std::string FBXResourcePath = "resources/objects/Skel/Elephant Idle.fbx";
-	const std::string animationPath = "resources/objects/Skel/Elephant Idle.fbx";
 	// Load the model
-	SkeletalModel ourModel(FBXResourcePath);
-	std::cout << "Model Loaded" << std::endl;
-
+	SkeletalModel* ourSkeletalModel = new SkeletalModel(FBXResourcePath);
+	SkeletalModelGameObject* elephant = new SkeletalModelGameObject(ourSkeletalModel);
+	//std::cout << "Model Loaded" << std::endl;
+	//
 	// Load the animation Clip
-	AnimationClipManager animationClipManager(animationPath, ourModel.GetSkeleton());
+	AnimationClipManager animationClipManager(animationPath, ourSkeletalModel->GetSkeleton());
 	if (animationClipManager.GetLoadedAnimationClips().empty())
 	{
 		std::cout << "Please load an animation";
 		return 0;
-	}
-	animationClipManager.AddNewAnimationClip("resources/objects/Archer/Yelling While Standing.fbx");
+	}*/
+
+	const std::string animationPath = "Resources/objects/Archer/Dying.fbx";
+	const std::string FBXResourcePath = "Resources/objects/Archer/Yelling While Standing.fbx";
+	
+	SkeletalModel* ourSkeletalModel = new SkeletalModel(FBXResourcePath);
+	SkeletalModelGameObject* archer = new SkeletalModelGameObject(ourSkeletalModel);
+	AnimationClipManager animationClipManager(animationPath, ourSkeletalModel->GetSkeleton());
+	animationClipManager.AddNewAnimationClip("Resources/objects/Archer/Yelling While Standing.fbx");
 	// Get an animation from anim manager and pass it to animation
 	// this way we could easily create state machines. Of course in its specific class
 
-	int animationSelector = 0;
+	//int animationSelector = 0;
 	
-	AnimationClip* anim = animationClipManager.GetLoadedAnimationClips()[animationSelector];
+	AnimationClip* anim = animationClipManager.GetLoadedAnimationClips()[0];
 
 
 	//TODO animator constructor should be changed so it does not take any animations;
 	Animator* animator = new Animator(animationClipManager.GetSkeleton(), *anim, glfwGetTime());  // TODO new?????/
 
 	AnimationState* IDLE_STATE = new AnimationState("IDLE",animationClipManager.GetLoadedAnimationClips()[0]); // TODO new?????/
-	//Transition* tranIdleToWalk = new Transition("WALK", []() { return changeState; }, 0.1); 
-	//IDLE_STATE->AddNewTransition(tranIdleToWalk); 
+	Transition* tranIdleToWalk = new Transition("WALK", []() { return changeState; }, 1); 
+	IDLE_STATE->AddNewTransition(tranIdleToWalk); 
 	
-	//AnimationState* Walk_STATE = new AnimationState("WALK", animationClipManager.GetLoadedAnimationClips()[1]); // TODO new?????/
-	//Transition* tranWalkToIdle = new Transition("IDLE", []() {return !changeState; }, 0.14);
-	//Walk_STATE->AddNewTransition(tranWalkToIdle);
+	AnimationState* Walk_STATE = new AnimationState("WALK", animationClipManager.GetLoadedAnimationClips()[1]); // TODO new?????/
+	Transition* tranWalkToIdle = new Transition("IDLE", []() {return !changeState; }, 0.14);
+	Walk_STATE->AddNewTransition(tranWalkToIdle);
 	
 	AnimationStateMachine animState(animator, IDLE_STATE); // TODO new?????/
-	//animState.AddNewState(Walk_STATE);
+	animState.AddNewState(Walk_STATE);
 
 	
 
@@ -181,7 +191,6 @@ int main()
 	fileDialog.SetTitle("Select an animation");
 	fileDialog.SetTypeFilters({ ".fbx" });
 
-	
 	while (!glfwWindowShouldClose(window.get()))
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -192,8 +201,17 @@ int main()
 
 		glfwPollEvents();
 
-		processInput(window.get());
 
+		//Input Handling
+		//TODO
+		/*processInput(window.get(), elephant);
+		glm::vec3 finalCamPosition = elephant->GetPosition() + cam.GetForward() * -200.0f + cam.GetUp() * 60.f;
+		
+		glm::vec3 camPosition = glm::mix(camPosition, finalCamPosition, deltaTime * 5);
+		cam.SetPosition(camPosition);*/
+
+		processInput(window.get());
+		
 		// update your application logic here,
 		// using deltaTime if necessary (for physics, tweening, etc.)
 
@@ -219,7 +237,7 @@ int main()
 		// Create a window called "My First Tool", with a menu bar.
 		ImGui::Begin("Animation Controller");
 
-		UIFunctions::DrawSkeletonTreeHelper(*(ourModel.GetSkeleton().GetRootBone()));
+		UIFunctions::DrawSkeletonTreeHelper(*(ourSkeletalModel->GetSkeleton().GetRootBone()));
 
 		/*if (ImGui::Button("Next Anim"))
 		{
@@ -333,17 +351,19 @@ int main()
 
 
 			// render the loaded model
-			glm::mat4 model = glm::mat4(1.0f);
+			/*glm::mat4 model = glm::mat4(1.0f);
 			model = glm::translate(model, glm::vec3(0.0f, 0.f, 0.0f)); // translate it down so it's at the center of the scene
 			model = glm::scale(model, glm::vec3(1.f, 1.f, 1.f));	// it's a bit too big for our scene, so scale it down
 			SimpleShader.SetMat4("model", model);
 
 			glm::mat3 normalMatrix = glm::transpose(glm::inverse(model));
-			SimpleShader.SetMat3("normalMatrix", normalMatrix);
+			SimpleShader.SetMat3("normalMatrix", normalMatrix);*/
 
 			if (ShowModel)
 			{
-				ourModel.Draw(SimpleShader);
+				//TODO
+				//elephant->Draw(SimpleShader);
+				archer->Draw(SimpleShader);
 			}
 
 			// LightShader
@@ -352,12 +372,12 @@ int main()
 			LightShader.SetMat4("projection", projection);
 
 			//Draw Skeleton Joints 
-			ourModel.DrawSkeletonJoints(LightShader);
+			//ourModel.DrawSkeletonJoints(LightShader);
 
-			for (int i = 0; i < POINT_LIGHTS_NUM; i++)
+			/*for (int i = 0; i < POINT_LIGHTS_NUM; i++)
 			{
 				lights[i].Render(LightShader);
-			}
+			}*/
 
 			imguiHandler->Render();
 			
@@ -390,8 +410,39 @@ int main()
 	return 0;
 }
 
-
 void processInput(GLFWwindow* window)
+{
+	ImGuiIO& io = ImGui::GetIO();
+	if (ImGui::IsKeyPressed(ImGuiKey_Y, false))
+	{
+		changeState = !changeState;
+	}
+
+
+	if (ImGui::IsKeyPressed(ImGuiKey_H, false))
+	{
+		ShowModel = !ShowModel;
+	}
+
+
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+	{
+		glfwSetWindowShouldClose(window, true);
+	}
+
+
+	const float cameraSpeed = cam.GetSpeed() * deltaTime; // adjust accordingly
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+		cam.Translate(cam.GetForward(), cameraSpeed);
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+		cam.Translate(cam.GetForward(), -cameraSpeed);
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+		cam.Translate(cam.GetRight(), -cameraSpeed);
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+		cam.Translate(cam.GetRight(), cameraSpeed);
+}
+
+void processInput(GLFWwindow* window, SkeletalModelGameObject* elephant)
 {
 
 
@@ -427,13 +478,13 @@ void processInput(GLFWwindow* window)
 
 	const float cameraSpeed = cam.GetSpeed() * deltaTime; // adjust accordingly
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		cam.Translate(cam.GetForward(), cameraSpeed);
+		elephant->Translate(cam.GetForward(), cameraSpeed);
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		cam.Translate(cam.GetForward(), -cameraSpeed);
+		elephant->Translate(cam.GetForward(), -cameraSpeed);
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		cam.Translate(cam.GetRight(), -cameraSpeed);
+		elephant->Translate(cam.GetRight(), -cameraSpeed);
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		cam.Translate(cam.GetRight(), cameraSpeed);
+		elephant->Translate(cam.GetRight(), cameraSpeed);
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -511,8 +562,9 @@ std::unique_ptr<GLFWwindow, DestroyglfwWin> CreateGLFWWindow()
 	}
 	glfwMakeContextCurrent(window);
 	glfwSwapInterval(1); // Enable vsync
-	
-	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+	// disable cursor
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{

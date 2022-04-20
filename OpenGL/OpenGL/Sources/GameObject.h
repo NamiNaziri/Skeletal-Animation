@@ -5,27 +5,31 @@
 
 #include "Shader.h"
 #include <vector>
+#include "SkeletalModel.h"
 class GameObject
 {
-private:
-	unsigned int VAO;
-	unsigned int VBO;
-	std::vector<float> vertices;
+protected:
 	glm::mat4 model;
 	glm::vec3 position;
 	float angle;
 
 public:
-	GameObject(std::vector<float> vertices);
-	~GameObject();
-	void SetupGameObject();
-	void Render(Shader& shader);
+	GameObject();
+	virtual void Draw(Shader& shader);
 
-
+	const glm::vec3& GetPosition();
 	void SetPosition(glm::vec3 position);
 	void SetAngle(float angle);
-	
+	void Translate(glm::vec3 dir, float speed);
+};
+
+class SkeletalModelGameObject : public GameObject
+{
+public:
+	SkeletalModelGameObject(SkeletalModel* skeletalModel);
+	void Draw(Shader& shader)override;
+private:
+	SkeletalModel* skeletalModel = nullptr;
 
 	
 };
-

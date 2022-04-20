@@ -199,36 +199,6 @@ void SkeletalModel::CreateMeshSkeletonHelper(aiNode* node)
 		CreateMeshSkeletonHelper(node->mChildren[i]);
 	}
 
-	
-	/*Bone* b = boneInfoMap[node->mName.C_Str()];
-
-	// Bone transform
-	if (b)
-	{
-		b->SetTransform(EngineMath::ConvertMatrixToGLMFormat(node->mTransformation));
-	}
-
-	for (unsigned int j = 0; j < node->mNumChildren; j++)
-	{
-		if (necessityMap[node] == false)
-		{
-			continue;
-		}
-		if (b)
-		{
-			Bone* childBone = boneInfoMap[node->mChildren[j]->mName.C_Str()];
-			if (childBone)
-			{
-				b->AddNewChild(childBone);
-			}
-
-		}
-		CreateMeshSkeletonHelper(node->mChildren[j]);
-	}
-	if (b)
-	{
-		skeleton.AddBone(b);
-	}*/
 }
 
 

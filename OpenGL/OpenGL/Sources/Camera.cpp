@@ -24,6 +24,11 @@ void Camera::Translate(glm::vec3 direction, float speed)
 	position += direction * speed;
 }
 
+void Camera::SetPosition(glm::vec3 newPosition)
+{
+	this->position = newPosition;
+}
+
 void Camera::SetFOV(float fov)
 {
 	FOV = fov;
@@ -52,6 +57,11 @@ glm::vec3 Camera::GetForward()
 glm::vec3 Camera::GetRight()
 {
 	return glm::normalize(glm::cross(forwardVector, upVector));
+}
+
+glm::vec3 Camera::GetUp()
+{
+	return upVector;
 }
 
 float Camera::GetPitch()

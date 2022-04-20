@@ -40,5 +40,5 @@ protected:
 
 
 };
-
+unsigned int LoadEmbeddedTexture(const aiTexture* embeddedTexture, const std::string& path);
 unsigned int LoadTextureFromFile(const std::string& path, const std::string& directory, bool gamma = false);

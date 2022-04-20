@@ -83,53 +83,6 @@ Mesh* Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 	return m;
 }
 
-// todo fix texture import
-std::vector<Texture> Model::LoadMaterialTextures(const aiScene* scene,aiMaterial* mat, aiTextureType type, TextureType textureType, const std::string& textureName)
-{
-	std::vector<Texture> textures;
-
-	
-	
-	for (int i = 0; i < mat->GetTextureCount(type); i++)
-	{
-		aiString str;
-
-		mat->GetTexture(type, i, &str);
-		const aiTexture* t = scene->GetEmbeddedTexture(str.C_Str());
-
-		if(t) // if there is an embedded texture, change the path so it uses external textures
-		{
-			std::string temp = str.C_Str();
-			std::size_t found = temp.rfind("fbm");
-			temp = temp.substr(found + 4);
-			str = "textures/" + temp;
-		}
-
-		bool skip = false;
-		for (unsigned int j = 0; j < loadedTextures.size(); j++)
-		{
-			if (std::strcmp(loadedTextures[j].path.data(), str.C_Str()) == 0)
-			{
-				textures.push_back(loadedTextures[j]);
-				skip = true;
-				break;
-			}
-		}
-		if (!skip)
-		{   // if texture hasn't been loaded already, load it
-			Texture texture;
-			texture.id = LoadTextureFromFile(str.C_Str(), directory);
-			texture.type = textureType;
-			texture.name = textureName;
-			texture.path = str.C_Str();
-			textures.push_back(texture);
-			loadedTextures.push_back(texture); // add to loaded textures
-		}
-	}
-	
-	
-	return textures;
-}
 
 std::vector<Vertex> Model::ProcessStaticMeshVertices(aiMesh* mesh)
 {
@@ -184,12 +137,113 @@ std::vector<Texture> Model::ProcessMaterials(aiMesh* mesh, const aiScene* scene)
 		std::vector<Texture> specularMaps = LoadMaterialTextures(scene, material, aiTextureType_SPECULAR, TextureType::specular, "texture_specular");
 		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 
+
+		//TODO fix this. find the difference between HEIGHT and NORMALS
 		std::vector<Texture> normalMaps = LoadMaterialTextures(scene, material, aiTextureType_HEIGHT, TextureType::normal, "texture_normal");
+		//std::vector<Texture> normalMaps = LoadMaterialTextures(scene, material, aiTextureType_NORMALS, TextureType::normal, "texture_normal");
 		textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
 	}
 
 	return textures;
 }
+
+// todo fix texture import
+std::vector<Texture> Model::LoadMaterialTextures(const aiScene* scene, aiMaterial* mat, aiTextureType type, TextureType textureType, const std::string& textureName)
+{
+	std::vector<Texture> textures;
+
+	for (int i = 0; i < mat->GetTextureCount(type); i++)
+	{
+		aiString str;
+		mat->GetTexture(type, i, &str); // Get the texture path
+
+		bool skip = false;
+		for (unsigned int j = 0; j < loadedTextures.size(); j++) // Check if its already loaded using the path of the texture
+		{
+			if (std::strcmp(loadedTextures[j].path.data(), str.C_Str()) == 0)
+			{
+				textures.push_back(loadedTextures[j]);
+				skip = true;
+				break;
+			}
+		}
+		if (!skip)
+		{   // if texture hasn't been loaded already, load it
+
+			Texture texture;
+			
+			const aiTexture* embeddedTexture = scene->GetEmbeddedTexture(str.C_Str());
+			if (embeddedTexture) // Check if the current texture is an embedded one
+			{
+				texture.id = LoadEmbeddedTexture(embeddedTexture,str.C_Str());
+			}
+			else // Its not embedded, so load the external texture using the path
+			{
+				
+				texture.id = LoadTextureFromFile(str.C_Str(), directory);
+				
+			}
+			
+			texture.type = textureType;
+			texture.name = textureName;
+			texture.path = str.C_Str();
+			textures.push_back(texture);
+			loadedTextures.push_back(texture); // add to loaded textures
+		}
+	}
+
+
+	return textures;
+}
+
+unsigned int LoadEmbeddedTexture(const aiTexture* embeddedTexture, const std::string& path)
+{
+	unsigned int textureID;
+	glGenTextures(1, &textureID);
+
+	
+	unsigned char* image_data = nullptr;
+	int width, height, nrComponents;
+	
+	if (embeddedTexture->mHeight == 0)
+	{
+		image_data = stbi_load_from_memory(reinterpret_cast<unsigned char*>(embeddedTexture->pcData), embeddedTexture->mWidth, &width, &height, &nrComponents, 0);
+	}
+	else
+	{
+		image_data = stbi_load_from_memory(reinterpret_cast<unsigned char*>(embeddedTexture->pcData), embeddedTexture->mWidth * embeddedTexture->mHeight, &width, &height, &nrComponents, 0);
+	}
+
+	if (image_data)
+	{
+		GLenum format;
+		if (nrComponents == 1)
+			format = GL_RED;
+		else if (nrComponents == 3)
+			format = GL_RGB;
+		else if (nrComponents == 4)
+			format = GL_RGBA;
+
+		glBindTexture(GL_TEXTURE_2D, textureID);
+		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, image_data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		stbi_image_free(image_data);
+	}
+	else
+	{
+		std::cout << "Texture failed to load at path: " << path << std::endl;
+		stbi_image_free(image_data);
+	}
+	return textureID;
+}
+
+
 
 unsigned int LoadTextureFromFile(const std::string& path, const std::string& directory, bool gamma)
 {

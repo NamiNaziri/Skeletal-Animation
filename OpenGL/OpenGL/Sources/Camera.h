@@ -10,7 +10,7 @@ public:
 	Camera(glm::vec3 position, glm::vec3 up,float fov = 45.f,float pitch = 0.f ,float yaw = -90, float speed = 50);
 	void Rotate(float pitch, float yaw);
 	void Translate(glm::vec3 direction, float speed);
-
+	void SetPosition(glm::vec3 newPosition);
 	
 	void SetFOV(float fov);
 	void SetSpeed(float speed);
@@ -19,7 +19,7 @@ public:
 	glm::vec3 GetPosition();
 	glm::vec3 GetForward();
 	glm::vec3 GetRight();
-
+	glm::vec3 GetUp();
 
 	float GetPitch();
 	float GetYaw();
