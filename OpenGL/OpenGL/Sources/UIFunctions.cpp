@@ -10,6 +10,7 @@ void UIFunctions::DrawSkeletonTree(Skeleton& skel)
 
 void UIFunctions::DrawSkeletonTreeHelper(Bone& root)
 {
+	
     static ImGuiTreeNodeFlags base_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
     bool node_open = false;
     ImGuiTreeNodeFlags node_flags = base_flags;

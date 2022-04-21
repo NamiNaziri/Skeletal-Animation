@@ -38,8 +38,6 @@ void SkeletalModel::Draw(Shader& shader)
 	{
 		
 	}
-
-	
 }
 
 void SkeletalModel::LoadAssets(std::string path)
@@ -117,7 +115,6 @@ void SkeletalModel::ProcessNecessityMap(aiNode* node, const aiScene* scene)
 		{
 			ProcessNecessityMapHelper(mesh, node, node->mParent, scene->mRootNode);
 		}
-
 	}
 
 	for (unsigned int j = 0; j < node->mNumChildren; j++)
@@ -155,9 +152,12 @@ void SkeletalModel::CreateMeshSkeleton(aiNode* node)
 {
 	// Create
 	CreateMeshSkeletonHelper(node);
-	//std::reverse(skeleton.GetBones().begin(), skeleton.GetBones().end());
 
-	skeleton.SetRootBone(skeleton.GetBones()[0]);
+	if(skeleton.GetBones().size() > 0)
+	{
+		skeleton.SetRootBone(skeleton.GetBones()[0]);
+	}
+	
 }
 
 /*
@@ -229,7 +229,6 @@ Mesh* SkeletalModel::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 	
 	if (mesh->HasBones()) 
 	{
-		
 
 		// process the vertices
 		const std::vector<SkinnedVertex> vertices = ProcessSkinnedMeshVertices(mesh);
@@ -279,6 +278,11 @@ void SkeletalModel::CalculateSkeletonTransform(Bone* root, glm::mat4 parentTrnsf
 
 void SkeletalModel::CalculateMatrixPalletTransform(Bone* root, glm::mat4 parentTrnsform)
 {
+	if(!root)
+	{
+		return;
+	}
+	
 	// TODO is the order right?
 	const glm::mat4 newParentTransform = (parentTrnsform * root->GetTransform());
 

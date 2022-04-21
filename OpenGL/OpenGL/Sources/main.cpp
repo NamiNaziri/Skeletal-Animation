@@ -27,6 +27,8 @@
 #include "Animation/Animator.h"
 #include "Animation/AnimationClipManager.h"
 #include "imgui/Plugin/imfilebrowser.h"
+#include "CubeMap.h"
+
 
 #include "imgui/ImguiHandler.h"
 #include "ModelData.h"
@@ -99,6 +101,11 @@ int main()
 	
 	Shader LightShader("E:/Graphics/OpenGL/GitRepo/OpenGL/OpenGL/Sources/Shaders/Vertex/SkeletonVertexShader.vert",
 				       "E:/Graphics/OpenGL/GitRepo/OpenGL/OpenGL/Sources/Shaders/Fragment/LightFragmentShader.frag");
+
+	Shader CubeMapShader("E:/Graphics/OpenGL/GitRepo/OpenGL/OpenGL/Sources/Shaders/Vertex/SkyBoxVertexShader.vert",
+		"E:/Graphics/OpenGL/GitRepo/OpenGL/OpenGL/Sources/Shaders/Fragment/SkyBoxFragmentShader.frag");
+
+	CubeMap cubeMap("Resources/CubeMap/skybox");
 	
 	// set upVector vertex data (and buffer(s)) and configure vertex attributes
 	// ------------------------------------------------------------------
@@ -223,8 +230,8 @@ int main()
 		}
 
 		
-		animState.Update(deltaTime);
-		//animator.Update(deltaTime);
+		//animState.Update(deltaTime);
+		
 
 		// This if-statement only executes once every 60th of a second
 
@@ -237,7 +244,8 @@ int main()
 		// Create a window called "My First Tool", with a menu bar.
 		ImGui::Begin("Animation Controller");
 
-		UIFunctions::DrawSkeletonTreeHelper(*(ourSkeletalModel->GetSkeleton().GetRootBone()));
+		if(ourSkeletalModel->GetSkeleton().GetRootBone())
+			UIFunctions::DrawSkeletonTreeHelper(*(ourSkeletalModel->GetSkeleton().GetRootBone()));
 
 		/*if (ImGui::Button("Next Anim"))
 		{
@@ -277,6 +285,10 @@ int main()
 			glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+
+			
+
+			
 			//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); //wireframe
 
 			// render the mesh
@@ -361,8 +373,6 @@ int main()
 
 			if (ShowModel)
 			{
-				//TODO
-				//elephant->Draw(SimpleShader);
 				archer->Draw(SimpleShader);
 			}
 
@@ -378,7 +388,17 @@ int main()
 			{
 				lights[i].Render(LightShader);
 			}*/
+			glDepthFunc(GL_LEQUAL);
 
+			view = glm::mat4(glm::mat3(cam.GetViewMatrix()));
+			CubeMapShader.use();
+			CubeMapShader.SetMat4("view", view);
+			CubeMapShader.SetMat4("projection", projection);
+
+			cubeMap.Draw(CubeMapShader);
+			glDepthFunc(GL_LESS);
+			
+			
 			imguiHandler->Render();
 			
 			// check and call events and swap buffers

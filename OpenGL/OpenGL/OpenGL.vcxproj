@@ -158,6 +158,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\glad.c" />
+    <ClCompile Include="Sources\CubeMap.cpp" />
     <ClCompile Include="Sources\imgui\ImguiHandler.cpp" />
     <ClCompile Include="Sources\Application.cpp" />
     <ClCompile Include="Sources\GraphicalWindow.cpp" />
@@ -184,6 +185,7 @@
     <ClCompile Include="Sources\StateMachine\StateMachine.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Sources\CubeMap.h" />
     <ClInclude Include="Sources\imgui\ImguiHandler.h" />
     <ClInclude Include="Sources\Application.h" />
     <ClInclude Include="Sources\GraphicalWindow.h" />
@@ -220,7 +222,9 @@
     <None Include="Sources\Shaders\Fragment\LightFragmentShader.frag" />
     <None Include="Resources\objects\MixamoCharacter\Standing.dae" />
     <None Include="Resources\objects\MixamoCharacter\Standing.fbx" />
+    <None Include="Sources\Shaders\Fragment\SkyBoxFragmentShader.frag" />
     <None Include="Sources\Shaders\Vertex\SkeletonVertexShader.vert" />
+    <None Include="Sources\Shaders\Vertex\SkyBoxVertexShader.vert" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\objects\MixamoCharacter\diffuse.png" />

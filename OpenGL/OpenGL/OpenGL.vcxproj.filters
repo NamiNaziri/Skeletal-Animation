@@ -93,6 +93,9 @@
     <ClCompile Include="Sources\StateMachine\StateMachine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Sources\CubeMap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Sources\Shader.h">
@@ -170,6 +173,9 @@
     <ClInclude Include="Sources\StateMachine\StateMachine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Sources\CubeMap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Sources\Shaders\Fragment\FragmentShader.frag">
@@ -181,6 +187,8 @@
     <None Include="Sources\Shaders\Vertex\SkeletonVertexShader.vert" />
     <None Include="Sources\imgui\Plugin\LICENSE" />
     <None Include="Sources\imgui\Core\imgui.ini" />
+    <None Include="Sources\Shaders\Vertex\SkyBoxVertexShader.vert" />
+    <None Include="Sources\Shaders\Fragment\SkyBoxFragmentShader.frag" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Sources\Shaders\Vertex\VertexShader.vert">
