@@ -24,7 +24,7 @@ protected:
 	
 
 	
-	 void LoadAssets(std::string path);
+	void LoadAssets(std::string path);
 	 
 	virtual void ProcessNode(aiNode* node, const aiScene* scene);
 	virtual Mesh* ProcessMesh(aiMesh* mesh, const aiScene* scene);

@@ -62,6 +62,18 @@ void UIFunctions::AddNewAnimationUI(ImGui::FileBrowser& fileDialog)
     ImGui::End();
 
     fileDialog.Display();
-
-
 }
+
+void UIFunctions::ChangeRotationVector(glm::vec3& rotationVector, float & angle)
+{
+    static ImGuiSliderFlags flags = ImGuiSliderFlags_None;
+
+    if (ImGui::Begin("rotation"))
+    {
+    	ImGui::SliderFloat3("Rotation Vector", (float*)&rotationVector, -1, 1);
+        ImGui::SliderAngle("Rotation Angle", &angle);
+    }
+    ImGui::End();
+}
+
+

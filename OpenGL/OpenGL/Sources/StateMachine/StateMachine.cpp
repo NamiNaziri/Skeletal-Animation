@@ -87,14 +87,14 @@ void AnimationStateMachine::Update(double deltaTime)
 	}
 	else if(transitionStatus == TransitionStatus::transitioning)
 	{
-		if(TransitionUpdate(deltaTime)) // if transition is finished //TODO
+		if(TransitionUpdate(deltaTime)) 
 		{
 			transitionStatus = TransitionStatus::finished;
 		}
 	}
 	else if(transitionStatus == TransitionStatus::finished)
 	{
-		animator->ChangeAnimationClip(*(currentState->GetAnimClip()), 0); // TODO start time;
+		animator->ChangeAnimationClip(*(currentState->GetAnimClip()), 0); 
 		transitionStatus = TransitionStatus::normal;
 	}
 }

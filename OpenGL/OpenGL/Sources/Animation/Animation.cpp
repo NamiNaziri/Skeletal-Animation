@@ -61,6 +61,8 @@ AnimationPose AnimationClip::GetPoseForCurrentFrame(double currentFrame)
 		else
 		{
 			//TODO return the last pose of the anim
+			//TODO this is not checked
+			currentFrame = frameCount - 1;
 		}
 		
 	}
@@ -112,14 +114,14 @@ glm::vec3 AnimationKeyframes::GetPositionAtFrame(double Frame)
 	}
 	if(Frame > positionKeyframes.back().time )
 	{
-		std::cout << __FUNCTION__ << "Frame cant be more than the frame count";
+		std::cout << __FUNCTION__ << "Frame cant be more than the frame count" <<std::endl;
 		return glm::vec3(0,0,0);
 	}
 	for(int i = 1 ; i < positionKeyframes.size() ; i++)
 	{
 		if(  positionKeyframes[i].time > Frame)
 		{
-			
+		
 			PositionKeyframe currentPos = positionKeyframes[i - 1];
 			PositionKeyframe nextPos = positionKeyframes[i];
 			return EngineMath::LinearBlend(currentPos.position, nextPos.position,

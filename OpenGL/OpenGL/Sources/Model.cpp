@@ -34,9 +34,13 @@ void Model::Draw(Shader& shader)
 
 void Model::LoadAssets(std::string path)
 {
+	if(path != "resources/objects/Sphere/sphere.obj")
+	{
+		std::cout << "hi";
+	}
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_JoinIdenticalVertices |
-		aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace);
+		aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace );
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
 		std::cout << "ERROR::ASSIMP::" << importer.GetErrorString() << std::endl;

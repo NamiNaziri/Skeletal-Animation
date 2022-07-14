@@ -65,6 +65,17 @@ void SkeletalModel::LoadAssets(std::string path)
 	// Process meshes and the bone coresponding to each mesh
 	ProcessNode(scene->mRootNode, scene);
 
+
+	//todo This is hacky and needs to be removed
+	//for (auto b : skeleton.GetBones())
+	//{
+	//	std::string name = b->GetName();
+	//	name = name.substr(0, name.find_last_of('_'));
+	//	if (name == "")
+	//		name = "RootBone";
+	//	b->SetName(name);
+	//}
+
 	
 	CreateJointModel();
 
@@ -157,7 +168,10 @@ void SkeletalModel::CreateMeshSkeleton(aiNode* node)
 	{
 		skeleton.SetRootBone(skeleton.GetBones()[0]);
 	}
-	
+
+
+
+
 }
 
 /*
@@ -178,7 +192,10 @@ void SkeletalModel::CreateMeshSkeletonHelper(aiNode* node)
 	if(isNecessery)
 	{
 		Bone* b = boneInfoMap[node->mName.C_Str()];
-		if(b)
+		
+
+		
+		if(b )
 		{
 			for (int i = 0; i < node->mNumChildren; i++)
 			{
@@ -190,6 +207,7 @@ void SkeletalModel::CreateMeshSkeletonHelper(aiNode* node)
 
 			}
 			b->SetTransform(EngineMath::ConvertMatrixToGLMFormat(node->mTransformation));
+
 			skeleton.AddBone(b);
 		}
 	}
@@ -210,11 +228,14 @@ void SkeletalModel::ProcessNode(aiNode* node, const aiScene* scene)
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 		meshes.push_back(ProcessMesh(mesh, scene));
 	}
-
-	for (unsigned int j = 0; j < node->mNumChildren; j++)
+	if (node->mNumChildren > 0)
 	{
-		ProcessNode(node->mChildren[j], scene);
+		for (unsigned int j = 0; j < node->mNumChildren; j++)
+		{
+			ProcessNode(node->mChildren[j], scene);
+		}
 	}
+
 }
 
 Mesh* SkeletalModel::ProcessMesh(aiMesh* mesh, const aiScene* scene)

@@ -6,7 +6,21 @@
 class Bone
 {
 private:
+
+	/** 
+	 *
+	 * This matrix describes the position of the mesh
+	 * in the local space of this bone when the skeleton was bound.
+	 * Thus it can be used directly to determine a desired vertex position,
+	 * given the world-space transform of the bone when animated,
+	 * and the position of the vertex in mesh space.
+	 *
+	 * It is sometimes called an inverse-bind matrix,
+	 * or inverse bind pose matrix.
+	 */
 	glm::mat4 inverseBindPose;
+
+	/** The transformation relative to the node's parent. */
 	glm::mat4 transform;
 
 	std::string	name;
@@ -32,6 +46,7 @@ public:
 	std::vector<Bone*>& GetChildren() { return children; }
 	void AddNewChild(Bone* child) { children.push_back(child); }
 	void SetTransform(glm::mat4 transform) { this->transform = transform; }
+	void SetName(std::string& name) { this->name = name; }
 };
 
 class Skeleton

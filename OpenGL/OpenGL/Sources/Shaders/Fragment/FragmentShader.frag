@@ -114,7 +114,7 @@ void main()
     }
     result += CalcSpotLight(spotLight, norm, fragPosition, viewDir);
 
-
+    //result = vec3(0.,0.,255.0);
     //fragColor = texture(material.texture_diffuse1, TexCoords);
     fragColor = vec4(result, 1.0);
 }

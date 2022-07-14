@@ -58,18 +58,32 @@ void AnimationClipManager::LoadAnimationClips(const aiScene* scene)
 
 AnimationKeyframes AnimationClipManager::ProcessAnimationChannel(aiNodeAnim* channel)
 {
-	AnimationKeyframes animKeyframes;
-
+ 	AnimationKeyframes animKeyframes;
+	double startTime = 0; // make sure every channel starts at zero 
+	if(channel->mNumPositionKeys > 0)
+	{
+		startTime = channel->mPositionKeys[0].mTime; 
+	}
+	
 	for (unsigned i = 0; i < channel->mNumPositionKeys; i++)
 	{
 		aiVectorKey posKey = channel->mPositionKeys[i];
-		animKeyframes.AddNewPositionKeyframe(posKey.mTime, EngineMath::GetGLMVec(posKey.mValue));
+		animKeyframes.AddNewPositionKeyframe(posKey.mTime - startTime, EngineMath::GetGLMVec(posKey.mValue));
 	}
-
+	if(channel->mNumRotationKeys > 0)
+	{
+		startTime = channel->mRotationKeys[0].mTime;
+	}
+	
 	for (unsigned i = 0; i < channel->mNumRotationKeys; i++)
 	{
 		aiQuatKey rotKey = channel->mRotationKeys[i];
-		animKeyframes.AddNewRotationKeyframe(rotKey.mTime, EngineMath::GetGLMQuat(rotKey.mValue));
+		animKeyframes.AddNewRotationKeyframe(rotKey.mTime - startTime, EngineMath::GetGLMQuat(rotKey.mValue));
+	}
+
+	if (channel->mNumScalingKeys > 0)
+	{
+		startTime = channel->mScalingKeys[0].mTime;
 	}
 
 	for (unsigned i = 0; i < channel->mNumScalingKeys; i++)

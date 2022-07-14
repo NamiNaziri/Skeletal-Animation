@@ -12,7 +12,7 @@ private:
 	Skeleton* skeleton;
 	AnimationClip* currentClip;
 	bool loop = true;
-
+	bool enableRootMotion = false;
 
 public:
 	Animator(Skeleton* skeleton, AnimationClip& animClip, double startTime);
@@ -21,7 +21,7 @@ public:
 	double GetCurrentClipTime();
 	const AnimationClip& GetCurrentClip();
 	AnimationPose GetPoseAtCurrentTime();
-
+	void SetRootMotionEnable(bool enable);
 
 	
 	void Update(double deltaTime);

@@ -7,5 +7,6 @@ namespace UIFunctions
 	void DrawSkeletonTree(Skeleton& skel);
 	void DrawSkeletonTreeHelper(Bone& root);
 	void AddNewAnimationUI(ImGui::FileBrowser& fileDialog);
+	void ChangeRotationVector(glm::vec3& rotationVector, float& angle);
 }
 
