@@ -43,7 +43,7 @@ struct DestroyglfwWin {
 
 };
 
-
+float archerSpeed = 0;
 void processInput(GLFWwindow* window);
 void processInput(GLFWwindow* window, SkeletalModelGameObject* gameObject);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -158,6 +158,8 @@ int main()
 	SkeletalModelGameObject* archer = new SkeletalModelGameObject(ourSkeletalModel);
 	archerPointer = archer;
 	AnimationClipManager animationClipManager(animationPath, ourSkeletalModel->GetSkeleton());
+	glm::vec3 currentArcherPosition = archer->GetPosition();
+	archer->SetPosition(currentArcherPosition + glm::vec3(90, 93, 90));
 
 	
 	animationClipManager.AddNewAnimationClip("Resources/objects/Archer/animations/walking.fbx");
@@ -166,7 +168,7 @@ int main()
 	animationClipManager.AddNewAnimationClip("Resources/objects/Archer/animations/Waving.fbx");
 
 
-	const std::string environmentPath = "Resources/objects/Castle/scene.gltf";
+	const std::string environmentPath = "Resources/objects/Castle/untitled.fbx_Scen3e.fbx_Scene.fbx";
 
 	Model* environmentModel = new Model(environmentPath);
 	ModelGameObject* environmentObject = new ModelGameObject(environmentModel);
@@ -205,6 +207,7 @@ int main()
 
 
 	archer->SetRotation(0, glm::vec3(0.f, 1.f, 0.f));
+	environmentObject->SetRotation(0, glm::vec3(0.f, 1.f, 0.f));
 
 	glfwSetCursorPosCallback(window.get(), mouse_callback);
 	glfwSetScrollCallback(window.get(), scroll_callback);
@@ -246,6 +249,13 @@ int main()
 		cam.SetPosition(camPosition);*/
 
 		processInput(window.get(),archer);
+		glm::vec3 finalCamPosition = archer->GetPosition() + cam.GetForward() * -200.0f + cam.GetUp() * 60.f;
+		glm::vec3 currentCamPosition = cam.GetPosition();
+
+		
+		
+		glm::vec3 camPosition = glm::mix(currentCamPosition, finalCamPosition, glm::min( float(deltaTime * 4), 1.f));
+		cam.SetPosition(camPosition);
 		
 		// update your application logic here,
 		// using deltaTime if necessary (for physics, tweening, etc.)
@@ -401,13 +411,14 @@ int main()
 				archer->Draw(SimpleShader);
 			}
 			
-			environmentObject->SetScale(glm::vec3(100, 100, 100));
+			//environmentObject->SetScale(glm::vec3(100, 100, 100));
 			
-			environmentObject->SetAngle(glm::degrees( envAngle));
-			environmentObject->SetRotationVector(rotationVector);
+			//environmentObject->SetAngle(glm::degrees( envAngle));
+			
+			//environmentObject->SetRotation(glm::degrees( envAngle), glm::vec3(1, 0, 0));
 			environmentObject->Draw(SimpleShader);
 			
-			std::cout << glm::to_string(archer->GetDirection())<< "|||" << " " << archer->GetAngle() << std::endl;
+			std::cout << archerSpeed << "|||" << " " << environmentObject->GetAngle() << std::endl;
 
 			
 			// LightShader
@@ -428,7 +439,7 @@ int main()
 			CubeMapShader.SetMat4("view", view);
 			CubeMapShader.SetMat4("projection", projection);
 
-			//cubeMap.Draw(CubeMapShader);
+			cubeMap.Draw(CubeMapShader);
 			glDepthFunc(GL_LESS);
 			
 			
@@ -501,18 +512,14 @@ void processInput(GLFWwindow* window, SkeletalModelGameObject* gameObject)
 	walking = ImGui::IsKeyDown(ImGuiKey_Y);
 	running = ImGui::IsKeyDown(ImGuiKey_LeftShift);
 
-	float archerSpeed = 0;
+	archerSpeed = 0;
 	if (walking)
 	{
 		archerSpeed = 3;
 	}
-	else if (running)
+	if (running && walking)
 	{
 		archerSpeed = 7;
-	}
-	else
-	{
-		archerSpeed = 0;
 	}
 
 	gameObject->Translate(normalize(gameObject->GetDirection()), archerSpeed);
@@ -529,7 +536,7 @@ void processInput(GLFWwindow* window, SkeletalModelGameObject* gameObject)
 	}
 
 
-	const float cameraSpeed = cam.GetSpeed() * deltaTime; // adjust accordingly
+	/*const float cameraSpeed = cam.GetSpeed() * deltaTime; // adjust accordingly
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		cam.Translate(cam.GetForward(), cameraSpeed);
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -537,7 +544,7 @@ void processInput(GLFWwindow* window, SkeletalModelGameObject* gameObject)
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 		cam.Translate(cam.GetRight(), -cameraSpeed);
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		cam.Translate(cam.GetRight(), cameraSpeed);
+		cam.Translate(cam.GetRight(), cameraSpeed);*/
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -585,9 +592,11 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 	cam.Rotate(pitch, yaw);
 	
 	float angle = archerPointer->GetAngle();
-	angle += xoffset;
+	angle -= xoffset;
 
-	archerPointer->SetAngle(angle);
+	float characterAngle = glm::degrees(atan2(cam.GetForward().x, cam.GetForward().z));
+
+	archerPointer->SetAngle(characterAngle);
 	
 }
 

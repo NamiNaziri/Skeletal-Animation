@@ -21,10 +21,14 @@ void GameObject::SetAngle(float _angle)
 	SetRotation(_angle, this->rotationVector);
 }
 
+
+/**
+ * Angle is in degree
+ */
 void GameObject::SetRotation(float angle, glm::vec3 direction)
 {
 	this->angle = angle;
-	this->rotationVector = direction;
+	this->rotationVector = glm::normalize( direction);
 
 	//const glm::mat4 rotationMatrix = glm::rotate(glm::radians(angle), direction);
 	//const glm::vec4 newDir = rotationMatrix * glm::vec4(this->direction, 1.0);
@@ -36,6 +40,8 @@ void GameObject::SetRotationVector(glm::vec3 rotationVector)
 {
 	SetRotation(this->angle, rotationVector);
 }
+
+
 
 void GameObject::Translate(glm::vec3 dir, float speed)
 {
@@ -73,7 +79,7 @@ void GameObject::Draw(Shader& shader)
 	
 	model = glm::mat4(1.0f);
 	model = glm::scale(model, scale);
-
+	
 	model = glm::translate(model, position);
 
 
@@ -85,7 +91,7 @@ void GameObject::Draw(Shader& shader)
 	
 	float characterAngle = glm::degrees(atan2(direction.x, direction.z));
 	characterAngle = ((int)characterAngle + 360) % 360;
-	model = glm::rotate(model, glm::radians(characterAngle), glm::normalize(glm::vec3(0, 1, 0)));
+	model = glm::rotate(model, glm::radians(characterAngle ), glm::normalize(glm::vec3(0, 1, 0)));
 	
 	
 	//model =  glm::lookAt(this->position, this->direction + this->position	, glm::vec3(0.f, 1.f, 0.f)) * model;

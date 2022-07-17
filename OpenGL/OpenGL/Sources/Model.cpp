@@ -261,9 +261,11 @@ unsigned int LoadTextureFromFile(const std::string& path, const std::string& dir
 	unsigned char* data = stbi_load(filename.c_str(), &width, &height, &nrComponents, 0);
 	if (data)
 	{
-		GLenum format;
+		GLenum format ;
 		if (nrComponents == 1)
 			format = GL_RED;
+		else if (nrComponents == 2)
+			format = GL_RG8;
 		else if (nrComponents == 3)
 			format = GL_RGB;
 		else if (nrComponents == 4)

@@ -27,6 +27,7 @@ public:
 	void SetAngle(float angle);
 	void SetRotation(float angle, glm::vec3 direction);
 	void SetRotationVector(glm::vec3 roationVector);
+	
 	void Translate(glm::vec3 dir, float speed);
 
 	
