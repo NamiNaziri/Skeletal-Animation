@@ -57,17 +57,21 @@ std::unique_ptr<GLFWwindow, DestroyglfwWin> CreateGLFWWindow();
 unsigned int loadTexture(const char* path);
 
 
+bool wolfMode = false;
+
 // camera
 Camera cam(glm::vec3(0.0f, 0.0f, 500.0f),
 	glm::vec3(0.0f, 1.0f, 0.0f),
 	45,
 	0,
-	-90
+	-90,
+	50
 );
 
 int Width = 1080;
 int Height = 1080;
 
+bool freeView = false;
 
 float lastX = Width / 2, lastY = Height / 2;
 
@@ -85,7 +89,7 @@ bool walking = false;
 bool running = false;
 
 
-SkeletalModelGameObject* archerPointer = nullptr;
+SkeletalModelGameObject* gameObjectPointer = nullptr;
 
 
 
@@ -117,10 +121,10 @@ int main()
 	float envAngle = glm::radians( 270.f);
 	// Light cube object
 	glm::vec3 pointLightPositions[] = {
-		glm::vec3(0.7f,  0.2f,  2.0f),
-		glm::vec3(2.3f, -3.3f, -4.0f),
-		glm::vec3(-4.0f,  2.0f, -12.0f),
-		glm::vec3(0.0f,  0.0f, -53.0f)
+		glm::vec3(0.7f,  100.f,  2.0f),
+		glm::vec3(2.3f, 100.f, -4.0f),
+		glm::vec3(-4.0f,  100.f, -12.0f),
+		glm::vec3(0.0f,  100.f, -53.0f)
 	};
 	
 	/*GameObject lights[POINT_LIGHTS_NUM] = { GameObject(vertices),GameObject(vertices) ,GameObject(vertices) ,GameObject(vertices) };
@@ -134,46 +138,28 @@ int main()
 
 
 	/************** Loading model and Animations **************/
-	
-	//TODO
-	/*const std::string animationPath = "resources/objects/Skel/Elephant Idle.fbx";
-	const std::string FBXResourcePath = "resources/objects/Skel/Elephant Idle.fbx";
-	// Load the model
-	SkeletalModel* ourSkeletalModel = new SkeletalModel(FBXResourcePath);
-	SkeletalModelGameObject* elephant = new SkeletalModelGameObject(ourSkeletalModel);
-	//std::cout << "Model Loaded" << std::endl;
-	//
-	// Load the animation Clip
-	AnimationClipManager animationClipManager(animationPath, ourSkeletalModel->GetSkeleton());
-	if (animationClipManager.GetLoadedAnimationClips().empty())
-	{
-		std::cout << "Please load an animation";
-		return 0;
-	}*/
+
+	/*
+	 * Importing archer
+	 */
 
 	const std::string animationPath = "Resources/objects/Archer/Animations/idle.fbx";
 	const std::string FBXResourcePath = "Resources/objects/Archer/Yelling While Standing.fbx";
 	
 	SkeletalModel* ourSkeletalModel = new SkeletalModel(FBXResourcePath);
 	SkeletalModelGameObject* archer = new SkeletalModelGameObject(ourSkeletalModel);
-	archerPointer = archer;
+	gameObjectPointer = archer;
 	AnimationClipManager animationClipManager(animationPath, ourSkeletalModel->GetSkeleton());
+	
 	glm::vec3 currentArcherPosition = archer->GetPosition();
 	archer->SetPosition(currentArcherPosition + glm::vec3(90, 93, 90));
-
+	archer->SetRotation(0, glm::vec3(0.f, 1.f, 0.f));
 	
 	animationClipManager.AddNewAnimationClip("Resources/objects/Archer/animations/walking.fbx");
 	animationClipManager.AddNewAnimationClip("Resources/objects/Archer/animations/Jog Forward.fbx");
 	animationClipManager.AddNewAnimationClip("Resources/objects/Archer/animations/idle.fbx");
 	animationClipManager.AddNewAnimationClip("Resources/objects/Archer/animations/Waving.fbx");
 
-
-	const std::string environmentPath = "Resources/objects/Castle/untitled.fbx_Scen3e.fbx_Scene.fbx";
-
-	Model* environmentModel = new Model(environmentPath);
-	ModelGameObject* environmentObject = new ModelGameObject(environmentModel);
-	
-	
 	// Get an animation from anim manager and pass it to animation
 	// this way we could easily create state machines. Of course in its specific class
 
@@ -188,17 +174,17 @@ int main()
 	Animator* animator = new Animator(animationClipManager.GetSkeleton(), *anim, glfwGetTime());  
 
 	AnimationState* IDLE_STATE = new AnimationState("IDLE",animationClipManager.GetLoadedAnimationClips()[0]); 
-	Transition* tranIdleToWalk = new Transition("WALK", []() { return walking; }, 0.13); 
+	Transition* tranIdleToWalk = new Transition("WALK", []() { return (!wolfMode) && walking; }, 0.13);
 	IDLE_STATE->AddNewTransition(tranIdleToWalk); 
 	
 	AnimationState* Walk_STATE = new AnimationState("WALK", animationClipManager.GetLoadedAnimationClips()[1]); 
-	Transition* tranWalkToIdle = new Transition("IDLE", []() {return !walking; }, 0.35);
+	Transition* tranWalkToIdle = new Transition("IDLE", []() {return (!wolfMode) && !walking; }, 0.35);
 	Walk_STATE->AddNewTransition(tranWalkToIdle);
-	Transition* tranWalkToRun = new Transition("RUN", []() {return running && walking; }, 0.13);
+	Transition* tranWalkToRun = new Transition("RUN", []() {return (!wolfMode) && running && walking; }, 0.13);
 	Walk_STATE->AddNewTransition(tranWalkToRun);
 	
 	AnimationState* RUN_STATE = new AnimationState("RUN", animationClipManager.GetLoadedAnimationClips()[2]); 
-	Transition* tranRunToWalk = new Transition("WALK", []() {return (!running) || (!walking); }, 0.13);
+	Transition* tranRunToWalk = new Transition("WALK", []() {return (!wolfMode) && ((!running) || (!walking)); }, 0.13);
 	RUN_STATE->AddNewTransition(tranRunToWalk);
 	
 	AnimationStateMachine animState(animator, IDLE_STATE);
@@ -206,8 +192,69 @@ int main()
 	animState.AddNewState(RUN_STATE);
 
 
-	archer->SetRotation(0, glm::vec3(0.f, 1.f, 0.f));
+
+
+
+	/*
+	 * Importing the environment
+	 */
+	const std::string environmentPath = "Resources/objects/Castle/untitled.fbx_Scen3e.fbx_Scene.fbx";
+
+	Model* environmentModel = new Model(environmentPath);
+	ModelGameObject* environmentObject = new ModelGameObject(environmentModel);
 	environmentObject->SetRotation(0, glm::vec3(0.f, 1.f, 0.f));
+
+	/*
+	 * Importing Elephant
+	 */
+	const std::string elephantPath = "Resources/objects/Elephant/Elephant.fbx";
+	SkeletalModel* elephantModel = new SkeletalModel(elephantPath);
+	SkeletalModelGameObject* elephantGameObject = new SkeletalModelGameObject(elephantModel);
+
+	AnimationClipManager elephantClipManager(elephantPath, elephantModel->GetSkeleton());
+
+	elephantGameObject->SetScale(glm::vec3(3, 3, 3));
+	elephantGameObject->SetPosition(elephantGameObject->GetPosition() + glm::vec3(500, 0, 500));
+
+	Animator* elephantAnimator = new Animator(elephantClipManager.GetSkeleton(), *(elephantClipManager.GetLoadedAnimationClips()[0]), glfwGetTime());
+
+	/*
+	 * Importing Wolf
+	 */
+	const std::string wolfPath = "Resources/objects/Wolf/wp.fbx";
+	SkeletalModel* wolfModel = new SkeletalModel(wolfPath);
+	SkeletalModelGameObject* wolfGameObject = new SkeletalModelGameObject(wolfModel);
+
+	AnimationClipManager wolfClipManager(wolfPath, wolfModel->GetSkeleton());
+
+	wolfGameObject->SetScale(glm::vec3(30, 30, 30));
+	//wolfGameObject->SetRotation(90, glm::vec3(0.f, 0.f, 1.f));
+
+	glm::vec3 currentWolfPosition = wolfGameObject->GetPosition();
+
+	wolfGameObject->SetPosition(currentWolfPosition + glm::vec3(0, 55, 0));
+
+	Animator* wolfAnimator = new Animator(wolfClipManager.GetSkeleton(), *(wolfClipManager.GetLoadedAnimationClips()[13]), glfwGetTime());
+
+	AnimationState* wolfIDLE_STATE = new AnimationState("IDLE", wolfClipManager.GetLoadedAnimationClips()[13]);
+	Transition* wolftranIdleToWalk = new Transition("WALK", []() { return wolfMode && walking; }, 0.13);
+	wolfIDLE_STATE->AddNewTransition(wolftranIdleToWalk);
+
+	AnimationState* wolfWalk_STATE = new AnimationState("WALK", wolfClipManager.GetLoadedAnimationClips()[11]);
+	Transition* wolftranWalkToIdle = new Transition("IDLE", []() {return wolfMode && !walking; }, 0.35);
+	wolfWalk_STATE->AddNewTransition(wolftranWalkToIdle);
+	Transition* wolftranWalkToRun = new Transition("RUN", []() {return wolfMode &&  running && walking; }, 0.13);
+	wolfWalk_STATE->AddNewTransition(wolftranWalkToRun);
+
+	AnimationState* wolfRUN_STATE = new AnimationState("RUN", wolfClipManager.GetLoadedAnimationClips()[10]);
+	Transition* wolftranRunToWalk = new Transition("WALK", []() {return wolfMode && ((!running) || (!walking)); }, 0.13);
+	wolfRUN_STATE->AddNewTransition(wolftranRunToWalk);
+
+	AnimationStateMachine wolfAnimState(wolfAnimator, wolfIDLE_STATE);
+	wolfAnimState.AddNewState(wolfWalk_STATE);
+	wolfAnimState.AddNewState(wolfRUN_STATE);
+	wolfAnimState.Update(deltaTime);
+	
 
 	glfwSetCursorPosCallback(window.get(), mouse_callback);
 	glfwSetScrollCallback(window.get(), scroll_callback);
@@ -239,31 +286,56 @@ int main()
 
 		glfwPollEvents();
 
-
-		//Input Handling
-		//TODO
-		/*processInput(window.get(), elephant);
-		glm::vec3 finalCamPosition = elephant->GetPosition() + cam.GetForward() * -200.0f + cam.GetUp() * 60.f;
+		if(!wolfMode)
+		{
+			gameObjectPointer = archer;
+			processInput(window.get(), archer);
+		}
+		else
+		{
+			gameObjectPointer = wolfGameObject;
+			processInput(window.get(),wolfGameObject);
+		}
 		
-		glm::vec3 camPosition = glm::mix(camPosition, finalCamPosition, deltaTime * 5);
-		cam.SetPosition(camPosition);*/
+		if(!freeView)
+		{
 
-		processInput(window.get(),archer);
-		glm::vec3 finalCamPosition = archer->GetPosition() + cam.GetForward() * -200.0f + cam.GetUp() * 60.f;
-		glm::vec3 currentCamPosition = cam.GetPosition();
+			if(!wolfMode)
+			{
+				glm::vec3 finalCamPosition = archer->GetPosition() + cam.GetForward() * -200.0f + cam.GetUp() * 60.f;
+				glm::vec3 currentCamPosition = cam.GetPosition();
+				glm::vec3 camPosition = glm::mix(currentCamPosition, finalCamPosition, glm::min(float(deltaTime * 4), 1.f));
+				cam.SetPosition(camPosition);
+			}
+			else
+			{
+				glm::vec3 finalCamPosition = wolfGameObject->GetPosition() + cam.GetForward() * -200.0f + cam.GetUp() * 60.f;
+				glm::vec3 currentCamPosition = cam.GetPosition();
+				glm::vec3 camPosition = glm::mix(currentCamPosition, finalCamPosition, glm::min(float(deltaTime * 4), 1.f));
+				cam.SetPosition(camPosition);
+			}
+			
+		}
 
-		
-		
-		glm::vec3 camPosition = glm::mix(currentCamPosition, finalCamPosition, glm::min( float(deltaTime * 4), 1.f));
-		cam.SetPosition(camPosition);
 		
 		// update your application logic here,
 		// using deltaTime if necessary (for physics, tweening, etc.)
 
 		// Updating animations
-		animState.Update(deltaTime);
-		
 
+		if(!wolfMode)
+		{
+			
+		}
+		else
+		{
+			
+		}
+		animState.Update(deltaTime);
+		wolfAnimState.Update(deltaTime);
+		elephantAnimator->Update(deltaTime);
+		
+		
 		// This if-statement only executes once every 60th of a second
 
 
@@ -277,18 +349,6 @@ int main()
 
 		if(ourSkeletalModel->GetSkeleton().GetRootBone())
 			UIFunctions::DrawSkeletonTreeHelper(*(ourSkeletalModel->GetSkeleton().GetRootBone()));
-
-		/*if (ImGui::Button("Next Anim"))
-		{
-			animationSelector++;
-			if (animationSelector >= animationClipManager.GetLoadedAnimationClips().size())
-			{
-				animationSelector = 0;
-			}
-			AnimationClip* anim = animationClipManager.GetLoadedAnimationClips()[animationSelector];
-			animator.ChangeAnimationClip(*anim, glfwGetTime());
-		}*/
-
 
 		ImGui::End();
 
@@ -378,9 +438,9 @@ int main()
 			// spotLight
 			SimpleShader.SetVec3("spotLight.position", pointLightPositions[3]);
 			SimpleShader.SetVec3("spotLight.direction", pointLightPositions[3]);
-			SimpleShader.SetVec3("spotLight.ambient", glm::vec3(10.0f, 10.0f, 10.0f));
-			SimpleShader.SetVec3("spotLight.diffuse", glm::vec3(10.0f, 1.0f, 10.0f));
-			SimpleShader.SetVec3("spotLight.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+			SimpleShader.SetVec3("spotLight.ambient", glm::vec3(0, 0.f, 0.f));
+			SimpleShader.SetVec3("spotLight.diffuse", glm::vec3(0.f, 0.f, 0.f));
+			SimpleShader.SetVec3("spotLight.specular", glm::vec3(0.f, 0.f, 0.f));
 			SimpleShader.SetFloat("spotLight.constant", 1.0f);
 			SimpleShader.SetFloat("spotLight.linear", 0.09f);
 			SimpleShader.SetFloat("spotLight.quadratic", 0.032f);
@@ -395,32 +455,15 @@ int main()
 
 			projection = glm::perspective(glm::radians(cam.GetFOV()), ((float)Width / (float)Height), 0.1f, 50000.0f);
 			SimpleShader.SetMat4("projection", projection);
-
-
-			// render the loaded model
-			/*glm::mat4 model = glm::mat4(1.0f);
-			model = glm::translate(model, glm::vec3(0.0f, 0.f, 0.0f)); // translate it down so it's at the center of the scene
-			model = glm::scale(model, glm::vec3(1.f, 1.f, 1.f));	// it's a bit too big for our scene, so scale it down
-			SimpleShader.SetMat4("model", model);
-
-			glm::mat3 normalMatrix = glm::transpose(glm::inverse(model));
-			SimpleShader.SetMat3("normalMatrix", normalMatrix);*/
 			
 			if (ShowModel)
 			{
 				archer->Draw(SimpleShader);
 			}
-			
-			//environmentObject->SetScale(glm::vec3(100, 100, 100));
-			
-			//environmentObject->SetAngle(glm::degrees( envAngle));
-			
-			//environmentObject->SetRotation(glm::degrees( envAngle), glm::vec3(1, 0, 0));
+			wolfGameObject->Draw(SimpleShader);
+			elephantGameObject->Draw(SimpleShader);
 			environmentObject->Draw(SimpleShader);
-			
-			std::cout << archerSpeed << "|||" << " " << environmentObject->GetAngle() << std::endl;
 
-			
 			// LightShader
 			LightShader.use();
 			LightShader.SetMat4("view", view);
@@ -515,11 +558,26 @@ void processInput(GLFWwindow* window, SkeletalModelGameObject* gameObject)
 	archerSpeed = 0;
 	if (walking)
 	{
-		archerSpeed = 3;
+		if(!wolfMode)
+		{
+			archerSpeed = 5;
+		}
+		else
+		{
+			archerSpeed = 3;
+		}
+		
 	}
 	if (running && walking)
 	{
-		archerSpeed = 7;
+		if (!wolfMode)
+		{
+			archerSpeed = 7;
+		}
+		else
+		{
+			archerSpeed = 10;
+		}
 	}
 
 	gameObject->Translate(normalize(gameObject->GetDirection()), archerSpeed);
@@ -529,22 +587,35 @@ void processInput(GLFWwindow* window, SkeletalModelGameObject* gameObject)
 		ShowModel = !ShowModel;
 	}
 
+	if (ImGui::IsKeyPressed(ImGuiKey_F, false))
+	{
+		freeView = !freeView;
+	}
+
+	if (ImGui::IsKeyPressed(ImGuiKey_K, false))
+	{
+		wolfMode = !wolfMode;
+	}
+
 
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 	{
 		glfwSetWindowShouldClose(window, true);
 	}
 
+	if(freeView)
+	{
+		const float cameraSpeed = cam.GetSpeed() * deltaTime; // adjust accordingly
+		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+			cam.Translate(cam.GetForward(), cameraSpeed);
+		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+			cam.Translate(cam.GetForward(), -cameraSpeed);
+		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+			cam.Translate(cam.GetRight(), -cameraSpeed);
+		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+			cam.Translate(cam.GetRight(), cameraSpeed);
+	}
 
-	/*const float cameraSpeed = cam.GetSpeed() * deltaTime; // adjust accordingly
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		cam.Translate(cam.GetForward(), cameraSpeed);
-	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		cam.Translate(cam.GetForward(), -cameraSpeed);
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		cam.Translate(cam.GetRight(), -cameraSpeed);
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		cam.Translate(cam.GetRight(), cameraSpeed);*/
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -591,12 +662,12 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 
 	cam.Rotate(pitch, yaw);
 	
-	float angle = archerPointer->GetAngle();
+	float angle = gameObjectPointer->GetAngle();
 	angle -= xoffset;
 
 	float characterAngle = glm::degrees(atan2(cam.GetForward().x, cam.GetForward().z));
 
-	archerPointer->SetAngle(characterAngle);
+	gameObjectPointer->SetAngle(characterAngle);
 	
 }
 

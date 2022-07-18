@@ -76,23 +76,22 @@ GameObject::GameObject()
 
 void GameObject::Draw(Shader& shader)
 {
+	// Scale -> Rotate -> Translate (note that when we creating the matrix, it is inverse like here!)
 	
 	model = glm::mat4(1.0f);
-	model = glm::scale(model, scale);
-	
-	model = glm::translate(model, position);
 
+	model = glm::translate(model, position);
 
 	const glm::mat4 rotationMatrix = glm::rotate(glm::radians(angle), rotationVector);
 	const glm::vec4 newDir = rotationMatrix * glm::vec4(glm::vec3(0.f, 0.f, 1.f), 1.0);
 	const glm::vec3 vnewDir(newDir);
 	this->direction = glm::normalize(vnewDir);
-	
-	
 	float characterAngle = glm::degrees(atan2(direction.x, direction.z));
 	characterAngle = ((int)characterAngle + 360) % 360;
 	model = glm::rotate(model, glm::radians(characterAngle ), glm::normalize(glm::vec3(0, 1, 0)));
 	
+	model = glm::scale(model, scale);
+
 	
 	//model =  glm::lookAt(this->position, this->direction + this->position	, glm::vec3(0.f, 1.f, 0.f)) * model;
 	
