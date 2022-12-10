@@ -14,8 +14,11 @@ public:
 
 	// program ID
 	unsigned int ID;
-
+	Shader();
 	Shader(const char* vertexPath, const char* fragmentPath);
+	void SetShaderPath(const char* vertexPath, const char* fragmentPath);
+
+	
 
 	void use();
 
@@ -27,5 +30,6 @@ public:
 	void SetVec3(const std::string& name, glm::vec3 value) const;
 private:
 	void CheckCompileErrors(unsigned int shader, std::string type);
+	void GenerateShader(const char* vertexPath, const char* fragmentPath);
 };
 

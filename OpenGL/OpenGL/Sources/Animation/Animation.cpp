@@ -173,7 +173,7 @@ glm::vec3 AnimationKeyframes::GetScaleAtFrame(double Frame) //TODO
 	return glm::vec3();
 }
 
-void AnimationPoses::AddNewPose(std::string boneName, AnimationKeyframes keyframes)
+void AnimationPoses::AddNewBonePose(std::string boneName, AnimationKeyframes keyframes)
 {
 	this->keyframesMap.emplace(boneName, keyframes);
 }

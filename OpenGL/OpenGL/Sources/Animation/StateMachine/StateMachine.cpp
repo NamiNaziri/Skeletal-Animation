@@ -1,9 +1,7 @@
 #include "StateMachine.h"
 
 Transition::Transition(std::string to, std::function<bool()> evaluateFunction, double transitionTime)
-	: to(to), evaluateFunction(std::move(evaluateFunction)), transitionTime(transitionTime)
-{
-}
+	: to(to), evaluateFunction(std::move(evaluateFunction)), transitionTime(transitionTime){}
 
 bool Transition::Evaluate()
 {
@@ -11,9 +9,14 @@ bool Transition::Evaluate()
 }
 
 AnimationState::AnimationState(std::string stateName, AnimationClip* animClip)
-	:stateName(stateName), animClip(animClip)
+	:stateName(stateName), animClip(animClip){}
+
+AnimationState::~AnimationState()
 {
-	
+	for(auto tran : transitions)
+	{
+		delete tran;
+	}
 }
 
 bool AnimationStateMachine::TransitionUpdate(double deltaTime)
@@ -55,6 +58,14 @@ AnimationStateMachine::AnimationStateMachine(Animator* animator, AnimationState*
 {
 	AddNewState(initialState);
 	animator->ChangeAnimationClip(*(currentState->GetAnimClip()), 0);
+}
+
+AnimationStateMachine::~AnimationStateMachine()
+{
+	for(auto state: animationStatesMap)
+	{
+		delete state.second;
+	}
 }
 
 void AnimationStateMachine::Update(double deltaTime)

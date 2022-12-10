@@ -1,7 +1,7 @@
 #include "Camera.h"
 
 Camera::Camera(glm::vec3 position, glm::vec3 up, float fov, float pitch , float yaw, float speed)
-	: position(position), upVector(up),pitch(pitch),FOV(fov),yaw(yaw), forwardVector(glm::vec3(0.0f, 0.0f, -1.0f)), speed(speed)
+	: position(position), upVector(up),FOV(fov),pitch(pitch),yaw(yaw), forwardVector(glm::vec3(0.0f, 0.0f, -1.0f)), speed(speed)
 {
 	Rotate(pitch, yaw);
 }

@@ -9,6 +9,7 @@ class AnimationClipManager
 public:
 	AnimationClipManager(const std::string& path, Skeleton& skeleton);
 	AnimationClipManager(Skeleton& skeleton);
+	~AnimationClipManager();
 	void AddNewAnimationClip(const std::string& path);
 	
 private:

@@ -6,10 +6,13 @@
 class CubeMap
 {
 public:
+	CubeMap();
 	CubeMap(std::string path);
+	void SetCubeMapPath(std::string path);
 	void Draw(Shader& shader);
 private:
 	void LoadCubeMap(std::string path);
+	
 	void CreateCubeMapObject();
 	
 	unsigned int textureID;

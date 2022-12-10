@@ -1,5 +1,4 @@
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
+
 #include <iostream>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -30,79 +29,77 @@
 #include "Animation/AnimationClipManager.h"
 #include "imgui/Plugin/imfilebrowser.h"
 #include "CubeMap.h"
+#include "GraphicalWindow.h"
 
 
 #include "imgui/ImguiHandler.h"
 #include "ModelData.h"
-#include "StateMachine/StateMachine.h"
-struct DestroyglfwWin {
+#include "Animation/StateMachine/StateMachine.h"
 
-	void operator()(GLFWwindow* ptr) {
-		glfwDestroyWindow(ptr);
-	}
-
-};
-
-float archerSpeed = 0;
-void processInput(GLFWwindow* window);
-void processInput(GLFWwindow* window, SkeletalModelGameObject* gameObject);
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void mouse_callback(GLFWwindow* window, double xpos, double ypos);
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-void WindowResizeHandler(GLFWwindow* window, int w, int h);
+//float archerSpeed = 0;
+// void processInput(GLFWwindow* window);
+// void processInput(GLFWwindow* window, SkeletalModelGameObject* gameObject);
+//void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+// void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+// void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+// void WindowResizeHandler(GLFWwindow* window, int w, int h);
 
 // Functions
 
-std::unique_ptr<GLFWwindow, DestroyglfwWin> CreateGLFWWindow();
-unsigned int loadTexture(const char* path);
+//unsigned int loadTexture(const char* path);
 
 
-bool wolfMode = false;
+//bool wolfMode = false;
 
 // camera
-Camera cam(glm::vec3(0.0f, 0.0f, 500.0f),
-	glm::vec3(0.0f, 1.0f, 0.0f),
-	45,
-	0,
-	-90,
-	50
-);
+// Camera cam(glm::vec3(0.0f, 0.0f, 500.0f),
+// 	glm::vec3(0.0f, 1.0f, 0.0f),
+// 	45,
+// 	0,
+// 	-90,
+// 	50
+// );
 
-int Width = 1080;
-int Height = 1080;
+// int Width = 1080;
+// int Height = 1080;
 
-bool freeView = false;
+//bool freeView = false;
 
-float lastX = Width / 2, lastY = Height / 2;
+//float lastX = Width / 2, lastY = Height / 2;
 
-bool firstMouse = true;
+//bool firstMouse = true;
 
-double deltaTime = 0.0f;	// Time between current frame and last frame
-float lastFrame = 0.0f; // Time of last frame
+// double deltaTime = 0.0f;	// Time between current frame and last frame
+// float lastFrame = 0.0f; // Time of last frame
 
-bool ShowModel = true;
+//bool ShowModel = true;
 
 #define POINT_LIGHTS_NUM 4
 
+/*
 bool walking = false;
 
 bool running = false;
 
 
 SkeletalModelGameObject* gameObjectPointer = nullptr;
+*/
 
-
-
+#include "Application.h"
 int main()
 {
 
-	std::unique_ptr<GLFWwindow, DestroyglfwWin> window = CreateGLFWWindow();
+	Application app;
+	app.Start();
+	//GraphicalWindow graphicalWindow(1080,1080);
 
-	std::unique_ptr<ImguiHandler> imguiHandler = std::make_unique<ImguiHandler>(*window) ;
+	//std::unique_ptr<ImguiHandler> imguiHandler = std::make_unique<ImguiHandler>(*(graphicalWindow.GetWindow()));
 	
 	/*
 	 * Note: we have to use the absolute path 
 	 */
+
+	/*
 	Shader SimpleShader("E:/Graphics/OpenGL/GitRepo/OpenGL/OpenGL/Sources/Shaders/Vertex/VertexShader.vert",
 						"E:/Graphics/OpenGL/GitRepo/OpenGL/OpenGL/Sources/Shaders/Fragment/FragmentShader.frag");
 	
@@ -113,19 +110,19 @@ int main()
 		"E:/Graphics/OpenGL/GitRepo/OpenGL/OpenGL/Sources/Shaders/Fragment/SkyBoxFragmentShader.frag");
 
 	CubeMap cubeMap("Resources/CubeMap/skybox");
-	
+	*/
 	// set upVector vertex data (and buffer(s)) and configure vertex attributes
 	// ------------------------------------------------------------------
 
-	glm::vec3 rotationVector = glm::vec3(1.f, 0.f, 0.1f);
-	float envAngle = glm::radians( 270.f);
+	// glm::vec3 rotationVector = glm::vec3(1.f, 0.f, 0.1f);
+	// float envAngle = glm::radians( 270.f);
 	// Light cube object
-	glm::vec3 pointLightPositions[] = {
-		glm::vec3(0.7f,  100.f,  2.0f),
-		glm::vec3(2.3f, 100.f, -4.0f),
-		glm::vec3(-4.0f,  100.f, -12.0f),
-		glm::vec3(0.0f,  100.f, -53.0f)
-	};
+	// glm::vec3 pointLightPositions[] = {
+	// 	glm::vec3(0.7f,  100.f,  2.0f),
+	// 	glm::vec3(2.3f, 100.f, -4.0f),
+	// 	glm::vec3(-4.0f,  100.f, -12.0f),
+	// 	glm::vec3(0.0f,  100.f, -53.0f)
+	// };
 	
 	/*GameObject lights[POINT_LIGHTS_NUM] = { GameObject(vertices),GameObject(vertices) ,GameObject(vertices) ,GameObject(vertices) };
 	for (int i = 0; i < POINT_LIGHTS_NUM; i++)
@@ -134,7 +131,7 @@ int main()
 	}*/
 
 	// tell stb_image.h to flip loaded texture's on the y-axis (before loading model).
-	stbi_set_flip_vertically_on_load(true);
+	//stbi_set_flip_vertically_on_load(true);
 
 
 	/************** Loading model and Animations **************/
@@ -142,71 +139,73 @@ int main()
 	/*
 	 * Importing archer
 	 */
-
-	const std::string animationPath = "Resources/objects/Archer/Animations/idle.fbx";
-	const std::string FBXResourcePath = "Resources/objects/Archer/Yelling While Standing.fbx";
+	/*
+	const std::string archerAnimationPath = "Resources/objects/Archer/Animations/idle.fbx";
+	const std::string archerFBXResourcePath = "Resources/objects/Archer/Yelling While Standing.fbx";
 	
-	SkeletalModel* ourSkeletalModel = new SkeletalModel(FBXResourcePath);
-	SkeletalModelGameObject* archer = new SkeletalModelGameObject(ourSkeletalModel);
+	SkeletalModel* archerSkeletalModel = new SkeletalModel(archerFBXResourcePath);
+	SkeletalModelGameObject* archer = new SkeletalModelGameObject(archerSkeletalModel);
 	gameObjectPointer = archer;
-	AnimationClipManager animationClipManager(animationPath, ourSkeletalModel->GetSkeleton());
+	AnimationClipManager archerClipManager(archerAnimationPath, archerSkeletalModel->GetSkeleton());
 	
 	glm::vec3 currentArcherPosition = archer->GetPosition();
 	archer->SetPosition(currentArcherPosition + glm::vec3(90, 93, 90));
 	archer->SetRotation(0, glm::vec3(0.f, 1.f, 0.f));
 	
-	animationClipManager.AddNewAnimationClip("Resources/objects/Archer/animations/walking.fbx");
-	animationClipManager.AddNewAnimationClip("Resources/objects/Archer/animations/Jog Forward.fbx");
-	animationClipManager.AddNewAnimationClip("Resources/objects/Archer/animations/idle.fbx");
-	animationClipManager.AddNewAnimationClip("Resources/objects/Archer/animations/Waving.fbx");
+	archerClipManager.AddNewAnimationClip("Resources/objects/Archer/animations/walking.fbx");
+	archerClipManager.AddNewAnimationClip("Resources/objects/Archer/animations/Jog Forward.fbx");
+	archerClipManager.AddNewAnimationClip("Resources/objects/Archer/animations/idle.fbx");
+	archerClipManager.AddNewAnimationClip("Resources/objects/Archer/animations/Waving.fbx");
 
 	// Get an animation from anim manager and pass it to animation
 	// this way we could easily create state machines. Of course in its specific class
 
 	//int animationSelector = 0;
 	
-	AnimationClip* anim = animationClipManager.GetLoadedAnimationClips()[0];
+	AnimationClip* anim = archerClipManager.GetLoadedAnimationClips()[0];
 
 
 	//TODO animator constructor should be changed so it does not take any animations;
 
 	
-	Animator* animator = new Animator(animationClipManager.GetSkeleton(), *anim, glfwGetTime());  
+	Animator* archerAnimator = new Animator(archerClipManager.GetSkeleton(), *anim, glfwGetTime());  
 
-	AnimationState* IDLE_STATE = new AnimationState("IDLE",animationClipManager.GetLoadedAnimationClips()[0]); 
-	Transition* tranIdleToWalk = new Transition("WALK", []() { return (!wolfMode) && walking; }, 0.13);
-	IDLE_STATE->AddNewTransition(tranIdleToWalk); 
+	AnimationState* ARCHER_IDLE_STATE = new AnimationState("IDLE",archerClipManager.GetLoadedAnimationClips()[0]); 
+	Transition* archerTranIdleToWalk = new Transition("WALK", []() { return (!wolfMode) && walking; }, 0.13);
+	ARCHER_IDLE_STATE->AddNewTransition(archerTranIdleToWalk); 
 	
-	AnimationState* Walk_STATE = new AnimationState("WALK", animationClipManager.GetLoadedAnimationClips()[1]); 
-	Transition* tranWalkToIdle = new Transition("IDLE", []() {return (!wolfMode) && !walking; }, 0.35);
-	Walk_STATE->AddNewTransition(tranWalkToIdle);
-	Transition* tranWalkToRun = new Transition("RUN", []() {return (!wolfMode) && running && walking; }, 0.13);
-	Walk_STATE->AddNewTransition(tranWalkToRun);
+	AnimationState* ARCHER_WALK_STATE = new AnimationState("WALK", archerClipManager.GetLoadedAnimationClips()[1]); 
+	Transition* archerTranWalkToIdle = new Transition("IDLE", []() {return (!wolfMode) && !walking; }, 0.35);
+	ARCHER_WALK_STATE->AddNewTransition(archerTranWalkToIdle);
+	Transition* archerTranWalkToRun = new Transition("RUN", []() {return (!wolfMode) && running && walking; }, 0.13);
+	ARCHER_WALK_STATE->AddNewTransition(archerTranWalkToRun);
 	
-	AnimationState* RUN_STATE = new AnimationState("RUN", animationClipManager.GetLoadedAnimationClips()[2]); 
-	Transition* tranRunToWalk = new Transition("WALK", []() {return (!wolfMode) && ((!running) || (!walking)); }, 0.13);
-	RUN_STATE->AddNewTransition(tranRunToWalk);
+	AnimationState* ARCHER_RUN_STATE = new AnimationState("RUN", archerClipManager.GetLoadedAnimationClips()[2]); 
+	Transition* archerTranRunToWalk = new Transition("WALK", []() {return (!wolfMode) && ((!running) || (!walking)); }, 0.13);
+	ARCHER_RUN_STATE->AddNewTransition(archerTranRunToWalk);
 	
-	AnimationStateMachine animState(animator, IDLE_STATE);
-	animState.AddNewState(Walk_STATE);
-	animState.AddNewState(RUN_STATE);
+	AnimationStateMachine archerAnimState(archerAnimator, ARCHER_IDLE_STATE);
+	archerAnimState.AddNewState(ARCHER_WALK_STATE);
+	archerAnimState.AddNewState(ARCHER_RUN_STATE);
 
-
+	*/
 
 
 
 	/*
 	 * Importing the environment
 	 */
+	/*
 	const std::string environmentPath = "Resources/objects/Castle/untitled.fbx_Scen3e.fbx_Scene.fbx";
 
 	Model* environmentModel = new Model(environmentPath);
 	ModelGameObject* environmentObject = new ModelGameObject(environmentModel);
 	environmentObject->SetRotation(0, glm::vec3(0.f, 1.f, 0.f));
-
+*/
 	/*
 	 * Importing Elephant
 	 */
+	/*
 	const std::string elephantPath = "Resources/objects/Elephant/Elephant.fbx";
 	SkeletalModel* elephantModel = new SkeletalModel(elephantPath);
 	SkeletalModelGameObject* elephantGameObject = new SkeletalModelGameObject(elephantModel);
@@ -217,10 +216,12 @@ int main()
 	elephantGameObject->SetPosition(elephantGameObject->GetPosition() + glm::vec3(500, 0, 500));
 
 	Animator* elephantAnimator = new Animator(elephantClipManager.GetSkeleton(), *(elephantClipManager.GetLoadedAnimationClips()[0]), glfwGetTime());
-
+	*/
 	/*
 	 * Importing Wolf
 	 */
+
+	/*
 	const std::string wolfPath = "Resources/objects/Wolf/wp.fbx";
 	SkeletalModel* wolfModel = new SkeletalModel(wolfPath);
 	SkeletalModelGameObject* wolfGameObject = new SkeletalModelGameObject(wolfModel);
@@ -240,7 +241,7 @@ int main()
 	Transition* wolftranIdleToWalk = new Transition("WALK", []() { return wolfMode && walking; }, 0.13);
 	wolfIDLE_STATE->AddNewTransition(wolftranIdleToWalk);
 
-	AnimationState* wolfWalk_STATE = new AnimationState("WALK", wolfClipManager.GetLoadedAnimationClips()[11]);
+	AnimationState* wolfWalk_STATE = new AnimationState("WALK", wolfClipManager.GetLoadedAnimationClips()[12]);
 	Transition* wolftranWalkToIdle = new Transition("IDLE", []() {return wolfMode && !walking; }, 0.35);
 	wolfWalk_STATE->AddNewTransition(wolftranWalkToIdle);
 	Transition* wolftranWalkToRun = new Transition("RUN", []() {return wolfMode &&  running && walking; }, 0.13);
@@ -254,68 +255,67 @@ int main()
 	wolfAnimState.AddNewState(wolfWalk_STATE);
 	wolfAnimState.AddNewState(wolfRUN_STATE);
 	wolfAnimState.Update(deltaTime);
+	*/
+
+	// glfwSetCursorPosCallback( graphicalWindow.GetWindow().get(), mouse_callback);
+	// glfwSetScrollCallback(graphicalWindow.GetWindow().get(), scroll_callback);
+	// glfwSetWindowSizeCallback(graphicalWindow.GetWindow().get(), WindowResizeHandler);
+
 	
+	// glEnable(GL_DEPTH_TEST);
 
-	glfwSetCursorPosCallback(window.get(), mouse_callback);
-	glfwSetScrollCallback(window.get(), scroll_callback);
-	glfwSetWindowSizeCallback(window.get(), WindowResizeHandler);
-
-	
-	glEnable(GL_DEPTH_TEST);
-	static double limitFPS = 1.0 / 60.0;
-
-	const double fpsLimit = 1.0 / 60.0;
-	double lastUpdateTime = 0;  // number of seconds since the last loop
-	double lastFrameTime = 0;   // number of seconds since the last frame
+	// const double fpsLimit = 1.0 / 60.0;
+	// double lastUpdateTime = 0;  // number of seconds since the last loop
+	// double lastFrameTime = 0;   // number of seconds since the last frame
 
 
-	// create a file browser instance
-	ImGui::FileBrowser fileDialog;
+	// // create a file browser instance
+	// ImGui::FileBrowser fileDialog;
+	//
+	// // (optional) set browser properties
+	// fileDialog.SetTitle("Select an animation");
+	// fileDialog.SetTypeFilters({ ".fbx" });
 
-	// (optional) set browser properties
-	fileDialog.SetTitle("Select an animation");
-	fileDialog.SetTypeFilters({ ".fbx" });
-
-	while (!glfwWindowShouldClose(window.get()))
-	{
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		const double now = glfwGetTime();
-		deltaTime = now - lastUpdateTime;
+	//while (!glfwWindowShouldClose(graphicalWindow.GetWindow().get()))
+	//{
+		// glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		//
+		// const double now = glfwGetTime();
+		// deltaTime = now - lastUpdateTime;
 		// input
 
-		glfwPollEvents();
-
-		if(!wolfMode)
-		{
-			gameObjectPointer = archer;
-			processInput(window.get(), archer);
-		}
-		else
-		{
-			gameObjectPointer = wolfGameObject;
-			processInput(window.get(),wolfGameObject);
-		}
+		// glfwPollEvents();
+		//
+		// if(!wolfMode)
+		// {
+		// 	gameObjectPointer = &archer;
+		// 	processInput(graphicalWindow.GetWindow().get(), &archer);
+		// }
+		// else
+		// {
+		// 	gameObjectPointer = wolfGameObject;
+		// 	processInput(graphicalWindow.GetWindow().get(),wolfGameObject);
+		// }
 		
-		if(!freeView)
-		{
-
-			if(!wolfMode)
-			{
-				glm::vec3 finalCamPosition = archer->GetPosition() + cam.GetForward() * -200.0f + cam.GetUp() * 60.f;
-				glm::vec3 currentCamPosition = cam.GetPosition();
-				glm::vec3 camPosition = glm::mix(currentCamPosition, finalCamPosition, glm::min(float(deltaTime * 4), 1.f));
-				cam.SetPosition(camPosition);
-			}
-			else
-			{
-				glm::vec3 finalCamPosition = wolfGameObject->GetPosition() + cam.GetForward() * -200.0f + cam.GetUp() * 60.f;
-				glm::vec3 currentCamPosition = cam.GetPosition();
-				glm::vec3 camPosition = glm::mix(currentCamPosition, finalCamPosition, glm::min(float(deltaTime * 4), 1.f));
-				cam.SetPosition(camPosition);
-			}
-			
-		}
+		// if(!freeView)
+		// {
+		//
+		// 	if(!wolfMode)
+		// 	{
+		// 		glm::vec3 finalCamPosition = archer->GetPosition() + cam.GetForward() * -200.0f + cam.GetUp() * 60.f;
+		// 		glm::vec3 currentCamPosition = cam.GetPosition();
+		// 		glm::vec3 camPosition = glm::mix(currentCamPosition, finalCamPosition, glm::min(float(deltaTime * 4), 1.f));
+		// 		cam.SetPosition(camPosition);
+		// 	}
+		// 	else
+		// 	{
+		// 		glm::vec3 finalCamPosition = wolfGameObject->GetPosition() + cam.GetForward() * -200.0f + cam.GetUp() * 60.f;
+		// 		glm::vec3 currentCamPosition = cam.GetPosition();
+		// 		glm::vec3 camPosition = glm::mix(currentCamPosition, finalCamPosition, glm::min(float(deltaTime * 4), 1.f));
+		// 		cam.SetPosition(camPosition);
+		// 	}
+		// 	
+		// }
 
 		
 		// update your application logic here,
@@ -323,62 +323,62 @@ int main()
 
 		// Updating animations
 
-		if(!wolfMode)
+		/*if(!wolfMode)
 		{
 			
 		}
 		else
 		{
 			
-		}
-		animState.Update(deltaTime);
-		wolfAnimState.Update(deltaTime);
-		elephantAnimator->Update(deltaTime);
-		
+		}*/
+		// archerAnimState.Update(deltaTime);
+		// wolfAnimState.Update(deltaTime);
+		// elephantAnimator->Update(deltaTime);
+		//
 		
 		// This if-statement only executes once every 60th of a second
 
 
-		imguiHandler->BeginFrame();
-
-		// Draw the UI
-		ImGui::ShowDemoWindow();
-
-		// Create a window called "My First Tool", with a menu bar.
-		ImGui::Begin("Animation Controller");
-
-		if(ourSkeletalModel->GetSkeleton().GetRootBone())
-			UIFunctions::DrawSkeletonTreeHelper(*(ourSkeletalModel->GetSkeleton().GetRootBone()));
-
-		ImGui::End();
-
-		// Getting new animation from user
-
-
-		UIFunctions::AddNewAnimationUI(fileDialog); // dialogue so that the user can choose the animation
-
-		if (fileDialog.HasSelected())
-		{
-			std::cout << "Selected filename" << fileDialog.GetSelected().string() << std::endl;
-			animationClipManager.AddNewAnimationClip(fileDialog.GetSelected().string());
-			fileDialog.ClearSelected();
-		}
+		// imguiHandler->BeginFrame();
+		//
+		// // Draw the UI
+		// ImGui::ShowDemoWindow();
+		//
+		// // Create a window called "My First Tool", with a menu bar.
+		// ImGui::Begin("Animation Controller");
+		//
+		// if(archerSkeletalModel->GetSkeleton().GetRootBone())
+		// 	UIFunctions::DrawSkeletonTreeHelper(*(archerSkeletalModel->GetSkeleton().GetRootBone()));
+		//
+		// ImGui::End();
+		//
+		// // Getting new animation from user
+		//
+		//
+		// UIFunctions::AddNewAnimationUI(fileDialog); // dialogue so that the user can choose the animation
+		//
+		// if (fileDialog.HasSelected())
+		// {
+		// 	std::cout << "Selected filename" << fileDialog.GetSelected().string() << std::endl;
+		// 	archerClipManager.AddNewAnimationClip(fileDialog.GetSelected().string());
+		// 	fileDialog.ClearSelected();
+		// }
+		//
+		// UIFunctions::ChangeRotationVector(rotationVector, envAngle);
+		//
+		// imguiHandler->EndFrame();
+		//
 		
-		UIFunctions::ChangeRotationVector(rotationVector, envAngle);
-		
-		imguiHandler->EndFrame();
-		
-		
 
 		
-		if ((now - lastFrameTime) >= fpsLimit)
-		{
+		//if ((now - lastFrameTime) >= fpsLimit)
+		//{
 
 			// draw your frame here
 			// rendering commands
 
-			glClearColor(0.7f, 0.7f,0.7f, 1.0f);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			// glClearColor(0.7f, 0.7f,0.7f, 1.0f);
+			// glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
 			
@@ -386,137 +386,137 @@ int main()
 			
 			//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); //wireframe
 
-			// render the mesh
-			SimpleShader.use(); // don't forget to activate/use the shader before setting uniforms!
-								// either set it manually like so:
-
-			// material
-			SimpleShader.SetFloat("material.shininess", 32.0f);
-
-			// camera view
-			SimpleShader.SetVec3("viewPosition", cam.GetPosition());
-
-			// light
-
-			// directional light
-			SimpleShader.SetVec3("dirLight.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
-			SimpleShader.SetVec3("dirLight.ambient", glm::vec3(0.4f, 0.4f, 0.4f));
-			SimpleShader.SetVec3("dirLight.diffuse", glm::vec3(1.0f, 1.0f, 1.f));
-			SimpleShader.SetVec3("dirLight.specular", glm::vec3(1.5f, 1.5f, 1.5f));
-			// point light 1
-			SimpleShader.SetVec3("pointLights[0].position", pointLightPositions[0]);
-			SimpleShader.SetVec3("pointLights[0].ambient", glm::vec3(0.05f, 0.05f, 0.05f));
-			SimpleShader.SetVec3("pointLights[0].diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
-			SimpleShader.SetVec3("pointLights[0].specular", glm::vec3(1.0f, 1.0f, 1.0f));
-			SimpleShader.SetFloat("pointLights[0].constant", 1.0f);
-			SimpleShader.SetFloat("pointLights[0].linear", 0.09f);
-			SimpleShader.SetFloat("pointLights[0].quadratic", 0.032f);
-			// point light 2
-			SimpleShader.SetVec3("pointLights[1].position", pointLightPositions[1]);
-			SimpleShader.SetVec3("pointLights[1].ambient", glm::vec3(0.05f, 0.05f, 0.05f));
-			SimpleShader.SetVec3("pointLights[1].diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
-			SimpleShader.SetVec3("pointLights[1].specular", glm::vec3(1.0f, 1.0f, 1.0f));
-			SimpleShader.SetFloat("pointLights[1].constant", 1.0f);
-			SimpleShader.SetFloat("pointLights[1].linear", 0.09f);
-			SimpleShader.SetFloat("pointLights[1].quadratic", 0.032f);
-			// point light 3
-			SimpleShader.SetVec3("pointLights[2].position", pointLightPositions[2]);
-			SimpleShader.SetVec3("pointLights[2].ambient", glm::vec3(0.05f, 0.05f, 0.05f));
-			SimpleShader.SetVec3("pointLights[2].diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
-			SimpleShader.SetVec3("pointLights[2].specular", glm::vec3(1.0f, 1.0f, 1.0f));
-			SimpleShader.SetFloat("pointLights[2].constant", 1.0f);
-			SimpleShader.SetFloat("pointLights[2].linear", 0.09f);
-			SimpleShader.SetFloat("pointLights[2].quadratic", 0.032f);
-			// point light 4
-			SimpleShader.SetVec3("pointLights[3].position", pointLightPositions[3]);
-			SimpleShader.SetVec3("pointLights[3].ambient", glm::vec3(0.05f, 0.05f, 0.05f));
-			SimpleShader.SetVec3("pointLights[3].diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
-			SimpleShader.SetVec3("pointLights[3].specular", glm::vec3(1.0f, 1.0f, 1.0f));
-			SimpleShader.SetFloat("pointLights[3].constant", 1.0f);
-			SimpleShader.SetFloat("pointLights[3].linear", 0.09f);
-			SimpleShader.SetFloat("pointLights[3].quadratic", 0.032f);
-			// spotLight
-			SimpleShader.SetVec3("spotLight.position", pointLightPositions[3]);
-			SimpleShader.SetVec3("spotLight.direction", pointLightPositions[3]);
-			SimpleShader.SetVec3("spotLight.ambient", glm::vec3(0, 0.f, 0.f));
-			SimpleShader.SetVec3("spotLight.diffuse", glm::vec3(0.f, 0.f, 0.f));
-			SimpleShader.SetVec3("spotLight.specular", glm::vec3(0.f, 0.f, 0.f));
-			SimpleShader.SetFloat("spotLight.constant", 1.0f);
-			SimpleShader.SetFloat("spotLight.linear", 0.09f);
-			SimpleShader.SetFloat("spotLight.quadratic", 0.032f);
-			SimpleShader.SetFloat("spotLight.cutOff", glm::cos(glm::radians(55.5f)));
-			SimpleShader.SetFloat("spotLight.outerCutOff", glm::cos(glm::radians(65.0f)));
-
-
-			glm::mat4 view = cam.GetViewMatrix();
-			SimpleShader.SetMat4("view", view);
-
-			glm::mat4 projection = glm::mat4(1);
-
-			projection = glm::perspective(glm::radians(cam.GetFOV()), ((float)Width / (float)Height), 0.1f, 50000.0f);
-			SimpleShader.SetMat4("projection", projection);
+			// // render the mesh
+			// SimpleShader.use(); // don't forget to activate/use the shader before setting uniforms!
+			// 					// either set it manually like so:
+			//
+			// // material
+			// SimpleShader.SetFloat("material.shininess", 32.0f);
+			//
+			// // camera view
+			// SimpleShader.SetVec3("viewPosition", cam.GetPosition());
+			//
+			// // light
+			//
+			// // directional light
+			// SimpleShader.SetVec3("dirLight.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
+			// SimpleShader.SetVec3("dirLight.ambient", glm::vec3(0.4f, 0.4f, 0.4f));
+			// SimpleShader.SetVec3("dirLight.diffuse", glm::vec3(1.0f, 1.0f, 1.f));
+			// SimpleShader.SetVec3("dirLight.specular", glm::vec3(1.5f, 1.5f, 1.5f));
+			// // point light 1
+			// SimpleShader.SetVec3("pointLights[0].position", pointLightPositions[0]);
+			// SimpleShader.SetVec3("pointLights[0].ambient", glm::vec3(0.05f, 0.05f, 0.05f));
+			// SimpleShader.SetVec3("pointLights[0].diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
+			// SimpleShader.SetVec3("pointLights[0].specular", glm::vec3(1.0f, 1.0f, 1.0f));
+			// SimpleShader.SetFloat("pointLights[0].constant", 1.0f);
+			// SimpleShader.SetFloat("pointLights[0].linear", 0.09f);
+			// SimpleShader.SetFloat("pointLights[0].quadratic", 0.032f);
+			// // point light 2
+			// SimpleShader.SetVec3("pointLights[1].position", pointLightPositions[1]);
+			// SimpleShader.SetVec3("pointLights[1].ambient", glm::vec3(0.05f, 0.05f, 0.05f));
+			// SimpleShader.SetVec3("pointLights[1].diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
+			// SimpleShader.SetVec3("pointLights[1].specular", glm::vec3(1.0f, 1.0f, 1.0f));
+			// SimpleShader.SetFloat("pointLights[1].constant", 1.0f);
+			// SimpleShader.SetFloat("pointLights[1].linear", 0.09f);
+			// SimpleShader.SetFloat("pointLights[1].quadratic", 0.032f);
+			// // point light 3
+			// SimpleShader.SetVec3("pointLights[2].position", pointLightPositions[2]);
+			// SimpleShader.SetVec3("pointLights[2].ambient", glm::vec3(0.05f, 0.05f, 0.05f));
+			// SimpleShader.SetVec3("pointLights[2].diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
+			// SimpleShader.SetVec3("pointLights[2].specular", glm::vec3(1.0f, 1.0f, 1.0f));
+			// SimpleShader.SetFloat("pointLights[2].constant", 1.0f);
+			// SimpleShader.SetFloat("pointLights[2].linear", 0.09f);
+			// SimpleShader.SetFloat("pointLights[2].quadratic", 0.032f);
+			// // point light 4
+			// SimpleShader.SetVec3("pointLights[3].position", pointLightPositions[3]);
+			// SimpleShader.SetVec3("pointLights[3].ambient", glm::vec3(0.05f, 0.05f, 0.05f));
+			// SimpleShader.SetVec3("pointLights[3].diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
+			// SimpleShader.SetVec3("pointLights[3].specular", glm::vec3(1.0f, 1.0f, 1.0f));
+			// SimpleShader.SetFloat("pointLights[3].constant", 1.0f);
+			// SimpleShader.SetFloat("pointLights[3].linear", 0.09f);
+			// SimpleShader.SetFloat("pointLights[3].quadratic", 0.032f);
+			// // spotLight
+			// SimpleShader.SetVec3("spotLight.position", pointLightPositions[3]);
+			// SimpleShader.SetVec3("spotLight.direction", pointLightPositions[3]);
+			// SimpleShader.SetVec3("spotLight.ambient", glm::vec3(0, 0.f, 0.f));
+			// SimpleShader.SetVec3("spotLight.diffuse", glm::vec3(0.f, 0.f, 0.f));
+			// SimpleShader.SetVec3("spotLight.specular", glm::vec3(0.f, 0.f, 0.f));
+			// SimpleShader.SetFloat("spotLight.constant", 1.0f);
+			// SimpleShader.SetFloat("spotLight.linear", 0.09f);
+			// SimpleShader.SetFloat("spotLight.quadratic", 0.032f);
+			// SimpleShader.SetFloat("spotLight.cutOff", glm::cos(glm::radians(55.5f)));
+			// SimpleShader.SetFloat("spotLight.outerCutOff", glm::cos(glm::radians(65.0f)));
+			//
+			//
+			// glm::mat4 view = cam.GetViewMatrix();
+			// SimpleShader.SetMat4("view", view);
+			//
+			// glm::mat4 projection = glm::mat4(1);
+			//
+			// projection = glm::perspective(glm::radians(cam.GetFOV()), ((float)Width / (float)Height), 0.1f, 50000.0f);
+			// SimpleShader.SetMat4("projection", projection);
 			
-			if (ShowModel)
-			{
-				archer->Draw(SimpleShader);
-			}
-			wolfGameObject->Draw(SimpleShader);
-			elephantGameObject->Draw(SimpleShader);
-			environmentObject->Draw(SimpleShader);
+			// if (ShowModel)
+			// {
+			// 	archer->Draw(SimpleShader);
+			// }
+			// wolfGameObject->Draw(SimpleShader);
+			// elephantGameObject->Draw(SimpleShader);
+			// environmentObject->Draw(SimpleShader);
 
-			// LightShader
-			LightShader.use();
-			LightShader.SetMat4("view", view);
-			LightShader.SetMat4("projection", projection);
+			// // LightShader
+			// LightShader.use();
+			// LightShader.SetMat4("view", view);
+			// LightShader.SetMat4("projection", projection);
 
-			//Draw Skeleton Joints 
-			//ourSkeletalModel->DrawSkeletonJoints(LightShader);
-			/*for (int i = 0; i < POINT_LIGHTS_NUM; i++)
-			{
-				lights[i].Render(LightShader);
-			}*/
-			glDepthFunc(GL_LEQUAL);
+			// //Draw Skeleton Joints 
+			// //ourSkeletalModel->DrawSkeletonJoints(LightShader);
+			// /*for (int i = 0; i < POINT_LIGHTS_NUM; i++)
+			// {
+			// 	lights[i].Render(LightShader);
+			// }*/
+			// glDepthFunc(GL_LEQUAL);
 
-			view = glm::mat4(glm::mat3(cam.GetViewMatrix()));
-			CubeMapShader.use();
-			CubeMapShader.SetMat4("view", view);
-			CubeMapShader.SetMat4("projection", projection);
-
-			cubeMap.Draw(CubeMapShader);
-			glDepthFunc(GL_LESS);
+			// view = glm::mat4(glm::mat3(cam.GetViewMatrix()));
+			// CubeMapShader.use();
+			// CubeMapShader.SetMat4("view", view);
+			// CubeMapShader.SetMat4("projection", projection);
+			//
+			// cubeMap.Draw(CubeMapShader);
+			// glDepthFunc(GL_LESS);
 			
 			
-			imguiHandler->Render();
+			// imguiHandler->Render();
 			
-			// check and call events and swap buffers
-			glfwSwapBuffers(window.get());
-
-
-			// only set lastFrameTime when you actually draw something
-			lastFrameTime = now;
+			// // check and call events and swap buffers
+			// glfwSwapBuffers(graphicalWindow.GetWindow().get());
+			//
+			//
+			// // only set lastFrameTime when you actually draw something
+			// lastFrameTime = now;
 		}
 
 		
 		
 
 		// set lastUpdateTime every iteration
-		lastUpdateTime = now;
+		//lastUpdateTime = now;
 
 
 
 
-	}
-	// Cleanup
-	ImGui_ImplOpenGL3_Shutdown();
-	ImGui_ImplGlfw_Shutdown();
-	ImGui::DestroyContext();
-
-
-	glfwTerminate();
-	
-	return 0;
-}
-
+	//}
+	// // Cleanup
+	// ImGui_ImplOpenGL3_Shutdown();
+	// ImGui_ImplGlfw_Shutdown();
+	// ImGui::DestroyContext();
+	//
+	//
+	// glfwTerminate();
+	//
+	// return 0;
+//}
+/*
 void processInput(GLFWwindow* window)
 {
 	ImGuiIO& io = ImGui::GetIO();
@@ -564,7 +564,7 @@ void processInput(GLFWwindow* window, SkeletalModelGameObject* gameObject)
 		}
 		else
 		{
-			archerSpeed = 3;
+			archerSpeed = 2;
 		}
 		
 	}
@@ -618,11 +618,14 @@ void processInput(GLFWwindow* window, SkeletalModelGameObject* gameObject)
 
 }
 
+*/
+
+/*
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
 	glViewport(0, 0, width, height);
-}
-
+}*/
+/*
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
 	ImGuiIO& io = ImGui::GetIO();
@@ -669,56 +672,20 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 
 	gameObjectPointer->SetAngle(characterAngle);
 	
-}
-
+}*/
+/*
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
 	ImGui_ImplGlfw_ScrollCallback(window, xoffset, yoffset);
 	
 	float speed = cam.GetSpeed();
 	speed += (float)yoffset * 10;
-	/*if (fov < 1.0f)
-		fov = 1.0f;
-	if (fov > 45.0f)
-		fov = 45.0f;*/
+	//if (fov < 1.0f)
+	//	fov = 1.0f;
+	//if (fov > 45.0f)
+	//	fov = 45.0f;
 
 	cam.SetSpeed(speed);
-}
-
-
-
-std::unique_ptr<GLFWwindow, DestroyglfwWin> CreateGLFWWindow()
-{
-	glfwInit();
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-	//std::unique_ptr<GLFWwindow> window = std::make_unique<GLFWwindow>()
-	GLFWwindow* window = glfwCreateWindow(Width, Height, "Skeletal Animation", NULL, NULL);
-	if (window == NULL)
-	{
-		std::cout << "Failed to create GLFW Window" << std::endl;
-		glfwTerminate();
-		//return -1;
-	}
-	glfwMakeContextCurrent(window);
-	glfwSwapInterval(1); // Enable vsync
-
-	// disable cursor
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-	{
-		std::cout << "Failed To initialize GLAD" << std::endl;
-		//return -1;
-	}
-
-	glViewport(0, 0, Width, Height);
-
-	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-	
-	return std::unique_ptr<GLFWwindow, DestroyglfwWin>(window);
 }
 
 void WindowResizeHandler(GLFWwindow* window, int w, int h)
@@ -728,9 +695,13 @@ void WindowResizeHandler(GLFWwindow* window, int w, int h)
 	Width = w;
 	Height = h;
 }
+*/
+
 
 // utility function for loading a 2D texture from file
 // ---------------------------------------------------
+
+/*
 unsigned int loadTexture(char const* path)
 {
 	unsigned int textureID;
@@ -766,7 +737,7 @@ unsigned int loadTexture(char const* path)
 	}
 
 	return textureID;
-}
+}*/
 
 
 

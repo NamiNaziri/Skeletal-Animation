@@ -15,6 +15,14 @@ AnimationClipManager::AnimationClipManager(const std::string& path, Skeleton& sk
 AnimationClipManager::AnimationClipManager(Skeleton& skeleton) : skeleton(&skeleton)
 {}
 
+AnimationClipManager::~AnimationClipManager()
+{
+	for(auto anim : loadedAnimationClips)
+	{
+		delete anim;
+	}
+}
+
 void AnimationClipManager::AddNewAnimationClip(const std::string& path)
 {
 	const aiScene* scene = importer.ReadFile(path, aiProcess_PopulateArmatureData | aiProcess_LimitBoneWeights);
@@ -39,15 +47,20 @@ void AnimationClipManager::LoadAnimationClips(const aiScene* scene)
 
 		// Create animation poses
 		AnimationPoses poses;
-		for (unsigned i = 0; i < anim->mNumChannels; i++)
+		for (unsigned j = 0; j < anim->mNumChannels; j++)
 		{
-			AnimationKeyframes keyframes = ProcessAnimationChannel(anim->mChannels[i]);
-			std::string boneName = anim->mChannels[i]->mNodeName.C_Str();
-			poses.AddNewPose(boneName, keyframes);
+			AnimationKeyframes keyframes = ProcessAnimationChannel(anim->mChannels[j]);
+			std::string boneName = anim->mChannels[j]->mNodeName.C_Str();
+			poses.AddNewBonePose(boneName, keyframes);
 		}
 		
 		// Creating an animation clip
 		//TODO loop should be assigned from outside of this class. prob in main.cpp
+		if(anim->mTicksPerSecond == 0.f)
+		{
+			std::cout<< __FUNCTION__ << "mTicksPerSecond: "<<anim->mTicksPerSecond << "(0 Division)" << std::endl;
+			return;
+		}
 		AnimationClip* animation = new AnimationClip(anim->mName.C_Str(), skeleton,
 			anim->mTicksPerSecond, anim->mDuration, true, anim->mDuration / anim->mTicksPerSecond, poses);
 		loadedAnimationClips.push_back(animation);

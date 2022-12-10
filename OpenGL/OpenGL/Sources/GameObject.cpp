@@ -91,14 +91,9 @@ void GameObject::Draw(Shader& shader)
 	model = glm::rotate(model, glm::radians(characterAngle ), glm::normalize(glm::vec3(0, 1, 0)));
 	
 	model = glm::scale(model, scale);
-
 	
 	//model =  glm::lookAt(this->position, this->direction + this->position	, glm::vec3(0.f, 1.f, 0.f)) * model;
-	
 
-
-
-	
 	shader.SetMat4("model", model);
 
 	const glm::mat3 normalMatrix = glm::transpose(glm::inverse(model));

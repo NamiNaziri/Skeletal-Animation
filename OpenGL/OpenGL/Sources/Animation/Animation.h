@@ -59,7 +59,7 @@ struct AnimationPoses
 	// map between bone name and SQT transform
 	std::map<std::string, AnimationKeyframes> keyframesMap;
 
-	void AddNewPose(std::string boneName, AnimationKeyframes keyframes);
+	void AddNewBonePose(std::string boneName, AnimationKeyframes keyframes);
 
 };
 

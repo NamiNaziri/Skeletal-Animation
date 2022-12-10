@@ -63,6 +63,10 @@ const std::vector<float> CubeMap::skyboxVertices = {
      1.0f, -1.0f,  1.0f
 };
 
+CubeMap::CubeMap()
+{
+}
+
 CubeMap::CubeMap(std::string path)
 {
 	LoadCubeMap(path);
@@ -109,6 +113,12 @@ void CubeMap::LoadCubeMap(std::string path)
 
 
 	
+}
+
+void CubeMap::SetCubeMapPath(std::string path)
+{
+	LoadCubeMap(path);
+	CreateCubeMapObject();
 }
 
 void CubeMap::CreateCubeMapObject()

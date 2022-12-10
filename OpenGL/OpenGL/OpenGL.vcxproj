@@ -118,7 +118,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GLFW_INCLUDE_NONE ;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>..\..\thirdpartylibs\Include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -158,9 +158,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\glad.c" />
+    <ClCompile Include="Sources\Animation\StateMachine\StateMachine.cpp" />
+    <ClCompile Include="Sources\Application.cpp" />
     <ClCompile Include="Sources\CubeMap.cpp" />
     <ClCompile Include="Sources\imgui\ImguiHandler.cpp" />
-    <ClCompile Include="Sources\Application.cpp" />
     <ClCompile Include="Sources\GraphicalWindow.cpp" />
     <ClCompile Include="Sources\Animation\Animation.cpp" />
     <ClCompile Include="Sources\Animation\AnimationClipManager.cpp" />
@@ -182,12 +183,12 @@
     <ClCompile Include="Sources\SkeletalModel.cpp" />
     <ClCompile Include="Sources\stb_image.cpp" />
     <ClCompile Include="Sources\UIFunctions.cpp" />
-    <ClCompile Include="Sources\StateMachine\StateMachine.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Sources\Animation\StateMachine\StateMachine.h" />
+    <ClInclude Include="Sources\Application.h" />
     <ClInclude Include="Sources\CubeMap.h" />
     <ClInclude Include="Sources\imgui\ImguiHandler.h" />
-    <ClInclude Include="Sources\Application.h" />
     <ClInclude Include="Sources\GraphicalWindow.h" />
     <ClInclude Include="Sources\Animation\Animation.h" />
     <ClInclude Include="Sources\Animation\AnimationClipManager.h" />
@@ -210,7 +211,6 @@
     <ClInclude Include="Sources\Shader.h" />
     <ClInclude Include="Sources\SkeletalModel.h" />
     <ClInclude Include="Sources\UIFunctions.h" />
-    <ClInclude Include="Sources\StateMachine\StateMachine.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Sources\Shaders\Vertex\VertexShader.vert" />
