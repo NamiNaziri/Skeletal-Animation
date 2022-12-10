@@ -20,6 +20,15 @@ Model::Model()
 	//LoadAssets(path);
 }
 
+Model::~Model()
+{
+	for(auto mesh: meshes)
+	{
+		if(mesh != nullptr)
+			delete mesh;
+	}
+}
+
 void Model::Draw(Shader& shader)
 {
 	for (auto mesh : meshes)

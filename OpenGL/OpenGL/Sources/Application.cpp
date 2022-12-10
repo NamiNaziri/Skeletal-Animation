@@ -337,7 +337,7 @@ void Application::ImportShaders()
     CubeMapShader.SetShaderPath("E:/Graphics/OpenGL/GitRepo/OpenGL/OpenGL/Sources/Shaders/Vertex/SkyBoxVertexShader.vert",
         "E:/Graphics/OpenGL/GitRepo/OpenGL/OpenGL/Sources/Shaders/Fragment/SkyBoxFragmentShader.frag");
 
-    cubeMap.SetCubeMapPath("Resources/CubeMap/skybox");
+    cubeMap.SetCubeMapPath("E:/Graphics/OpenGL/GitRepo/OpenGL/OpenGL/Resources/CubeMap/skybox");
 }
 
 void Application::ImportModels()
@@ -357,10 +357,10 @@ void Application::ImportModels()
 	archer->SetPosition(currentArcherPosition + glm::vec3(90, 93, 90));
 	archer->SetRotation(0, glm::vec3(0.f, 1.f, 0.f));
 	
-	archerClipManager->AddNewAnimationClip("Resources/objects/Archer/animations/walking.fbx");
-	archerClipManager->AddNewAnimationClip("Resources/objects/Archer/animations/Jog Forward.fbx");
-	archerClipManager->AddNewAnimationClip("Resources/objects/Archer/animations/idle.fbx");
-	archerClipManager->AddNewAnimationClip("Resources/objects/Archer/animations/Waving.fbx");
+	archerClipManager->AddNewAnimationClip("E:/Graphics/OpenGL/GitRepo/OpenGL/OpenGL/Resources/objects/Archer/animations/walking.fbx");
+	archerClipManager->AddNewAnimationClip("E:/Graphics/OpenGL/GitRepo/OpenGL/OpenGL/Resources/objects/Archer/animations/Jog Forward.fbx");
+	archerClipManager->AddNewAnimationClip("E:/Graphics/OpenGL/GitRepo/OpenGL/OpenGL/Resources/objects/Archer/animations/idle.fbx");
+	archerClipManager->AddNewAnimationClip("E:/Graphics/OpenGL/GitRepo/OpenGL/OpenGL/Resources/objects/Archer/animations/Waving.fbx");
 
 	// Get an animation from anim manager and pass it to animation
 	// this way we could easily create state machines. Of course in its specific class

@@ -14,6 +14,7 @@ class Model
 public:
 	Model(std::string path);
 	Model();
+	~Model();
 	virtual void Draw(Shader& shader);
 	
 protected:

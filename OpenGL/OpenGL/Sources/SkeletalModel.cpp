@@ -382,11 +382,11 @@ void SkeletalModel::SetDrawSkeleton(bool drawSkeleton)
 
 void SkeletalModel::CreateJointModel()
 {
-	for (int i = 0; i < skeleton.GetBones().size(); i++)
+	/*for (int i = 0; i < skeleton.GetBones().size(); i++)
 	{
 		Model secModel("resources/objects/Sphere/sphere.obj");
 		skeletalJointsModels.push_back(secModel);
-
-	}
+		
+	}*/
 	
 }

@@ -61,6 +61,14 @@ public:
 
 	}
 
+	~Skeleton()
+	{
+		for(auto bone: bones)
+		{
+			delete bone;
+		}
+	}
+
 	std::vector<Bone*>& GetBones()
 	{
 		return bones;
