@@ -22,11 +22,6 @@ Model::Model()
 
 Model::~Model()
 {
-	for(auto mesh: meshes)
-	{
-		if(mesh != nullptr)
-			delete mesh;
-	}
 }
 
 void Model::Draw(Shader& shader)
@@ -76,10 +71,10 @@ void Model::ProcessNode(aiNode* node, const aiScene* scene)
 	}
 }
 
-Mesh* Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
+std::shared_ptr<Mesh> Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 {
 
-	Mesh* m = nullptr;
+	std::shared_ptr<Mesh> m = nullptr;
 	
 	// Processing indices
 	const std::vector<unsigned int> indices = ProcessIndices(mesh);
@@ -88,10 +83,9 @@ Mesh* Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 	const std::vector<Texture> textures = ProcessMaterials(mesh, scene);
 	
 	// Processing Vertices
-
 	const std::vector<Vertex> vertices = ProcessStaticMeshVertices(mesh);
 		
-	m = new StaticMesh(mesh->mName.C_Str(), vertices, indices, textures);
+	m = std::make_shared<StaticMesh>(mesh->mName.C_Str(), vertices, indices, textures);
 
 	return m;
 }

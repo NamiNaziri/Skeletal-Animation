@@ -18,7 +18,7 @@ public:
 	virtual void Draw(Shader& shader);
 	
 protected:
-	std::vector<Mesh*> meshes;
+	std::vector<std::shared_ptr<Mesh>> meshes;
 	std::string directory;
 	std::vector<Texture> loadedTextures;
 
@@ -28,7 +28,7 @@ protected:
 	void LoadAssets(std::string path);
 	 
 	virtual void ProcessNode(aiNode* node, const aiScene* scene);
-	virtual Mesh* ProcessMesh(aiMesh* mesh, const aiScene* scene);
+	virtual std::shared_ptr<Mesh> ProcessMesh(aiMesh* mesh, const aiScene* scene);
 	std::vector<Texture> LoadMaterialTextures(const aiScene* scene,aiMaterial* mat, aiTextureType type, TextureType textureType, const std::string& textureName);
 
 

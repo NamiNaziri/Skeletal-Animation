@@ -75,7 +75,7 @@ class AnimationClip
 {
 private:
 	std::string name;
-	Skeleton* skeleton; //TODO pointer has to be replaced with skeletonUnique Id
+	std::shared_ptr<Skeleton> skeleton; //TODO pointer has to be replaced with skeletonUnique Id
 	double framePerSecond;
 	int frameCount;
 	double duration;
@@ -89,13 +89,13 @@ private:
 
 	int loopCounter = 0;
 public:
-	AnimationClip(std::string clipName, Skeleton* skeleton, double framePerSecond, int frameCount, bool loop, double clipDuration);
-	AnimationClip(std::string clipName, Skeleton* skeleton, double framePerSecond, int frameCount, bool loop, double clipDuration, AnimationPoses animationPoses);
+	AnimationClip(std::string clipName, std::shared_ptr<Skeleton> skeleton, double framePerSecond, int frameCount, bool loop, double clipDuration);
+	AnimationClip(std::string clipName, std::shared_ptr<Skeleton> skeleton, double framePerSecond, int frameCount, bool loop, double clipDuration, AnimationPoses animationPoses);
 
 	std::string GetName();
 	
 	void SetName(std::string name);
-	void SetSkeleton(Skeleton* skeleton);
+	void SetSkeleton(std::shared_ptr<Skeleton>  skeleton);
 	void SetFramePerSecond(double framePerSecond);
 	void SetFrameCount(int frameCount);
 

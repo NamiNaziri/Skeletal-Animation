@@ -6,22 +6,17 @@
 #include "Animation.h"
 
 
-AnimationClipManager::AnimationClipManager(const std::string& path, Skeleton& skeleton)
-		:skeleton(&skeleton)
+AnimationClipManager::AnimationClipManager(const std::string& path, std::shared_ptr<Skeleton> skeleton)
+		:skeleton(skeleton)
 {
 	AddNewAnimationClip(path);
 }
 
-AnimationClipManager::AnimationClipManager(Skeleton& skeleton) : skeleton(&skeleton)
+AnimationClipManager::AnimationClipManager(std::shared_ptr<Skeleton> skeleton) : skeleton(skeleton)
 {}
 
 AnimationClipManager::~AnimationClipManager()
-{
-	for(auto anim : loadedAnimationClips)
-	{
-		delete anim;
-	}
-}
+{}
 
 void AnimationClipManager::AddNewAnimationClip(const std::string& path)
 {
@@ -61,7 +56,7 @@ void AnimationClipManager::LoadAnimationClips(const aiScene* scene)
 			std::cout<< __FUNCTION__ << "mTicksPerSecond: "<<anim->mTicksPerSecond << "(0 Division)" << std::endl;
 			return;
 		}
-		AnimationClip* animation = new AnimationClip(anim->mName.C_Str(), skeleton,
+		std::shared_ptr<AnimationClip> animation = std::make_shared<AnimationClip>(anim->mName.C_Str(), skeleton,
 			anim->mTicksPerSecond, anim->mDuration, true, anim->mDuration / anim->mTicksPerSecond, poses);
 		loadedAnimationClips.push_back(animation);
 		std::cout << std::endl << "New Animation added. Clip name: " << anim->mName.C_Str() << std::endl;
@@ -108,12 +103,12 @@ AnimationKeyframes AnimationClipManager::ProcessAnimationChannel(aiNodeAnim* cha
 	return animKeyframes;
 }
 
-std::vector<AnimationClip* > AnimationClipManager::GetLoadedAnimationClips()
+std::vector<std::shared_ptr<AnimationClip> > AnimationClipManager::GetLoadedAnimationClips()
 {
 	return loadedAnimationClips;
 }
 
-Skeleton* AnimationClipManager::GetSkeleton()
+std::shared_ptr<Skeleton> AnimationClipManager::GetSkeleton()
 {
 	return skeleton;
 }

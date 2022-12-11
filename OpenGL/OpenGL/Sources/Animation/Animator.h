@@ -9,14 +9,14 @@ private:
 	double startTimeForCurrentAnim;
 	double currentTime;
 	std::string currentClipName;
-	Skeleton* skeleton;
-	AnimationClip* currentClip;
+	std::shared_ptr<Skeleton> skeleton;
+	std::shared_ptr<AnimationClip> currentClip;
 	bool loop = true;
 	bool enableRootMotion = false;
 
 public:
-	Animator(Skeleton* skeleton, AnimationClip& animClip, double startTime);
-	void ChangeAnimationClip(AnimationClip& animClip, double startTime);
+	Animator(std::shared_ptr<Skeleton> skeleton, std::shared_ptr<AnimationClip> animClip, double startTime);
+	void ChangeAnimationClip(std::shared_ptr<AnimationClip> animClip, double startTime);
 	void SetSkeletonPose(AnimationPose& pose);
 	double GetCurrentClipTime();
 	const AnimationClip& GetCurrentClip();

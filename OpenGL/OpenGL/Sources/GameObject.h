@@ -41,18 +41,18 @@ protected:
 class SkeletalModelGameObject : public GameObject
 {
 public:
-	SkeletalModelGameObject(SkeletalModel* skeletalModel);
+	SkeletalModelGameObject(std::shared_ptr<SkeletalModel> skeletalModel);
 	void Draw(Shader& shader)override;
 private:
-	SkeletalModel* skeletalModel = nullptr;
+	std::shared_ptr<SkeletalModel> skeletalModel = nullptr;
 };
 
 
 class ModelGameObject : public GameObject
 {
 public:
-	ModelGameObject(Model* model);
+	ModelGameObject(std::shared_ptr<Model> model);
 	void Draw(Shader& shader)override;
 private:
-	Model* model = nullptr;
+	std::shared_ptr<Model> model = nullptr;
 };

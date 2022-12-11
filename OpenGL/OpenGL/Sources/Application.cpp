@@ -22,28 +22,6 @@ Application::Application() :
 
 Application::~Application()
 {
-	delete archerSkeletalModel;
-	delete archer;
-	delete archerClipManager;
-	delete archerAnimator;
-	delete archerAnimState;
-
-	
-	delete environmentModel;
-	delete environmentObject;
-
-	delete elephantModel;
-	delete elephantGameObject;
-	delete elephantClipManager;
-	delete elephantAnimator;
-
-
-	delete wolfModel;
-	delete wolfGameObject;
-	delete wolfClipManager ;
-	delete wolfAnimator;
-	delete wolfAnimState;
-
 }
 
 void Application::Start()
@@ -175,8 +153,8 @@ void Application::UpdateUI()
 	// Create a window called "My First Tool", with a menu bar.
 	ImGui::Begin("Animation Controller");
 
-	if(archerSkeletalModel->GetSkeleton().GetRootBone())
-		UIFunctions::DrawSkeletonTreeHelper(*(archerSkeletalModel->GetSkeleton().GetRootBone()));
+	if(archerSkeletalModel->GetSkeleton()->GetRootBone())
+		UIFunctions::DrawSkeletonTreeHelper(*(archerSkeletalModel->GetSkeleton()->GetRootBone()));
 
 	ImGui::End();
 
@@ -348,10 +326,10 @@ void Application::ImportModels()
 	const std::string archerAnimationPath = "Resources/objects/Archer/Animations/idle.fbx";
 	const std::string archerFBXResourcePath = "Resources/objects/Archer/Yelling While Standing.fbx";
 	
-	archerSkeletalModel = new SkeletalModel(archerFBXResourcePath);
-	archer = new SkeletalModelGameObject(archerSkeletalModel);
+	archerSkeletalModel = std::make_shared<SkeletalModel>(archerFBXResourcePath);
+	archer = std::make_shared<SkeletalModelGameObject>(archerSkeletalModel);
 	gameObjectPointer = archer;
-	archerClipManager = new AnimationClipManager(archerAnimationPath, archerSkeletalModel->GetSkeleton());
+	archerClipManager = std::make_shared<AnimationClipManager>(archerAnimationPath, archerSkeletalModel->GetSkeleton());
 	
 	glm::vec3 currentArcherPosition = archer->GetPosition();
 	archer->SetPosition(currentArcherPosition + glm::vec3(90, 93, 90));
@@ -367,29 +345,29 @@ void Application::ImportModels()
 
 	//int animationSelector = 0;
 	
-	AnimationClip* anim = archerClipManager->GetLoadedAnimationClips()[0];
+	std::shared_ptr<AnimationClip> anim = archerClipManager->GetLoadedAnimationClips()[0];
 
 
 	//TODO animator constructor should be changed so it does not take any animations;
 
 	
-	archerAnimator = new Animator(archerClipManager->GetSkeleton(), *anim, glfwGetTime());  
+	archerAnimator = std::make_shared<Animator>(archerClipManager->GetSkeleton(), anim, glfwGetTime());  
 
-	AnimationState* ARCHER_IDLE_STATE = new AnimationState("IDLE",archerClipManager->GetLoadedAnimationClips()[0]); 
-	Transition* archerTranIdleToWalk = new Transition("WALK", [this]() { return (!wolfMode) && walking; }, 0.13);
+	std::shared_ptr<AnimationState> ARCHER_IDLE_STATE = std::make_shared<AnimationState>("IDLE",archerClipManager->GetLoadedAnimationClips()[0]); 
+	std::shared_ptr<Transition> archerTranIdleToWalk = std::make_shared<Transition>("WALK", [this]() { return (!wolfMode) && walking; }, 0.13);
 	ARCHER_IDLE_STATE->AddNewTransition(archerTranIdleToWalk); 
 	
-	AnimationState* ARCHER_WALK_STATE = new AnimationState("WALK", archerClipManager->GetLoadedAnimationClips()[1]); 
-	Transition* archerTranWalkToIdle = new Transition("IDLE", [this]() {return (!wolfMode) && !walking; }, 0.35);
+	std::shared_ptr<AnimationState> ARCHER_WALK_STATE = std::make_shared<AnimationState>("WALK", archerClipManager->GetLoadedAnimationClips()[1]); 
+	std::shared_ptr<Transition> archerTranWalkToIdle = std::make_shared<Transition>("IDLE", [this]() {return (!wolfMode) && !walking; }, 0.35);
 	ARCHER_WALK_STATE->AddNewTransition(archerTranWalkToIdle);
-	Transition* archerTranWalkToRun = new Transition("RUN", [this]() {return (!wolfMode) && running && walking; }, 0.13);
+	std::shared_ptr<Transition> archerTranWalkToRun = std::make_shared<Transition>("RUN", [this]() {return (!wolfMode) && running && walking; }, 0.13);
 	ARCHER_WALK_STATE->AddNewTransition(archerTranWalkToRun);
 	
-	AnimationState* ARCHER_RUN_STATE = new AnimationState("RUN", archerClipManager->GetLoadedAnimationClips()[2]); 
-	Transition* archerTranRunToWalk = new Transition("WALK", [this]() {return (!wolfMode) && ((!running) || (!walking)); }, 0.13);
+	std::shared_ptr<AnimationState> ARCHER_RUN_STATE = std::make_shared<AnimationState>("RUN", archerClipManager->GetLoadedAnimationClips()[2]); 
+	std::shared_ptr<Transition> archerTranRunToWalk = std::make_shared<Transition>("WALK", [this]() {return (!wolfMode) && ((!running) || (!walking)); }, 0.13);
 	ARCHER_RUN_STATE->AddNewTransition(archerTranRunToWalk);
 	
-	archerAnimState = new AnimationStateMachine(archerAnimator, ARCHER_IDLE_STATE);
+	archerAnimState = std::make_shared<AnimationStateMachine>(archerAnimator, ARCHER_IDLE_STATE);
 	archerAnimState->AddNewState(ARCHER_WALK_STATE);
 	archerAnimState->AddNewState(ARCHER_RUN_STATE);
 
@@ -400,8 +378,8 @@ void Application::ImportModels()
 	*/
 	const std::string environmentPath = "Resources/objects/Castle/untitled.fbx_Scen3e.fbx_Scene.fbx";
 
-	environmentModel = new Model(environmentPath);
-	environmentObject = new ModelGameObject(environmentModel);
+	environmentModel = std::make_shared<Model>(environmentPath);
+	environmentObject = std::make_shared<ModelGameObject>(environmentModel);
 	environmentObject->SetRotation(0, glm::vec3(0.f, 1.f, 0.f));
 
 
@@ -409,15 +387,15 @@ void Application::ImportModels()
 	 * Importing Elephant
 	 */
 	const std::string elephantPath = "Resources/objects/Elephant/Elephant.fbx";
-	elephantModel = new SkeletalModel(elephantPath);
-	elephantGameObject = new SkeletalModelGameObject(elephantModel);
+	elephantModel = std::make_shared<SkeletalModel>(elephantPath);
+	elephantGameObject = std::make_shared<SkeletalModelGameObject>(elephantModel);
 
-	elephantClipManager = new AnimationClipManager (elephantPath, elephantModel->GetSkeleton());
+	elephantClipManager = std::make_shared<AnimationClipManager> (elephantPath, elephantModel->GetSkeleton());
 
 	elephantGameObject->SetScale(glm::vec3(3, 3, 3));
 	elephantGameObject->SetPosition(elephantGameObject->GetPosition() + glm::vec3(500, 0, 500));
 
-	elephantAnimator = new Animator(elephantClipManager->GetSkeleton(), *(elephantClipManager->GetLoadedAnimationClips()[0]), glfwGetTime());
+	elephantAnimator = std::make_shared<Animator>(elephantClipManager->GetSkeleton(), (elephantClipManager->GetLoadedAnimationClips()[0]), glfwGetTime());
 
 
 
@@ -425,10 +403,10 @@ void Application::ImportModels()
 
 
 	const std::string wolfPath = "Resources/objects/Wolf/wp.fbx";
-	wolfModel = new SkeletalModel(wolfPath);
-	wolfGameObject = new SkeletalModelGameObject(wolfModel);
+	wolfModel = std::make_shared<SkeletalModel>(wolfPath);
+	wolfGameObject = std::make_shared<SkeletalModelGameObject>(wolfModel);
 
-	wolfClipManager = new AnimationClipManager(wolfPath, wolfModel->GetSkeleton());
+	wolfClipManager = std::make_shared<AnimationClipManager>(wolfPath, wolfModel->GetSkeleton());
 
 	wolfGameObject->SetScale(glm::vec3(30, 30, 30));
 	//wolfGameObject->SetRotation(90, glm::vec3(0.f, 0.f, 1.f));
@@ -437,23 +415,23 @@ void Application::ImportModels()
 
 	wolfGameObject->SetPosition(currentWolfPosition + glm::vec3(0, 55, 0));
 
-	wolfAnimator = new Animator(wolfClipManager->GetSkeleton(), *(wolfClipManager->GetLoadedAnimationClips()[13]), glfwGetTime());
+	wolfAnimator = std::make_shared<Animator>(wolfClipManager->GetSkeleton(), (wolfClipManager->GetLoadedAnimationClips()[13]), glfwGetTime());
 
-	AnimationState* wolfIDLE_STATE = new AnimationState("IDLE", wolfClipManager->GetLoadedAnimationClips()[13]);
-	Transition* wolftranIdleToWalk = new Transition("WALK", [this]() { return wolfMode && walking; }, 0.13);
+	std::shared_ptr<AnimationState> wolfIDLE_STATE = std::make_shared<AnimationState>("IDLE", wolfClipManager->GetLoadedAnimationClips()[13]);
+	std::shared_ptr<Transition> wolftranIdleToWalk = std::make_shared<Transition>("WALK", [this]() { return wolfMode && walking; }, 0.13);
 	wolfIDLE_STATE->AddNewTransition(wolftranIdleToWalk);
 
-	AnimationState* wolfWalk_STATE = new AnimationState("WALK", wolfClipManager->GetLoadedAnimationClips()[12]);
-	Transition* wolftranWalkToIdle = new Transition("IDLE", [this]() {return wolfMode && !walking; }, 0.35);
+	std::shared_ptr<AnimationState> wolfWalk_STATE = std::make_shared<AnimationState>("WALK", wolfClipManager->GetLoadedAnimationClips()[12]);
+	std::shared_ptr<Transition> wolftranWalkToIdle = std::make_shared<Transition>("IDLE", [this]() {return wolfMode && !walking; }, 0.35);
 	wolfWalk_STATE->AddNewTransition(wolftranWalkToIdle);
-	Transition* wolftranWalkToRun = new Transition("RUN", [this]() {return wolfMode &&  running && walking; }, 0.13);
+	std::shared_ptr<Transition> wolftranWalkToRun = std::make_shared<Transition>("RUN", [this]() {return wolfMode &&  running && walking; }, 0.13);
 	wolfWalk_STATE->AddNewTransition(wolftranWalkToRun);
 
-	AnimationState* wolfRUN_STATE = new AnimationState("RUN", wolfClipManager->GetLoadedAnimationClips()[10]);
-	Transition* wolftranRunToWalk = new Transition("WALK", [this]() {return wolfMode && ((!running) || (!walking)); }, 0.13);
+	std::shared_ptr<AnimationState> wolfRUN_STATE = std::make_shared<AnimationState>("RUN", wolfClipManager->GetLoadedAnimationClips()[10]);
+	std::shared_ptr<Transition> wolftranRunToWalk = std::make_shared<Transition>("WALK", [this]() {return wolfMode && ((!running) || (!walking)); }, 0.13);
 	wolfRUN_STATE->AddNewTransition(wolftranRunToWalk);
 
-	wolfAnimState = new AnimationStateMachine(wolfAnimator, wolfIDLE_STATE);
+	wolfAnimState = std::make_shared<AnimationStateMachine>(wolfAnimator, wolfIDLE_STATE);
 	wolfAnimState->AddNewState(wolfWalk_STATE);
 	wolfAnimState->AddNewState(wolfRUN_STATE);
 	wolfAnimState->Update(deltaTime);
@@ -490,7 +468,7 @@ void Application::processInput(GLFWwindow* window)
 		cam.Translate(cam.GetRight(), cameraSpeed);
 }
 
-void Application::processInput(GLFWwindow* window, SkeletalModelGameObject* gameObject)
+void Application::processInput(GLFWwindow* window, std::shared_ptr<SkeletalModelGameObject> gameObject)
 {
 	ImGuiIO& io = ImGui::GetIO();
 

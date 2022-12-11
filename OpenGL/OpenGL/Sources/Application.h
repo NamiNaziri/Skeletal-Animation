@@ -34,7 +34,7 @@ private:
     void ImportModels();
 
     void processInput(GLFWwindow* window);
-    void processInput(GLFWwindow* window, SkeletalModelGameObject* gameObject);
+    void processInput(GLFWwindow* window, std::shared_ptr<SkeletalModelGameObject> gameObject);
 
 
     // Callbacks
@@ -58,7 +58,7 @@ private:
 
     static Camera cam;
 
-    inline static SkeletalModelGameObject* gameObjectPointer = nullptr;
+    inline static std::shared_ptr<SkeletalModelGameObject> gameObjectPointer = nullptr;
 
 
     /*Archer*/
@@ -67,28 +67,28 @@ private:
     
     
 
-    SkeletalModel* archerSkeletalModel;
-    SkeletalModelGameObject* archer;
-    AnimationClipManager* archerClipManager;
-    Animator* archerAnimator;
-    AnimationStateMachine* archerAnimState;
+    std::shared_ptr<SkeletalModel> archerSkeletalModel;
+    std::shared_ptr<SkeletalModelGameObject> archer;
+    std::shared_ptr<AnimationClipManager> archerClipManager;
+    std::shared_ptr<Animator> archerAnimator;
+    std::shared_ptr<AnimationStateMachine> archerAnimState;
 
 
-    Model* environmentModel;
-    ModelGameObject* environmentObject;
+    std::shared_ptr<Model> environmentModel;
+   std::shared_ptr<ModelGameObject> environmentObject;
 
 
-    SkeletalModel* elephantModel;
-    SkeletalModelGameObject* elephantGameObject;
-    AnimationClipManager* elephantClipManager;
-    Animator* elephantAnimator;
+    std::shared_ptr<SkeletalModel> elephantModel;
+    std::shared_ptr<SkeletalModelGameObject> elephantGameObject;
+    std::shared_ptr<AnimationClipManager> elephantClipManager;
+    std::shared_ptr<Animator> elephantAnimator;
 
 
-    SkeletalModel* wolfModel;
-    SkeletalModelGameObject* wolfGameObject;
-    AnimationClipManager* wolfClipManager ;
-    Animator* wolfAnimator;
-    AnimationStateMachine* wolfAnimState;
+    std::shared_ptr<SkeletalModel> wolfModel;
+    std::shared_ptr<SkeletalModelGameObject> wolfGameObject;
+    std::shared_ptr<AnimationClipManager> wolfClipManager ;
+    std::shared_ptr<Animator> wolfAnimator;
+    std::shared_ptr<AnimationStateMachine> wolfAnimState;
 
 
 

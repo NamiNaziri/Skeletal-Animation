@@ -25,7 +25,7 @@ private:
 
 	std::string	name;
 	int parentIndex = -1;
-	std::vector<Bone*> children;
+	std::vector<std::shared_ptr<Bone>> children;
 
 public:
 	Bone(glm::mat4 invBindPose, std::string name)
@@ -43,8 +43,8 @@ public:
 	glm::mat4 GetInverseBindPose() { return inverseBindPose; }
 	glm::mat4 GetTransform() { return transform; }
 
-	std::vector<Bone*>& GetChildren() { return children; }
-	void AddNewChild(Bone* child) { children.push_back(child); }
+	std::vector<std::shared_ptr<Bone> >& GetChildren() { return children; }
+	void AddNewChild(std::shared_ptr<Bone>  child) { children.push_back(child); }
 	void SetTransform(glm::mat4 transform) { this->transform = transform; }
 	void SetName(std::string& name) { this->name = name; }
 };
@@ -53,8 +53,8 @@ class Skeleton
 {
 private:
 	int uniqueID = -1;
-	Bone* rootBone;
-	std::vector<Bone* > bones;
+	std::shared_ptr<Bone> rootBone;
+	std::vector<std::shared_ptr<Bone> > bones;
 public:
 	Skeleton()
 	{
@@ -63,20 +63,17 @@ public:
 
 	~Skeleton()
 	{
-		for(auto bone: bones)
-		{
-			delete bone;
-		}
+
 	}
 
-	std::vector<Bone*>& GetBones()
+	std::vector<std::shared_ptr<Bone>>& GetBones()
 	{
 		return bones;
 	}
 
-	void AddBone(Bone* bone) { bones.push_back(bone); }
-	void SetRootBone(Bone* bone) { rootBone = bone; };
-	Bone* GetRootBone() { return rootBone; }
+	void AddBone(std::shared_ptr<Bone> bone) { bones.push_back(bone); }
+	void SetRootBone(std::shared_ptr<Bone> bone) { rootBone = bone; };
+	std::shared_ptr<Bone> GetRootBone() { return rootBone; }
 
 	int GetBoneIndexByName(const std::string& boneName)
 	{
@@ -91,7 +88,7 @@ public:
 		return -1;
 	}
 
-	Bone* GetBoneByName(const std::string& boneName)
+	std::shared_ptr<Bone> GetBoneByName(const std::string& boneName)
 	{
 		for (int i = 0; i < bones.size(); i++)
 		{
@@ -131,18 +128,18 @@ class SkeletalModel : public Model
 {
 public:
 	SkeletalModel(std::string path);
-	Skeleton& GetSkeleton() { return skeleton; }
+	std::shared_ptr<Skeleton> GetSkeleton() { return skeleton; }
 	
 	void Draw(Shader& shader) override;
 	void DrawSkeletonJoints(Shader& shader);
 protected:
-	Skeleton skeleton;
+	std::shared_ptr<Skeleton> skeleton;
 	
 	std::vector<Model> skeletalJointsModels;
 	
 	void LoadAssets(std::string path);
 	void ProcessNode(aiNode* node, const aiScene* scene) override;
-	Mesh* ProcessMesh(aiMesh* mesh, const aiScene* scene) override;
+	std::shared_ptr<Mesh> ProcessMesh(aiMesh* mesh, const aiScene* scene) override;
 
 	
 	std::vector<SkinnedVertex> ProcessSkinnedMeshVertices(aiMesh* mesh);
@@ -154,7 +151,7 @@ private:
 	 * used for finding the skeleton
 	 */
 	std::map<aiNode*, bool> necessityMap;
-	std::map<std::string, Bone* > boneInfoMap; // name of the bone -> BoneInfo
+	std::map<std::string, std::shared_ptr<Bone> > boneInfoMap; // name of the bone -> BoneInfo
 
 	std::vector<glm::mat4> skeletonTransform; // This just the skeleton transform
 	std::vector<glm::mat4> matrixPalletTransform; 
@@ -198,6 +195,6 @@ private:
 
 	//TODO Draw skeleton bind pose!?
 	
-	void CalculateSkeletonTransform(Bone* root, glm::mat4 parentTrnsform);
-	void CalculateMatrixPalletTransform(Bone* root, glm::mat4 parentTrnsform);
+	void CalculateSkeletonTransform(std::shared_ptr<Bone>  root, glm::mat4 parentTrnsform);
+	void CalculateMatrixPalletTransform(std::shared_ptr<Bone>  root, glm::mat4 parentTrnsform);
 };

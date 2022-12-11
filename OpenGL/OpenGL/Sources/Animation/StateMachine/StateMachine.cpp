@@ -8,15 +8,11 @@ bool Transition::Evaluate()
 	return evaluateFunction();
 }
 
-AnimationState::AnimationState(std::string stateName, AnimationClip* animClip)
+AnimationState::AnimationState(std::string stateName, std::shared_ptr<AnimationClip> animClip)
 	:stateName(stateName), animClip(animClip){}
 
 AnimationState::~AnimationState()
 {
-	for(auto tran : transitions)
-	{
-		delete tran;
-	}
 }
 
 bool AnimationStateMachine::TransitionUpdate(double deltaTime)
@@ -53,19 +49,15 @@ bool AnimationStateMachine::TransitionUpdate(double deltaTime)
 	}
 }
 
-AnimationStateMachine::AnimationStateMachine(Animator* animator, AnimationState* initialState)
+AnimationStateMachine::AnimationStateMachine(std::shared_ptr<Animator> animator, std::shared_ptr<AnimationState> initialState)
 	: animator(animator), currentState(initialState)
 {
 	AddNewState(initialState);
-	animator->ChangeAnimationClip(*(currentState->GetAnimClip()), 0);
+	animator->ChangeAnimationClip((currentState->GetAnimClip()), 0);
 }
 
 AnimationStateMachine::~AnimationStateMachine()
 {
-	for(auto state: animationStatesMap)
-	{
-		delete state.second;
-	}
 }
 
 void AnimationStateMachine::Update(double deltaTime)
@@ -105,12 +97,12 @@ void AnimationStateMachine::Update(double deltaTime)
 	}
 	else if(transitionStatus == TransitionStatus::finished)
 	{
-		animator->ChangeAnimationClip(*(currentState->GetAnimClip()), 0); 
+		animator->ChangeAnimationClip((currentState->GetAnimClip()), 0); 
 		transitionStatus = TransitionStatus::normal;
 	}
 }
 
-void AnimationStateMachine::AddNewState(AnimationState* animationState)
+void AnimationStateMachine::AddNewState(std::shared_ptr<AnimationState> animationState)
 {
 	animationStatesMap.emplace(animationState->GetStateName(), animationState);
 }

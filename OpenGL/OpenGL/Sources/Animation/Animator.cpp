@@ -1,18 +1,18 @@
 #include "Animator.h"
 
-Animator::Animator(Skeleton* skeleton, AnimationClip& animClip, double startTime) :
-	skeleton(skeleton),  startTimeForCurrentAnim(startTime), currentClip(&animClip)
+Animator::Animator(std::shared_ptr<Skeleton> skeleton, std::shared_ptr<AnimationClip> animClip, double startTime) :
+	skeleton(skeleton),  startTimeForCurrentAnim(startTime), currentClip(animClip)
 {
 
-	currentClipName = animClip.GetName();
+	currentClipName = animClip->GetName();
 	currentTime = startTime;
 }
 
-void Animator::ChangeAnimationClip(AnimationClip& animClip, double startTime)
+void Animator::ChangeAnimationClip(std::shared_ptr<AnimationClip> animClip, double startTime)
 {
-	currentClip = &animClip;
+	currentClip = animClip;
 
-	currentClipName = animClip.GetName();
+	currentClipName = animClip->GetName();
 	startTimeForCurrentAnim = startTime;
 	currentTime = startTime; //todo is this necessary or is it better to not change it?
 	
@@ -23,9 +23,9 @@ void Animator::SetSkeletonPose(AnimationPose& pose)
 	for (auto ap : pose.keyframesMap)
 	{
 
-		Bone* b = skeleton->GetBoneByName(ap.first);
+		std::shared_ptr<Bone> b = skeleton->GetBoneByName(ap.first);
 
-		Bone* root = skeleton->GetBones()[0];
+		std::shared_ptr<Bone>  root = skeleton->GetBones()[0];
 		if(b )
 		{
 			glm::mat4 rot = glm::toMat4(ap.second.rotation);

@@ -3,13 +3,13 @@
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 
-AnimationClip::AnimationClip(std::string clipName, Skeleton* skeleton, double framePerSecond, int frameCount, bool loop, double duration)
+AnimationClip::AnimationClip(std::string clipName, std::shared_ptr<Skeleton> skeleton, double framePerSecond, int frameCount, bool loop, double duration)
 	:name(clipName), skeleton(skeleton), framePerSecond(framePerSecond), frameCount(frameCount),loop(loop), duration(duration)
 {
 	loopCounter = 0;
 }
 
-AnimationClip::AnimationClip(std::string clipName, Skeleton* skeleton, double framePerSecond, int frameCount, bool loop, double duration,
+AnimationClip::AnimationClip(std::string clipName, std::shared_ptr<Skeleton> skeleton, double framePerSecond, int frameCount, bool loop, double duration,
 	AnimationPoses animationPoses)
 	: name(clipName), skeleton(skeleton), framePerSecond(framePerSecond), frameCount(frameCount), loop(loop), duration(duration),
 		animationPoses(animationPoses)
@@ -28,7 +28,7 @@ void AnimationClip::SetName(std::string clipName)
 	this->name = clipName;
 }
 
-void AnimationClip::SetSkeleton(Skeleton* skeleton)
+void AnimationClip::SetSkeleton(std::shared_ptr<Skeleton> skeleton)
 {
 	this->skeleton = skeleton;
 }

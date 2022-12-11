@@ -122,7 +122,7 @@ void SkeletalModelGameObject::Draw(Shader& shader)
 	skeletalModel->Draw(shader);
 }
 
-ModelGameObject::ModelGameObject(Model* model)
+ModelGameObject::ModelGameObject(std::shared_ptr<Model> model)
 	: model (model)
 {
 }
@@ -133,7 +133,7 @@ void ModelGameObject::Draw(Shader& shader)
 	model->Draw(shader);
 }
 
-SkeletalModelGameObject::SkeletalModelGameObject(SkeletalModel* skeletalModel)
+SkeletalModelGameObject::SkeletalModelGameObject(std::shared_ptr<SkeletalModel> skeletalModel)
 	: skeletalModel(skeletalModel)
 {
 }

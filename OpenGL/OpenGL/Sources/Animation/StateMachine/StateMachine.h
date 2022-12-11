@@ -41,20 +41,20 @@ public:
 class AnimationState
 {
 public:
-	AnimationState(std::string stateName, AnimationClip* animClip);
+	AnimationState(std::string stateName, std::shared_ptr<AnimationClip> animClip);
 	~AnimationState();
 private:
 	std::string stateName;
-	AnimationClip* animClip;
+	std::shared_ptr<AnimationClip> animClip;
 	//void Update();
 
 private:
-	std::vector<Transition*> transitions;
+	std::vector<std::shared_ptr<Transition>> transitions;
 public:
-	AnimationClip* GetAnimClip() { return animClip; }
+	std::shared_ptr<AnimationClip> GetAnimClip() { return animClip; }
 	const std::string& GetStateName() { return stateName; }
-	const std::vector<Transition*>& GetTransitions() { return transitions; }
-	void AddNewTransition(Transition* newTransition) { transitions.push_back(newTransition); }
+	const std::vector<std::shared_ptr<Transition>>& GetTransitions() { return transitions; }
+	void AddNewTransition(std::shared_ptr<Transition> newTransition) { transitions.push_back(newTransition); }
 };
 
 
@@ -70,11 +70,11 @@ class AnimationStateMachine
 	enum TransitionStatus { normal, transitioning, finished };
 	
 private:
-	Animator* animator = nullptr;
-	AnimationState* currentState = nullptr;
+	std::shared_ptr<Animator> animator = nullptr;
+	std::shared_ptr<AnimationState> currentState = nullptr;
 
 	
-	std::map<std::string, AnimationState*> animationStatesMap; // map of Animation state name and the object
+	std::map<std::string, std::shared_ptr<AnimationState>> animationStatesMap; // map of Animation state name and the object
 	TransitionStatus transitionStatus = TransitionStatus::normal;
 
 
@@ -87,12 +87,12 @@ private:
 	// returns true if transition is finished 
 	bool TransitionUpdate(double deltaTime);
 public:
-	AnimationStateMachine(Animator* animator, AnimationState* initialState);
+	AnimationStateMachine(std::shared_ptr<Animator> animator, std::shared_ptr<AnimationState> initialState);
 	~AnimationStateMachine();
 
 	
 	void Update(double deltaTime);
 
-	void AddNewState(AnimationState* animationState);
+	void AddNewState(std::shared_ptr<AnimationState> animationState);
 };
 
