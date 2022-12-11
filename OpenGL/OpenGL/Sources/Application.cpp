@@ -207,74 +207,74 @@ void Application::Render()
 void Application::UpdateSimpleShader()
 {
 	// render the mesh
-			SimpleShader.use(); // don't forget to activate/use the shader before setting uniforms!
-								// either set it manually like so:
+		SimpleShader.use(); // don't forget to activate/use the shader before setting uniforms!
+							// either set it manually like so:
 
-			// material
-			SimpleShader.SetFloat("material.shininess", 32.0f);
+		// material
+		SimpleShader.SetFloat("material.shininess", 32.0f);
 
-			// camera view
-			SimpleShader.SetVec3("viewPosition", cam.GetPosition());
+		// camera view
+		SimpleShader.SetVec3("viewPosition", cam.GetPosition());
 
-			// light
+		// light
 
-			// directional light
-			SimpleShader.SetVec3("dirLight.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
-			SimpleShader.SetVec3("dirLight.ambient", glm::vec3(0.4f, 0.4f, 0.4f));
-			SimpleShader.SetVec3("dirLight.diffuse", glm::vec3(1.0f, 1.0f, 1.f));
-			SimpleShader.SetVec3("dirLight.specular", glm::vec3(1.5f, 1.5f, 1.5f));
-			// point light 1
-			SimpleShader.SetVec3("pointLights[0].position", pointLightPositions[0]);
-			SimpleShader.SetVec3("pointLights[0].ambient", glm::vec3(0.05f, 0.05f, 0.05f));
-			SimpleShader.SetVec3("pointLights[0].diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
-			SimpleShader.SetVec3("pointLights[0].specular", glm::vec3(1.0f, 1.0f, 1.0f));
-			SimpleShader.SetFloat("pointLights[0].constant", 1.0f);
-			SimpleShader.SetFloat("pointLights[0].linear", 0.09f);
-			SimpleShader.SetFloat("pointLights[0].quadratic", 0.032f);
-			// point light 2
-			SimpleShader.SetVec3("pointLights[1].position", pointLightPositions[1]);
-			SimpleShader.SetVec3("pointLights[1].ambient", glm::vec3(0.05f, 0.05f, 0.05f));
-			SimpleShader.SetVec3("pointLights[1].diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
-			SimpleShader.SetVec3("pointLights[1].specular", glm::vec3(1.0f, 1.0f, 1.0f));
-			SimpleShader.SetFloat("pointLights[1].constant", 1.0f);
-			SimpleShader.SetFloat("pointLights[1].linear", 0.09f);
-			SimpleShader.SetFloat("pointLights[1].quadratic", 0.032f);
-			// point light 3
-			SimpleShader.SetVec3("pointLights[2].position", pointLightPositions[2]);
-			SimpleShader.SetVec3("pointLights[2].ambient", glm::vec3(0.05f, 0.05f, 0.05f));
-			SimpleShader.SetVec3("pointLights[2].diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
-			SimpleShader.SetVec3("pointLights[2].specular", glm::vec3(1.0f, 1.0f, 1.0f));
-			SimpleShader.SetFloat("pointLights[2].constant", 1.0f);
-			SimpleShader.SetFloat("pointLights[2].linear", 0.09f);
-			SimpleShader.SetFloat("pointLights[2].quadratic", 0.032f);
-			// point light 4
-			SimpleShader.SetVec3("pointLights[3].position", pointLightPositions[3]);
-			SimpleShader.SetVec3("pointLights[3].ambient", glm::vec3(0.05f, 0.05f, 0.05f));
-			SimpleShader.SetVec3("pointLights[3].diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
-			SimpleShader.SetVec3("pointLights[3].specular", glm::vec3(1.0f, 1.0f, 1.0f));
-			SimpleShader.SetFloat("pointLights[3].constant", 1.0f);
-			SimpleShader.SetFloat("pointLights[3].linear", 0.09f);
-			SimpleShader.SetFloat("pointLights[3].quadratic", 0.032f);
-			// spotLight
-			SimpleShader.SetVec3("spotLight.position", pointLightPositions[3]);
-			SimpleShader.SetVec3("spotLight.direction", pointLightPositions[3]);
-			SimpleShader.SetVec3("spotLight.ambient", glm::vec3(0, 0.f, 0.f));
-			SimpleShader.SetVec3("spotLight.diffuse", glm::vec3(0.f, 0.f, 0.f));
-			SimpleShader.SetVec3("spotLight.specular", glm::vec3(0.f, 0.f, 0.f));
-			SimpleShader.SetFloat("spotLight.constant", 1.0f);
-			SimpleShader.SetFloat("spotLight.linear", 0.09f);
-			SimpleShader.SetFloat("spotLight.quadratic", 0.032f);
-			SimpleShader.SetFloat("spotLight.cutOff", glm::cos(glm::radians(55.5f)));
-			SimpleShader.SetFloat("spotLight.outerCutOff", glm::cos(glm::radians(65.0f)));
+		// directional light
+		SimpleShader.SetVec3("dirLight.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
+		SimpleShader.SetVec3("dirLight.ambient", glm::vec3(0.4f, 0.4f, 0.4f));
+		SimpleShader.SetVec3("dirLight.diffuse", glm::vec3(1.0f, 1.0f, 1.f));
+		SimpleShader.SetVec3("dirLight.specular", glm::vec3(1.5f, 1.5f, 1.5f));
+		// point light 1
+		SimpleShader.SetVec3("pointLights[0].position", pointLightPositions[0]);
+		SimpleShader.SetVec3("pointLights[0].ambient", glm::vec3(0.05f, 0.05f, 0.05f));
+		SimpleShader.SetVec3("pointLights[0].diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
+		SimpleShader.SetVec3("pointLights[0].specular", glm::vec3(1.0f, 1.0f, 1.0f));
+		SimpleShader.SetFloat("pointLights[0].constant", 1.0f);
+		SimpleShader.SetFloat("pointLights[0].linear", 0.09f);
+		SimpleShader.SetFloat("pointLights[0].quadratic", 0.032f);
+		// point light 2
+		SimpleShader.SetVec3("pointLights[1].position", pointLightPositions[1]);
+		SimpleShader.SetVec3("pointLights[1].ambient", glm::vec3(0.05f, 0.05f, 0.05f));
+		SimpleShader.SetVec3("pointLights[1].diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
+		SimpleShader.SetVec3("pointLights[1].specular", glm::vec3(1.0f, 1.0f, 1.0f));
+		SimpleShader.SetFloat("pointLights[1].constant", 1.0f);
+		SimpleShader.SetFloat("pointLights[1].linear", 0.09f);
+		SimpleShader.SetFloat("pointLights[1].quadratic", 0.032f);
+		// point light 3
+		SimpleShader.SetVec3("pointLights[2].position", pointLightPositions[2]);
+		SimpleShader.SetVec3("pointLights[2].ambient", glm::vec3(0.05f, 0.05f, 0.05f));
+		SimpleShader.SetVec3("pointLights[2].diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
+		SimpleShader.SetVec3("pointLights[2].specular", glm::vec3(1.0f, 1.0f, 1.0f));
+		SimpleShader.SetFloat("pointLights[2].constant", 1.0f);
+		SimpleShader.SetFloat("pointLights[2].linear", 0.09f);
+		SimpleShader.SetFloat("pointLights[2].quadratic", 0.032f);
+		// point light 4
+		SimpleShader.SetVec3("pointLights[3].position", pointLightPositions[3]);
+		SimpleShader.SetVec3("pointLights[3].ambient", glm::vec3(0.05f, 0.05f, 0.05f));
+		SimpleShader.SetVec3("pointLights[3].diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
+		SimpleShader.SetVec3("pointLights[3].specular", glm::vec3(1.0f, 1.0f, 1.0f));
+		SimpleShader.SetFloat("pointLights[3].constant", 1.0f);
+		SimpleShader.SetFloat("pointLights[3].linear", 0.09f);
+		SimpleShader.SetFloat("pointLights[3].quadratic", 0.032f);
+		// spotLight
+		SimpleShader.SetVec3("spotLight.position", pointLightPositions[3]);
+		SimpleShader.SetVec3("spotLight.direction", pointLightPositions[3]);
+		SimpleShader.SetVec3("spotLight.ambient", glm::vec3(0, 0.f, 0.f));
+		SimpleShader.SetVec3("spotLight.diffuse", glm::vec3(0.f, 0.f, 0.f));
+		SimpleShader.SetVec3("spotLight.specular", glm::vec3(0.f, 0.f, 0.f));
+		SimpleShader.SetFloat("spotLight.constant", 1.0f);
+		SimpleShader.SetFloat("spotLight.linear", 0.09f);
+		SimpleShader.SetFloat("spotLight.quadratic", 0.032f);
+		SimpleShader.SetFloat("spotLight.cutOff", glm::cos(glm::radians(55.5f)));
+		SimpleShader.SetFloat("spotLight.outerCutOff", glm::cos(glm::radians(65.0f)));
 
 
-			glm::mat4 view = cam.GetViewMatrix();
-			SimpleShader.SetMat4("view", view);
+		glm::mat4 view = cam.GetViewMatrix();
+		SimpleShader.SetMat4("view", view);
 
-			glm::mat4 projection = glm::mat4(1);
+		glm::mat4 projection = glm::mat4(1);
 
-			projection = glm::perspective(glm::radians(cam.GetFOV()), ((float)Width / (float)Height), 0.1f, 50000.0f);
-			SimpleShader.SetMat4("projection", projection);
+		projection = glm::perspective(glm::radians(cam.GetFOV()), ((float)Width / (float)Height), 0.1f, 50000.0f);
+		SimpleShader.SetMat4("projection", projection);
 }
 
 void Application::UpdateLightShader()
@@ -323,7 +323,30 @@ void Application::ImportModels()
     // tell stb_image.h to flip loaded texture's on the y-axis (before loading model).
     stbi_set_flip_vertically_on_load(true);
 
-	const std::string archerAnimationPath = "Resources/objects/Archer/Animations/idle.fbx";
+	/*
+	* Importing archer
+	*/
+	ImportArcherModel();
+	
+	/*
+	* Importing environment
+	*/
+	ImportEnvironmentModel();
+	
+	/*
+	 * Importing Elephant
+	 */
+	ImportElephantModel();
+
+	/*
+	 * Importing Wolf
+	 */
+	ImportWolfModel();
+}
+
+void Application::ImportArcherModel()
+{
+		const std::string archerAnimationPath = "Resources/objects/Archer/Animations/idle.fbx";
 	const std::string archerFBXResourcePath = "Resources/objects/Archer/Yelling While Standing.fbx";
 	
 	archerSkeletalModel = std::make_shared<SkeletalModel>(archerFBXResourcePath);
@@ -343,14 +366,10 @@ void Application::ImportModels()
 	// Get an animation from anim manager and pass it to animation
 	// this way we could easily create state machines. Of course in its specific class
 
-	//int animationSelector = 0;
-	
 	std::shared_ptr<AnimationClip> anim = archerClipManager->GetLoadedAnimationClips()[0];
 
 
 	//TODO animator constructor should be changed so it does not take any animations;
-
-	
 	archerAnimator = std::make_shared<Animator>(archerClipManager->GetSkeleton(), anim, glfwGetTime());  
 
 	std::shared_ptr<AnimationState> ARCHER_IDLE_STATE = std::make_shared<AnimationState>("IDLE",archerClipManager->GetLoadedAnimationClips()[0]); 
@@ -371,11 +390,10 @@ void Application::ImportModels()
 	archerAnimState->AddNewState(ARCHER_WALK_STATE);
 	archerAnimState->AddNewState(ARCHER_RUN_STATE);
 
+}
 
-
-	/*
-	* Importing the environment
-	*/
+void Application::ImportEnvironmentModel()
+{
 	const std::string environmentPath = "Resources/objects/Castle/untitled.fbx_Scen3e.fbx_Scene.fbx";
 
 	environmentModel = std::make_shared<Model>(environmentPath);
@@ -383,9 +401,10 @@ void Application::ImportModels()
 	environmentObject->SetRotation(0, glm::vec3(0.f, 1.f, 0.f));
 
 
-	/*
-	 * Importing Elephant
-	 */
+}
+
+void Application::ImportElephantModel()
+{
 	const std::string elephantPath = "Resources/objects/Elephant/Elephant.fbx";
 	elephantModel = std::make_shared<SkeletalModel>(elephantPath);
 	elephantGameObject = std::make_shared<SkeletalModelGameObject>(elephantModel);
@@ -398,11 +417,11 @@ void Application::ImportModels()
 	elephantAnimator = std::make_shared<Animator>(elephantClipManager->GetSkeleton(), (elephantClipManager->GetLoadedAnimationClips()[0]), glfwGetTime());
 
 
+}
 
-
-
-
-	const std::string wolfPath = "Resources/objects/Wolf/wp.fbx";
+void Application::ImportWolfModel()
+{
+		const std::string wolfPath = "Resources/objects/Wolf/wp.fbx";
 	wolfModel = std::make_shared<SkeletalModel>(wolfPath);
 	wolfGameObject = std::make_shared<SkeletalModelGameObject>(wolfModel);
 
@@ -435,7 +454,6 @@ void Application::ImportModels()
 	wolfAnimState->AddNewState(wolfWalk_STATE);
 	wolfAnimState->AddNewState(wolfRUN_STATE);
 	wolfAnimState->Update(deltaTime);
-	
 }
 
 void Application::processInput(GLFWwindow* window)
@@ -449,13 +467,11 @@ void Application::processInput(GLFWwindow* window)
 	{
 		ShowModel = !ShowModel;
 	}
-
-
+	
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 	{
 		glfwSetWindowShouldClose(window, true);
 	}
-
 
 	const float cameraSpeed = cam.GetSpeed() * deltaTime; // adjust accordingly
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)

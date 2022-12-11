@@ -32,6 +32,10 @@ private:
 
     void ImportShaders();
     void ImportModels();
+    void ImportArcherModel();
+    void ImportEnvironmentModel();
+    void ImportElephantModel();
+    void ImportWolfModel();
 
     void processInput(GLFWwindow* window);
     void processInput(GLFWwindow* window, std::shared_ptr<SkeletalModelGameObject> gameObject);
