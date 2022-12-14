@@ -1,6 +1,17 @@
 ## Skeletal Animation
 
+As part of my bachelor project, I decided to create an animation system from scratch learning about computer graphics and animation systems.
 
+## Resources
+
+I have used different resources. For this project I did not want to create something new but rather my goal was to learn. Threfore, good chunks of the code, mostly graphics engine, is from [learnopengl](https://learnopengl.com/) website.
+
++ [learnopengl](https://learnopengl.com/)
++ [Game Engine Architecture](https://www.gameenginebook.com/)
++ [MIT OPENCOURSEWARE - Computer Graphics](https://ocw.mit.edu/courses/6-837-computer-graphics-fall-2012/resources/mit6_837f12_lec06/)
++ [Assimp](https://assimp.sourceforge.net/lib_html/data.html)
+
+## Examples
 <p align="center">
   <img src="https://user-images.githubusercontent.com/49837425/172467013-2730cb30-34f0-47cb-8317-3e83f2974002.gif">
 </p>
